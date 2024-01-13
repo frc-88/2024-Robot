@@ -24,6 +24,7 @@ public class RobotContainer {
   private void configureSmartDashboardButtons(){
     SmartDashboard.putData("ClimberRun", m_climber.runFactory());
     SmartDashboard.putData("ClimberStop", m_climber.stopFactory());
+    SmartDashboard.putData("ClimberGoToPostition", m_climber.setPositionFactory());
   }
 
 
