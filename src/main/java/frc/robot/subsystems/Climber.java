@@ -19,10 +19,11 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
+import frc.robot.util.preferenceconstants.PIDPreferenceConstants;
 
 public class Climber extends SubsystemBase {
   private DoublePreferenceConstant p_armSpeed = new DoublePreferenceConstant("Arm/Speed", -0.5);
-  
+  private PIDPreferenceConstants p_PidPreferenceConstants = new PIDPreferenceConstants("Arm/PID");
   private final TalonFX m_armLeader = new TalonFX(0, "rio");
   private final TalonFX m_armFollower = new TalonFX(1, "rio");
   
@@ -47,11 +48,11 @@ public class Climber extends SubsystemBase {
     mm.MotionMagicJerk = 500;  // Take approximately 0.5 seconds to reach max accel 
 
     Slot0Configs slot0 = cfg.Slot0;
-    slot0.kP = 60;
-    slot0.kI = 0;
-    slot0.kD = 0.1;
-    slot0.kV = 0.12;
-    slot0.kS = 0.25; // Approximately 0.25V to get the mechanism moving
+    slot0.kP = p_PidPreferenceConstants.getKP().getValue();
+    slot0.kI = p_PidPreferenceConstants.getKI().getValue();
+    slot0.kD = p_PidPreferenceConstants.getKD().getValue();
+    slot0.kV = p_PidPreferenceConstants.getKF().getValue();
+    slot0.kS = p_PidPreferenceConstants.getKS().getValue(); // Approximately 0.25V to get the mechanism moving
 
     talon.getConfigurator().apply(cfg);
   }
