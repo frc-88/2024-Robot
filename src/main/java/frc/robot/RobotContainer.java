@@ -8,9 +8,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Indexer;
 
 public class RobotContainer {
   private final Shooter m_shooter = new Shooter();
+  private final Indexer m_indexer = new Indexer();
   public RobotContainer() {
     configureBindings();
     configureSmartDashboardButtons();
@@ -19,13 +21,14 @@ public class RobotContainer {
 private void configureSmartDashboardButtons() {
   //Shooter
   SmartDashboard.putData("Run Shooter", m_shooter.runShooterCommand());
-  SmartDashboard.putData("Run Indexer", m_shooter.runIndexerCommand());
+  SmartDashboard.putData("Run Indexer", m_indexer.runIndexerCommand());
   SmartDashboard.putData("Stop Shooter", m_shooter.stopShooterCommand());
-  SmartDashboard.putData("Stop Indexer", m_shooter.stopIndexerCommand());
+  SmartDashboard.putData("Stop Indexer", m_indexer.stopIndexerCommand());
 }
 
   private void configureBindings() {
-
+    m_shooter.setDefaultCommand(m_shooter.stopShooterCommand());
+    m_indexer.setDefaultCommand(m_indexer.stopIndexerCommand());
   }
 
   public Command getAutonomousCommand() {
