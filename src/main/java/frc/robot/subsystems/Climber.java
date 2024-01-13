@@ -23,6 +23,9 @@ import frc.robot.util.preferenceconstants.PIDPreferenceConstants;
 
 public class Climber extends SubsystemBase {
   private DoublePreferenceConstant p_armSpeed = new DoublePreferenceConstant("Arm/Speed", -0.5);
+  private DoublePreferenceConstant p_maxVelocity = new DoublePreferenceConstant("Arm/MotionMagicVelocity", 62.5);
+  private DoublePreferenceConstant p_maxAcceleration = new DoublePreferenceConstant("Arm/MotionMagicAcceleration", 250);
+  private DoublePreferenceConstant p_maxJerk = new DoublePreferenceConstant("Arm/MotionMagicJerk", 500);
   private PIDPreferenceConstants p_PidPreferenceConstants = new PIDPreferenceConstants("Arm/PID");
   private final TalonFX m_armLeader = new TalonFX(0, "rio");
   private final TalonFX m_armFollower = new TalonFX(1, "rio");
@@ -43,9 +46,9 @@ public class Climber extends SubsystemBase {
 
     /* Configure current limits */
     MotionMagicConfigs mm = cfg.MotionMagic;
-    mm.MotionMagicCruiseVelocity = 62.5; // 5 rotations per second cruise
-    mm.MotionMagicAcceleration = 250; // Take approximately 0.25 seconds to reach max vel
-    mm.MotionMagicJerk = 500;  // Take approximately 0.5 seconds to reach max accel 
+    mm.MotionMagicCruiseVelocity = p_maxVelocity.getValue(); // 5 rotations per second cruise
+    mm.MotionMagicAcceleration = p_maxAcceleration.getValue(); // Take approximately 0.25 seconds to reach max vel
+    mm.MotionMagicJerk = p_maxJerk.getValue();  // Take approximately 0.5 seconds to reach max accel 
 
     Slot0Configs slot0 = cfg.Slot0;
     slot0.kP = p_PidPreferenceConstants.getKP().getValue();
