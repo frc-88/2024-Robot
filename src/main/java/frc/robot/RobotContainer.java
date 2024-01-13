@@ -4,15 +4,29 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.Climber;
 
 public class RobotContainer {
+  private Climber m_climber = new Climber();
+
+
   public RobotContainer() {
     configureBindings();
-  }
+    configureSmartDashboardButtons();
+  } 
+
 
   private void configureBindings() {}
+
+  private void configureSmartDashboardButtons(){
+    SmartDashboard.putData("ClimberRun", m_climber.runFactory());
+    SmartDashboard.putData("ClimberStop", m_climber.stopFactory());
+  }
+
+
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
