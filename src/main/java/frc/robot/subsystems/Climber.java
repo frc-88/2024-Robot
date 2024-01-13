@@ -26,10 +26,11 @@ public class Climber extends SubsystemBase {
   private DoublePreferenceConstant p_maxVelocity = new DoublePreferenceConstant("Arm/MotionMagicVelocity", 62.5);
   private DoublePreferenceConstant p_maxAcceleration = new DoublePreferenceConstant("Arm/MotionMagicAcceleration", 250);
   private DoublePreferenceConstant p_maxJerk = new DoublePreferenceConstant("Arm/MotionMagicJerk", 500);
-  private DoublePreferenceConstant p_targetPosition = new DoublePreferenceConstant("Arm/TagrgetPosition", 0);
+  private DoublePreferenceConstant p_targetRightPosition = new DoublePreferenceConstant("Arm/RightTarget", 0);
+  private DoublePreferenceConstant p_targetLeftPosition = new DoublePreferenceConstant("Arm/LeftTarget", 0);
   private PIDPreferenceConstants p_PidPreferenceConstants = new PIDPreferenceConstants("Arm/PID");
   private final TalonFX m_armRight = new TalonFX(11);
-  private final TalonFX m_armFollower = new TalonFX(9);
+  private final TalonFX m_armLeft = new TalonFX(9);
   
   private final DutyCycleOut m_armRequest =  new DutyCycleOut(0.0);
   private final DutyCycleOut m_armFollowerRequest = new DutyCycleOut(0.0);
@@ -39,7 +40,7 @@ public class Climber extends SubsystemBase {
   /** Creates a new Climber. */
   public Climber() {
     configureTalons(m_armRight);
-    configureTalons(m_armFollower);
+    configureTalons(m_armLeft);
 
 
   }
@@ -63,13 +64,14 @@ public class Climber extends SubsystemBase {
     talon.getConfigurator().apply(cfg);
   }
 
-  public void setPostion(double position){
-    m_armRight.setControl(m_motionMagic.withPosition(position));
+  public void setPostion(double rightPosition, double leftPosition){
+    m_armRight.setControl(m_motionMagic.withPosition(rightPosition));
+    m_armLeft.setControl(m_motionMagic.withPosition(leftPosition));
   }
 
   public void set(double speed){
     m_armRight.setControl(m_armRequest.withOutput(speed));
-    m_armFollower.setControl(m_armFollowerRequest.withOutput(speed));
+    m_armLeft.setControl(m_armFollowerRequest.withOutput(speed));
   }
 
   public void run(){
@@ -89,12 +91,13 @@ public class Climber extends SubsystemBase {
   }
 
   public Command setPositionFactory(){
-    return new RunCommand(() -> {setPostion(p_targetPosition.getValue());}, this);
+    return new RunCommand(() -> {setPostion(p_targetRightPosition.getValue(), p_targetLeftPosition.getValue());}, this);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Climber:Arm:Postion", m_armRight.getPosition().getValueAsDouble());
+    SmartDashboard.putNumber("Climber:ArmRight", m_armRight.getPosition().getValueAsDouble());
+    SmartDashboard.putNumber("Climber:ArmLeft", m_armLeft.getPosition().getValueAsDouble());
   }
 }
