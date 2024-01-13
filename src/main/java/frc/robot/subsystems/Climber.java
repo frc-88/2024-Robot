@@ -37,6 +37,8 @@ public class Climber extends SubsystemBase {
   private final DutyCycleOut m_armFollowerRequest = new DutyCycleOut(0.0);
   // create a Motion Magic request, voltage output
   private final MotionMagicVoltage m_motionMagic = new MotionMagicVoltage(0);
+  private double rightStartPosition;
+  private double leftStartPosition;
 
   /** Creates a new Climber. */
   public Climber() {
@@ -44,6 +46,8 @@ public class Climber extends SubsystemBase {
     configureTalons(m_armLeft);
     m_armRight.setNeutralMode(NeutralModeValue.Brake);
     m_armLeft.setNeutralMode(NeutralModeValue.Brake);
+    rightStartPosition = m_armRight.getPosition().getValueAsDouble();
+    leftStartPosition = m_armLeft.getPosition().getValueAsDouble();
   }
 
   private void configureTalons(TalonFX talon) {
@@ -92,6 +96,10 @@ public class Climber extends SubsystemBase {
 
   public Command setPositionFactory(){
     return new RunCommand(() -> {setPostion(p_targetRightPosition.getValue(), p_targetLeftPosition.getValue());}, this);
+  }
+
+  public Command goToStartFactory(){
+    return new RunCommand(() -> {setPostion(rightStartPosition, leftStartPosition);});
   }
 
   @Override
