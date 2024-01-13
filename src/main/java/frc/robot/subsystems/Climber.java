@@ -11,6 +11,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -41,13 +42,12 @@ public class Climber extends SubsystemBase {
   public Climber() {
     configureTalons(m_armRight);
     configureTalons(m_armLeft);
-
-
+    m_armRight.setNeutralMode(NeutralModeValue.Brake);
+    m_armLeft.setNeutralMode(NeutralModeValue.Brake);
   }
 
   private void configureTalons(TalonFX talon) {
-     TalonFXConfiguration cfg = new TalonFXConfiguration();
-
+    TalonFXConfiguration cfg = new TalonFXConfiguration();
     /* Configure current limits */
     MotionMagicConfigs mm = cfg.MotionMagic;
     mm.MotionMagicCruiseVelocity = p_maxVelocity.getValue(); // 5 rotations per second cruise
