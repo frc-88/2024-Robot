@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -13,7 +12,6 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -32,8 +30,8 @@ public class Climber extends SubsystemBase {
   private PIDPreferenceConstants p_PidPreferenceConstants = new PIDPreferenceConstants("Arm/PID");
   private final TalonFX m_armRight = new TalonFX(11);
   private final TalonFX m_armLeft = new TalonFX(9);
-  
-  private final DutyCycleOut m_armRequest =  new DutyCycleOut(0.0);
+
+  private final DutyCycleOut m_armRequest = new DutyCycleOut(0.0);
   private final DutyCycleOut m_armFollowerRequest = new DutyCycleOut(0.0);
   // create a Motion Magic request, voltage output
   private final MotionMagicVoltage m_motionMagic = new MotionMagicVoltage(0);
@@ -54,9 +52,9 @@ public class Climber extends SubsystemBase {
     TalonFXConfiguration cfg = new TalonFXConfiguration();
     /* Configure current limits */
     MotionMagicConfigs mm = cfg.MotionMagic;
-    mm.MotionMagicCruiseVelocity = p_maxVelocity.getValue(); // 5 rotations per second cruise
-    mm.MotionMagicAcceleration = p_maxAcceleration.getValue(); // Take approximately 0.25 seconds to reach max vel
-    mm.MotionMagicJerk = p_maxJerk.getValue();  // Take approximately 0.5 seconds to reach max accel 
+    mm.MotionMagicCruiseVelocity = p_maxVelocity.getValue();
+    mm.MotionMagicAcceleration = p_maxAcceleration.getValue();
+    mm.MotionMagicJerk = p_maxJerk.getValue();
 
     Slot0Configs slot0 = cfg.Slot0;
     slot0.kP = p_PidPreferenceConstants.getKP().getValue();
@@ -68,37 +66,37 @@ public class Climber extends SubsystemBase {
     talon.getConfigurator().apply(cfg);
   }
 
-  public void setPostion(double rightPosition, double leftPosition){
+  public void setPostion(double rightPosition, double leftPosition) {
     m_armRight.setControl(m_motionMagic.withPosition(rightPosition));
     m_armLeft.setControl(m_motionMagic.withPosition(leftPosition));
   }
 
-  public void set(double speed){
+  public void set(double speed) {
     m_armRight.setControl(m_armRequest.withOutput(speed));
     m_armLeft.setControl(m_armFollowerRequest.withOutput(speed));
   }
 
-  public void run(){
+  public void run() {
     set(p_armSpeed.getValue());
   }
 
-  public void stop(){
+  public void stop() {
     set(0);
   }
 
-  public Command runFactory(){
+  public Command runFactory() {
     return new RunCommand(() -> {run();}, this);
   }
 
-  public Command stopFactory(){
+  public Command stopFactory() {
     return new InstantCommand(() -> {stop();}, this);
   }
 
-  public Command setPositionFactory(){
+  public Command setPositionFactory() {
     return new RunCommand(() -> {setPostion(p_targetRightPosition.getValue(), p_targetLeftPosition.getValue());}, this);
   }
 
-  public Command goToStartFactory(){
+  public Command goToStartFactory() {
     return new RunCommand(() -> {setPostion(rightStartPosition, leftStartPosition);});
   }
 
