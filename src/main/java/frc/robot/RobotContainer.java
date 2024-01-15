@@ -29,6 +29,7 @@ public class RobotContainer {
         NetworkTableInstance instance = NetworkTableInstance.getDefault();
 
         ROSNetworkTablesBridge bridge = new ROSNetworkTablesBridge(instance.getTable(""), 0.02);
+        tfListenerCompact = new TFListenerCompact(bridge, "/tf_compact");
         coprocessorBridge = new CoprocessorBridge(tfListenerCompact);
     }
 
