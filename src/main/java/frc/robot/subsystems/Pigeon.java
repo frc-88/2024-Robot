@@ -25,9 +25,9 @@ public class Pigeon {
         pigeonConfiguration.MountPose.MountPoseYaw = p_PigeonYawCalibration.getValue();
         pigeonConfiguration.MountPose.MountPoseRoll = p_PigeonRollCalibration.getValue();
         pigeonConfiguration.MountPose.MountPosePitch = p_PigeonPitchCalibration.getValue();
-        pigeonConfiguration.GyroScalarX = p_GyroXSensitivityScalar.getValue();
-        pigeonConfiguration.GyroScalarY = p_GyroYSensitivityScalar.getValue();
-        pigeonConfiguration.GyroScalarZ = p_GyroZSensitivityScalar.getValue();
+        pigeonConfiguration.GyroTrim.GyroScalarX = p_GyroXSensitivityScalar.getValue();
+        pigeonConfiguration.GyroTrim.GyroScalarY = p_GyroYSensitivityScalar.getValue();
+        pigeonConfiguration.GyroTrim.GyroScalarZ = p_GyroZSensitivityScalar.getValue();
 
         this.base.getConfigurator().apply(pigeonConfiguration);
     }
