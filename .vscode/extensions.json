@@ -1,0 +1,24 @@
+{
+    "recommendations": [
+        "editorconfig.editorconfig",
+        "ms-vscode.cpptools",
+        "jtr.vscode-position",
+        "dbaeumer.vscode-eslint",
+        "bierner.folder-source-actions",
+        "mhutchie.git-graph",
+        "eamodio.gitlens",
+        "visualstudioexptteam.vscodeintellicode",
+        "visualstudioexptteam.intellicode-api-usage-examples",
+        "ms-vscode-remote.vscode-remote-extensionpack",
+        "ms-vsliveshare.vsliveshare",
+        "esbenp.prettier-vscode",
+        "styled-components.vscode-styled-components",
+        "redhat.vscode-yaml",
+        "ms-toolsai.jupyter-keymap",
+        "ms-vscode-remote.remote-containers",
+        "alpha4.jsonl",
+        "hashicorp.terraform",
+        "timonwong.shellcheck",
+        "redhat.vscode-xml"
+    ]
+}
