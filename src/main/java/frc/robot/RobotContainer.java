@@ -4,15 +4,32 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.CoprocessorBridge;
+
+import frc.team88.ros.bridge.ROSNetworkTablesBridge;
+import frc.team88.ros.conversions.TFListenerCompact;
 
 public class RobotContainer {
+    private TFListenerCompact tfListenerCompact;
+    @SuppressWarnings("unused")
+    private CoprocessorBridge coprocessorBridge;
+
     public RobotContainer() {
         configureBindings();
+        configureRosNetworkTablesBridge();
     }
 
     private void configureBindings() {
+    }
+
+    public void configureRosNetworkTablesBridge() {
+        NetworkTableInstance instance = NetworkTableInstance.getDefault();
+
+        ROSNetworkTablesBridge bridge = new ROSNetworkTablesBridge(instance.getTable(""), 0.02);
+        coprocessorBridge = new CoprocessorBridge(tfListenerCompact);
     }
 
     public Command getAutonomousCommand() {
