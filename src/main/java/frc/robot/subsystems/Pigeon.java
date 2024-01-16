@@ -4,6 +4,7 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 
 public class Pigeon {
     private DoublePreferenceConstant p_PigeonYawCalibration;
@@ -60,6 +61,10 @@ public class Pigeon {
     
     public Rotation2d getRotation2d() {
         return base.getRotation2d();
+    }
+
+    public Rotation3d getRotation3d() {
+        return this.base.getRotation3d();
     }
 
     public double getAccelerationX() {
