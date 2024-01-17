@@ -1,12 +1,14 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Pigeon {
+public class Pigeon extends SubsystemBase {
     private DoublePreferenceConstant p_PigeonYawCalibration;
     private DoublePreferenceConstant p_PigeonRollCalibration; 
     private DoublePreferenceConstant p_PigeonPitchCalibration;
@@ -15,16 +17,26 @@ public class Pigeon {
     private DoublePreferenceConstant p_GyroZSensitivityScalar;
     private final double GRAVITY = 9.81;
     private Pigeon2 base;
+    private int deviceID;
     
-    public Pigeon(int deviceID) {
+    public Pigeon(int deviceID, String canbus) {
+        this.deviceID = deviceID;
         p_PigeonYawCalibration = new DoublePreferenceConstant("Pigeon" + deviceID + "/InitialYaw", 0);
         p_PigeonRollCalibration = new DoublePreferenceConstant("Pigeon" + deviceID + "/InitialRoll", 0);
         p_PigeonPitchCalibration = new DoublePreferenceConstant("Pigeon" + deviceID + "/InitialPitch", 0);
         p_GyroXSensitivityScalar = new DoublePreferenceConstant("Pigeon" + deviceID + "/GyroXSensitivity", 0);
         p_GyroYSensitivityScalar = new DoublePreferenceConstant("Pigeon" + deviceID + "/GyroYSensitivity", 0);
         p_GyroZSensitivityScalar = new DoublePreferenceConstant("Pigeon" + deviceID + "/GyroZSensitivity", 0);
-        base = new Pigeon2(deviceID);
-        configurePigeon();
+        base = new Pigeon2(deviceID, canbus);
+        //configurePigeon();
+    }
+
+    public Pigeon(int deviceID) {
+        this(deviceID, "rio");
+    }
+
+    public Pigeon() {
+        this(0, "rio");
     }
 
     public void configurePigeon() {
@@ -36,7 +48,7 @@ public class Pigeon {
         pigeonConfiguration.GyroTrim.GyroScalarY = p_GyroYSensitivityScalar.getValue();
         pigeonConfiguration.GyroTrim.GyroScalarZ = p_GyroZSensitivityScalar.getValue();
 
-        this.base.getConfigurator().apply(pigeonConfiguration);
+        base.getConfigurator().apply(pigeonConfiguration);
     }
 
     public void calibratePigeon() {
@@ -64,7 +76,7 @@ public class Pigeon {
     }
 
     public Rotation3d getRotation3d() {
-        return this.base.getRotation3d();
+        return base.getRotation3d();
     }
 
     public double getAccelerationX() {
@@ -87,5 +99,14 @@ public class Pigeon {
         base.reset();
     }
 
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber(String.format("Pigeon%d/YawRate", deviceID), getYawRate());
+        SmartDashboard.putNumber(String.format("Pigeon%d/Yaw", deviceID), getYaw());
+        SmartDashboard.putNumber(String.format("Pigeon%d/Angle", deviceID), getAngle());
+        SmartDashboard.putNumber(String.format("Pigeon%d/Roll", deviceID), getRoll());
+        SmartDashboard.putNumber(String.format("Pigeon%d/Pitch", deviceID), getPitch());
+    }
 }
+
     
