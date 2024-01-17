@@ -7,6 +7,8 @@ import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 public class Pigeon extends SubsystemBase {
     private DoublePreferenceConstant p_PigeonYawCalibration;
@@ -99,6 +101,14 @@ public class Pigeon extends SubsystemBase {
         base.reset();
     }
 
+    public Command calibratePigeonFactory() {
+        return new InstantCommand(() -> calibratePigeon(), this);
+    }
+
+    public Command resetPigeonFactory() {
+        return new InstantCommand(() -> reset(), this);
+    }
+
     @Override
     public void periodic() {
         SmartDashboard.putNumber(String.format("Pigeon%d/YawRate", deviceID), getYawRate());
@@ -107,6 +117,7 @@ public class Pigeon extends SubsystemBase {
         SmartDashboard.putNumber(String.format("Pigeon%d/Roll", deviceID), getRoll());
         SmartDashboard.putNumber(String.format("Pigeon%d/Pitch", deviceID), getPitch());
     }
+
 }
 
     
