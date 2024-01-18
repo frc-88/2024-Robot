@@ -9,6 +9,9 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.swervedrivespecialties.swervelib.DriveController;
 import com.swervedrivespecialties.swervelib.DriveControllerFactory;
 import com.swervedrivespecialties.swervelib.ModuleConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public final class Falcon500DriveControllerFactoryBuilder {
     private static final double TICKS_PER_ROTATION = 2048.0;
@@ -44,7 +47,7 @@ public final class Falcon500DriveControllerFactoryBuilder {
 
     private class FactoryImplementation implements DriveControllerFactory<ControllerImplementation, Integer> {
         @Override
-        public ControllerImplementation create(Integer driveConfiguration, ModuleConfiguration moduleConfiguration) {
+        public ControllerImplementation create(Integer deviceID, ModuleConfiguration moduleConfiguration) {
             TalonFXConfiguration motorConfiguration = new TalonFXConfiguration();
 
             double sensorPositionCoefficient = Math.PI * moduleConfiguration.getWheelDiameter() * moduleConfiguration.getDriveReduction() / TICKS_PER_ROTATION;
@@ -55,21 +58,21 @@ public final class Falcon500DriveControllerFactoryBuilder {
             }
 
             if (hasCurrentLimit()) {
-                motorConfiguration.supplyCurrLimit.currentLimit = currentLimit;
-                motorConfiguration.supplyCurrLimit.enable = true;
+                motorConfiguration.CurrentLimits.SupplyCurrentLimit = currentLimit;
+                motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
             }
 
-            WPI_TalonFX motor = new WPI_TalonFX(driveConfiguration);
-            CtreUtils.checkCtreError(motor.configAllSettings(motorConfiguration), "Failed to configure Falcon 500");
+            TalonFX motor = new TalonFX(deviceID);
+            CtreUtils.checkCtreError(motor.getConfigurator().apply(motorConfiguration), "Failed to configure Falcon 500");
 
             if (hasVoltageCompensation()) {
                 // Enable voltage compensation
                 motor.enableVoltageCompensation(true);
             }
 
-            motor.setNeutralMode(NeutralMode.Brake);
+            motor.setNeutralMode(NeutralModeValue.Brake);
 
-            motor.setInverted(moduleConfiguration.isDriveInverted() ? TalonFXInvertType.Clockwise : TalonFXInvertType.CounterClockwise);
+            motor.setInverted(moduleConfiguration.isDriveInverted() ? motorConfiguration.MotorOutput.Inverted.Clockwise_Positive : motorConfiguration.MotorOutput.Inverted.CounterClockwise_Positive);
             motor.setSensorPhase(true);
 
             // Reduce CAN status frame rates
@@ -87,25 +90,25 @@ public final class Falcon500DriveControllerFactoryBuilder {
     }
 
     private class ControllerImplementation implements DriveController {
-        private final WPI_TalonFX motor;
+        private final TalonFX motor;
         private final double sensorVelocityCoefficient;
         private final double sensorPositionCoefficient;
         private final double nominalVoltage = hasVoltageCompensation() ? Falcon500DriveControllerFactoryBuilder.this.nominalVoltage : 12.0;
 
-        private ControllerImplementation(WPI_TalonFX motor, double sensorVelocityCoefficient, double sensorPositionCoefficient) {
+        private ControllerImplementation(TalonFX motor, double sensorVelocityCoefficient, double sensorPositionCoefficient) {
             this.motor = motor;
             this.sensorVelocityCoefficient = sensorVelocityCoefficient;
             this.sensorPositionCoefficient = sensorPositionCoefficient;
         }
 
         @Override
-        public WPI_TalonFX getMotor() {
+        public TalonFX getMotor() {
             return motor;
         }
 
         @Override
         public void setReferenceVoltage(double voltage) {
-            motor.set(TalonFXControlMode.PercentOutput, voltage / nominalVoltage);
+            motor.set(voltage / nominalVoltage);
         }
 
         @Override

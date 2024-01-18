@@ -1,14 +1,13 @@
 package com.swervedrivespecialties.swervelib.ctre;
 
-import com.ctre.phoenix.ErrorCode;
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix.sensors.CANCoderStatusFrame;
-import com.ctre.phoenix.sensors.MagnetFieldStrength;
 import com.swervedrivespecialties.swervelib.AbsoluteEncoder;
 import com.swervedrivespecialties.swervelib.AbsoluteEncoderFactory;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
+import com.ctre.phoenix6.signals.MagnetHealthValue;
 
 public class CanCoderFactoryBuilder {
     private SensorDirectionValue direction = SensorDirectionValue.Clockwise_Positive;
@@ -33,9 +32,11 @@ public class CanCoderFactoryBuilder {
             config.MagnetSensor.SensorDirection = direction;
 
             CANcoder encoder = new CANcoder(configuration.getId());
-            CtreUtils.checkCtreError(encoder.configAllSettings(config, 250), "Failed to configure CANCoder");
+            CtreUtils.checkCtreError(encoder.getConfigurator().apply(config), "Failed to configure CANCoder");
 
-            CtreUtils.checkCtreError(encoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, periodMilliseconds, 250), "Failed to configure CANCoder update rate");
+            //CtreUtils.checkCtreError(encoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, periodMilliseconds, 250), "Failed to configure CANCoder update rate");
+            CtreUtils.checkCtreError(encoder.getPosition().setUpdateFrequency(5), "Failed to configure CANCoder update rate");
+
 
             return new EncoderImplementation(encoder);
         };
@@ -50,7 +51,7 @@ public class CanCoderFactoryBuilder {
 
         @Override
         public double getAbsoluteAngle() {
-            double angle = Math.toRadians(encoder.getAbsolutePosition());
+            double angle = Math.toRadians(encoder.getAbsolutePosition().getValueAsDouble());
             angle %= 2.0 * Math.PI;
             if (angle < 0.0) {
                 angle += 2.0 * Math.PI;
@@ -61,9 +62,9 @@ public class CanCoderFactoryBuilder {
 
         @Override
         public boolean isPresent() {
-            return !(encoder.getMagnetFieldStrength() == MagnetFieldStrength.BadRange_RedLED
-                || encoder.getMagnetFieldStrength() == MagnetFieldStrength.Invalid_Unknown
-                || encoder.getLastError() == ErrorCode.SensorNotPresent);
+            return !(encoder.getMagnetHealth().getValue() == MagnetHealthValue.Magnet_Red
+                || encoder.getMagnetHealth().getValue() == MagnetHealthValue.Magnet_Invalid
+                || encoder.clearStickyFault_Hardware() == StatusCode.SensorNotPresent);
         }
     }
 
