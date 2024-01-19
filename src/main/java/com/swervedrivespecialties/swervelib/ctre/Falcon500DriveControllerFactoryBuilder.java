@@ -1,11 +1,6 @@
 package com.swervedrivespecialties.swervelib.ctre;
 
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
-import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
 import com.swervedrivespecialties.swervelib.DriveController;
 import com.swervedrivespecialties.swervelib.DriveControllerFactory;
 import com.swervedrivespecialties.swervelib.ModuleConfiguration;
@@ -54,7 +49,7 @@ public final class Falcon500DriveControllerFactoryBuilder {
             double sensorVelocityCoefficient = sensorPositionCoefficient * 10.0;
 
             if (hasVoltageCompensation()) {
-                motorConfiguration.voltageCompSaturation = nominalVoltage;
+                motorConfiguration.Voltage.PeakForwardVoltage = nominalVoltage;
             }
 
             if (hasCurrentLimit()) {
@@ -72,7 +67,8 @@ public final class Falcon500DriveControllerFactoryBuilder {
 
             motor.setNeutralMode(NeutralModeValue.Brake);
 
-            motor.setInverted(moduleConfiguration.isDriveInverted() ? motorConfiguration.MotorOutput.Inverted.Clockwise_Positive : motorConfiguration.MotorOutput.Inverted.CounterClockwise_Positive);
+            motor.setInverted(moduleConfiguration.isDriveInverted() ? true : false);
+            //no method for this one in pheonix6
             motor.setSensorPhase(true);
 
             // Reduce CAN status frame rates
@@ -113,12 +109,12 @@ public final class Falcon500DriveControllerFactoryBuilder {
 
         @Override
         public double getStateVelocity() {
-            return motor.getSelectedSensorVelocity() * sensorVelocityCoefficient;
+            return motor.getVelocity().getValueAsDouble();
         }
 
         @Override
         public double getDistance() {
-            return motor.getSelectedSensorPosition() * sensorPositionCoefficient;
+            return motor.getPosition().getValueAsDouble();
         }
     }
 }

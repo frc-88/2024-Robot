@@ -1,6 +1,6 @@
 package com.swervedrivespecialties.swervelib;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix6.hardware.TalonFX;
 
 public interface SteerController {
     double getReferenceAngle();
@@ -11,7 +11,7 @@ public interface SteerController {
 
     void checkAngleReset();
 
-    WPI_TalonFX getMotor();
+    TalonFX getMotor();
 
     AbsoluteEncoder getEncoder();
 }
