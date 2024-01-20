@@ -28,7 +28,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -41,12 +40,8 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
-import frc.robot.commands.drive.GrantDriveCommand;
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.util.controllers.DriverController;
-import frc.robot.util.controllers.FrskyController;
-import frc.robot.util.coprocessor.ChassisInterface;
-import frc.robot.util.coprocessor.VelocityCommand;
 import frc.robot.util.drive.DriveUtils;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 
@@ -56,7 +51,7 @@ import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
  * it's sideways, of course!
  */
 
-public class SwerveDrive extends SubsystemBase implements ChassisInterface{
+public class SwerveDrive extends SubsystemBase {
         /**
          * The maximum voltage that will be delivered to the drive motors.
          * 
@@ -267,10 +262,10 @@ public class SwerveDrive extends SubsystemBase implements ChassisInterface{
         }
 
         public void zeroDriveEncoders() {
-                m_frontLeftModule.getDriveController().getMotor().setSelectedSensorPosition(0);
-                m_frontRightModule.getDriveController().getMotor().setSelectedSensorPosition(0);
-                m_backLeftModule.getDriveController().getMotor().setSelectedSensorPosition(0);
-                m_backRightModule.getDriveController().getMotor().setSelectedSensorPosition(0);
+                m_frontLeftModule.getDriveController().getMotor().setPosition(0);
+                m_frontRightModule.getDriveController().getMotor().setPosition(0);
+                m_backLeftModule.getDriveController().getMotor().setPosition(0);
+                m_backRightModule.getDriveController().getMotor().setPosition(0);
         }
 
         public void resetOdometry(Pose2d startPose, Rotation2d startGyro) {
@@ -402,20 +397,6 @@ public class SwerveDrive extends SubsystemBase implements ChassisInterface{
                 return swerveDrive;
         }
 
-        public GrantDriveCommand grantDriveCommandFactory(SwerveDrive drive,
-                        DriverController driverController) {
-                GrantDriveCommand grantDrive;
-
-                grantDrive =new GrantDriveCommand(
-                        drive,
-                        () -> modifyAxis(filterY.calculate(((FrskyController) driverController).getLeftStickY()), true) * MAX_VELOCITY_METERS_PER_SECOND * 0.75,
-                        () -> modifyAxis(((FrskyController) driverController).getRightStickX(), false),
-                        () -> modifyAxis(((FrskyController) driverController).getRightStickY(), false),
-                        () -> -modifyAxis(((FrskyController) driverController).getLeftStickX(), false) * MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
-                      );
-                return grantDrive;
-        }
-
         public Command lockCommandFactory() {
                 SwerveModuleState [] lockStates = { new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
                         new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
@@ -426,16 +407,6 @@ public class SwerveDrive extends SubsystemBase implements ChassisInterface{
                 return new RunCommand( () -> {setModuleStates(lockStates);}, this);
         }
 
-        public void addToOrchestra(Orchestra m_orchestra) {
-                m_orchestra.addInstrument(m_frontLeftModule.getDriveController().getMotor());
-                m_orchestra.addInstrument(m_frontRightModule.getDriveController().getMotor());
-                m_orchestra.addInstrument(m_backLeftModule.getDriveController().getMotor());
-                m_orchestra.addInstrument(m_backRightModule.getDriveController().getMotor());
-                m_orchestra.addInstrument(m_frontLeftModule.getSteerController().getMotor());
-                m_orchestra.addInstrument(m_frontRightModule.getSteerController().getMotor());
-                m_orchestra.addInstrument(m_backLeftModule.getSteerController().getMotor());
-                m_orchestra.addInstrument(m_backRightModule.getSteerController().getMotor());
-        }
         public InstantCommand resetYawCommandFactory() {
                 return new InstantCommand(() -> {zeroGyroscope();});
         }
@@ -505,12 +476,6 @@ public class SwerveDrive extends SubsystemBase implements ChassisInterface{
                 SmartDashboard.putNumber("poseY", getPoseEstimate().getY());
                 SmartDashboard.putNumber("poseTheta", getPoseEstimate().getRotation().getDegrees());
                 SmartDashboard.putNumber("field offset", m_fieldOffset);
-        }
-
-        @Override
-        public void drive(VelocityCommand command) {
-                // TODO Auto-generated method stub
-                
         }
 
         public boolean notMoving() {
