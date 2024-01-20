@@ -7,6 +7,7 @@ import com.swervedrivespecialties.swervelib.*;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.ControlRequest;
+import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -146,10 +147,19 @@ public final class Falcon500SteerControllerFactoryBuilder {
                     "Failed to configure Falcon status frame period"
             );
 
+            ControlRequest controlRequest;
+            
+            if (hasMotionMagic()) {
+                controlRequest = hasVoltageCompensation()? new MotionMagicVoltage(0) : new MotionMagicDutyCycle(0);
+            } else {
+                controlRequest = hasVoltageCompensation()? new PositionVoltage(0) : new PositionDutyCycle(0);
+            }
+
+
             return new ControllerImplementation(motor,
                     sensorPositionCoefficient,
                     sensorVelocityCoefficient,
-                    hasMotionMagic(),
+                    controlRequest,
                     absoluteEncoder);
         }
     }
@@ -159,8 +169,7 @@ public final class Falcon500SteerControllerFactoryBuilder {
         private static final double ENCODER_RESET_MAX_ANGULAR_VELOCITY = Math.toRadians(0.5);
 
         private final TalonFX motor;
-        private final MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0);
-        private final PositionVoltage positionVoltage = new PositionVoltage(0);
+        private final ControlRequest controlRequest;
         private final double motorEncoderPositionCoefficient;
         private final double motorEncoderVelocityCoefficient;
         private final boolean isMotionMagic;
@@ -173,12 +182,12 @@ public final class Falcon500SteerControllerFactoryBuilder {
         private ControllerImplementation(TalonFX motor,
                                          double motorEncoderPositionCoefficient,
                                          double motorEncoderVelocityCoefficient,
-                                         boolean isMotionMagic,
+                                         ControlRequest controlRequest,
                                          AbsoluteEncoder absoluteEncoder) {
             this.motor = motor;
             this.motorEncoderPositionCoefficient = motorEncoderPositionCoefficient;
             this.motorEncoderVelocityCoefficient = motorEncoderVelocityCoefficient;
-            this.isMotionMagic = isMotionMagic;
+            this.controlRequest = controlRequest;
             this.absoluteEncoder = absoluteEncoder;
         }
 
