@@ -19,16 +19,19 @@ private DoublePreferenceConstant shooterSpeed =
   new DoublePreferenceConstant("shooter/shooter/speed", 0);
 
   final TalonFX m_Shooter = new TalonFX(8);
+  final TalonFX m_ShooterTwo = new TalonFX(7);
   
 
 private double talonFree = 6380;
 
   public void startShooter() {
     m_Shooter.set(shooterSpeed.getValue()/talonFree);
+    m_ShooterTwo.set(shooterSpeed.getValue()/talonFree);
     }  
  
   public void stopShooter() {
     m_Shooter.set(0);
+    m_ShooterTwo.set(0);
     }
  
   public Command runShooterCommand(){
