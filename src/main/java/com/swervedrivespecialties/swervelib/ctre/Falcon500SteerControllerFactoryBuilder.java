@@ -1,10 +1,10 @@
 package com.swervedrivespecialties.swervelib.ctre;
 
-import com.ctre.phoenix.motorcontrol.*;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.swervedrivespecialties.swervelib.*;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
+
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
@@ -127,23 +127,19 @@ public final class Falcon500SteerControllerFactoryBuilder {
             TalonFX motor = new TalonFX(steerConfiguration.getMotorPort());
             checkCtreError(motor.getConfigurator().apply(motorConfiguration), "Failed to configure Falcon 500 settings");
 
-            if (hasVoltageCompensation()) {
-                motor.enableVoltageCompensation(true);
-            }
             checkCtreError(motor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, CAN_TIMEOUT_MS), "Failed to set Falcon 500 feedback sensor");
-            motor.setSensorPhase(true);
-            motor.setInverted(moduleConfiguration.isSteerInverted() ? TalonFXInvertType.CounterClockwise : TalonFXInvertType.Clockwise);
+            //motor.setSensorPhase(true);
+            motor.setInverted(moduleConfiguration.isSteerInverted() ? true : false);
             motor.setNeutralMode(NeutralModeValue.Brake);
 
             checkCtreError(motor.setPosition(absoluteEncoder.getAbsoluteAngle() / sensorPositionCoefficient, CAN_TIMEOUT_MS), "Failed to set Falcon 500 encoder position");
 
             // Reduce CAN status frame rates
-            CtreUtils.checkCtreError(
-                    motor.setStatusFramePeriod(
-                            StatusFrameEnhanced.Status_1_General,
-                            STATUS_FRAME_GENERAL_PERIOD_MS,
-                            CAN_TIMEOUT_MS
-                    ),
+             CtreUtils.checkCtreError(
+                    StatusSignal.setUpdateFrequencyForAll(STATUS_FRAME_GENERAL_PERIOD_MS,
+                        (BaseStatusSignal)motor.getSupplyVoltage(),
+                        (BaseStatusSignal)motor.getVersion(),
+                        (BaseStatusSignal)motor.getFaultField()),
                     "Failed to configure Falcon status frame period"
             );
 
@@ -172,7 +168,6 @@ public final class Falcon500SteerControllerFactoryBuilder {
         private final ControlRequest controlRequest;
         private final double motorEncoderPositionCoefficient;
         private final double motorEncoderVelocityCoefficient;
-        private final boolean isMotionMagic;
         private final AbsoluteEncoder absoluteEncoder;
 
         private double referenceAngleRadians = 0.0;
@@ -223,7 +218,7 @@ public final class Falcon500SteerControllerFactoryBuilder {
                 adjustedReferenceAngleRadians += 2.0 * Math.PI;
             }
 
-            motor.setControl(isMotionMagic ? motionMagicVoltage.withPosition(adjustedReferenceAngleRadians / motorEncoderPositionCoefficient) : positionVoltage.withPosition(adjustedReferenceAngleRadians / motorEncoderPositionCoefficient));
+            motor.setControl(controlRequest.withPosition(adjustedReferenceAngleRadians / motorEncoderPositionCoefficient)); 
             
 
             this.referenceAngleRadians = referenceAngleRadians;
