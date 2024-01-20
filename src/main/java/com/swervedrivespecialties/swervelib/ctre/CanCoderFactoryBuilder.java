@@ -1,6 +1,8 @@
 package com.swervedrivespecialties.swervelib.ctre;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.swervedrivespecialties.swervelib.AbsoluteEncoder;
@@ -33,9 +35,14 @@ public class CanCoderFactoryBuilder {
 
             CANcoder encoder = new CANcoder(configuration.getId());
             CtreUtils.checkCtreError(encoder.getConfigurator().apply(config), "Failed to configure CANCoder");
+            CtreUtils.checkCtreError(
+                    StatusSignal.setUpdateFrequencyForAll(periodMilliseconds,
+                        (BaseStatusSignal)encoder.getPosition(),
+                        (BaseStatusSignal)encoder.getVelocity()
+                        ),
+                    "Failed to configure Falcon status frame period"
+            );
 
-            //CtreUtils.checkCtreError(encoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, periodMilliseconds, 250), "Failed to configure CANCoder update rate");
-            CtreUtils.checkCtreError(encoder.getPosition().setUpdateFrequency(5), "Failed to configure CANCoder update rate");
 
 
             return new EncoderImplementation(encoder);

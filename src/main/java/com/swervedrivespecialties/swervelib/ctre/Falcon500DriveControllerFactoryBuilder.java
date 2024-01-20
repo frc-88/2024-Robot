@@ -1,9 +1,7 @@
 package com.swervedrivespecialties.swervelib.ctre;
 
 
-import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -16,7 +14,6 @@ public final class Falcon500DriveControllerFactoryBuilder {
     private static final double TICKS_PER_ROTATION = 2048.0;
     private static final double WHEEL_RADIUS = 0.0508;
 
-    private static final int CAN_TIMEOUT_MS = 250;
     private static final int STATUS_FRAME_GENERAL_PERIOD_MS = 250;
 
     private double nominalVoltage = Double.NaN;
@@ -116,12 +113,12 @@ public final class Falcon500DriveControllerFactoryBuilder {
 
         @Override
         public double getStateVelocity() {
-            return motor.getVelocity().getValueAsDouble();
+            return motor.getVelocity().getValueAsDouble() * sensorVelocityCoefficient;
         }
 
         @Override
         public double getDistance() {
-            return motor.getPosition().getValueAsDouble();
+            return motor.getPosition().getValueAsDouble() * sensorPositionCoefficient;
         }
     }
 }
