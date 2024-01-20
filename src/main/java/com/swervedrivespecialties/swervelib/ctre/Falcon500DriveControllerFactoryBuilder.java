@@ -1,18 +1,19 @@
 package com.swervedrivespecialties.swervelib.ctre;
 
 
-import com.swervedrivespecialties.swervelib.DriveController;
-import com.swervedrivespecialties.swervelib.DriveControllerFactory;
-import com.swervedrivespecialties.swervelib.ModuleConfiguration;
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.swervedrivespecialties.swervelib.DriveController;
+import com.swervedrivespecialties.swervelib.DriveControllerFactory;
+import com.swervedrivespecialties.swervelib.ModuleConfiguration;
 
 public final class Falcon500DriveControllerFactoryBuilder {
     private static final double TICKS_PER_ROTATION = 2048.0;
     private static final double WHEEL_RADIUS = 0.0508;
 
-    private static final int CAN_TIMEOUT_MS = 250;
     private static final int STATUS_FRAME_GENERAL_PERIOD_MS = 250;
 
     private double nominalVoltage = Double.NaN;
@@ -62,22 +63,25 @@ public final class Falcon500DriveControllerFactoryBuilder {
 
             if (hasVoltageCompensation()) {
                 // Enable voltage compensation
-                motor.enableVoltageCompensation(true);
+                // motor.enableVoltageCompensation(true);
+                // Not needed in Phoenix 6
+                // instead use VelocityVoltage (or other ..Voltage) control request
             }
 
             motor.setNeutralMode(NeutralModeValue.Brake);
 
             motor.setInverted(moduleConfiguration.isDriveInverted() ? true : false);
-            //no method for this one in pheonix6
-            motor.setSensorPhase(true);
+            
+            // no method for this one in pheonix6
+            // no longer needed...sensor always in phase
+            //motor.setSensorPhase(true);
 
             // Reduce CAN status frame rates
             CtreUtils.checkCtreError(
-                    motor.setStatusFramePeriod(
-                            StatusFrameEnhanced.Status_1_General,
-                            STATUS_FRAME_GENERAL_PERIOD_MS,
-                            CAN_TIMEOUT_MS
-                    ),
+                    StatusSignal.setUpdateFrequencyForAll(STATUS_FRAME_GENERAL_PERIOD_MS,
+                        (BaseStatusSignal)motor.getSupplyVoltage(),
+                        (BaseStatusSignal)motor.getVersion(),
+                        (BaseStatusSignal)motor.getFaultField()),
                     "Failed to configure Falcon status frame period"
             );
 
@@ -109,12 +113,12 @@ public final class Falcon500DriveControllerFactoryBuilder {
 
         @Override
         public double getStateVelocity() {
-            return motor.getVelocity().getValueAsDouble();
+            return motor.getVelocity().getValueAsDouble() * sensorVelocityCoefficient;
         }
 
         @Override
         public double getDistance() {
-            return motor.getPosition().getValueAsDouble();
+            return motor.getPosition().getValueAsDouble() * sensorPositionCoefficient;
         }
     }
 }

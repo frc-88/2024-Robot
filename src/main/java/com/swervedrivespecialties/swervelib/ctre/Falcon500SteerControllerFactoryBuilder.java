@@ -1,16 +1,14 @@
 package com.swervedrivespecialties.swervelib.ctre;
 
-import com.ctre.phoenix.motorcontrol.*;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.swervedrivespecialties.swervelib.*;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
+
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.PositionDutyCycle;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import static com.swervedrivespecialties.swervelib.ctre.CtreUtils.checkCtreError;
@@ -124,32 +122,25 @@ public final class Falcon500SteerControllerFactoryBuilder {
             }
 
             TalonFX motor = new TalonFX(steerConfiguration.getMotorPort());
+            motorConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
             checkCtreError(motor.getConfigurator().apply(motorConfiguration), "Failed to configure Falcon 500 settings");
-
-            if (hasVoltageCompensation()) {
-                motor.enableVoltageCompensation(true);
-            }
-            checkCtreError(motor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, CAN_TIMEOUT_MS), "Failed to set Falcon 500 feedback sensor");
-            motor.setSensorPhase(true);
-            motor.setInverted(moduleConfiguration.isSteerInverted() ? TalonFXInvertType.CounterClockwise : TalonFXInvertType.Clockwise);
+            motor.setInverted(moduleConfiguration.isSteerInverted() ? true : false);
             motor.setNeutralMode(NeutralModeValue.Brake);
 
             checkCtreError(motor.setPosition(absoluteEncoder.getAbsoluteAngle() / sensorPositionCoefficient, CAN_TIMEOUT_MS), "Failed to set Falcon 500 encoder position");
 
             // Reduce CAN status frame rates
-            CtreUtils.checkCtreError(
-                    motor.setStatusFramePeriod(
-                            StatusFrameEnhanced.Status_1_General,
-                            STATUS_FRAME_GENERAL_PERIOD_MS,
-                            CAN_TIMEOUT_MS
-                    ),
+             CtreUtils.checkCtreError(
+                    StatusSignal.setUpdateFrequencyForAll(STATUS_FRAME_GENERAL_PERIOD_MS,
+                        (BaseStatusSignal)motor.getSupplyVoltage(),
+                        (BaseStatusSignal)motor.getVersion(),
+                        (BaseStatusSignal)motor.getFaultField()),
                     "Failed to configure Falcon status frame period"
             );
 
             return new ControllerImplementation(motor,
                     sensorPositionCoefficient,
                     sensorVelocityCoefficient,
-                    hasMotionMagic(),
                     absoluteEncoder);
         }
     }
@@ -159,11 +150,9 @@ public final class Falcon500SteerControllerFactoryBuilder {
         private static final double ENCODER_RESET_MAX_ANGULAR_VELOCITY = Math.toRadians(0.5);
 
         private final TalonFX motor;
-        private final MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0);
-        private final PositionVoltage positionVoltage = new PositionVoltage(0);
+        private final MotionMagicVoltage controlRequest = new MotionMagicVoltage(0);
         private final double motorEncoderPositionCoefficient;
         private final double motorEncoderVelocityCoefficient;
-        private final boolean isMotionMagic;
         private final AbsoluteEncoder absoluteEncoder;
 
         private double referenceAngleRadians = 0.0;
@@ -173,12 +162,10 @@ public final class Falcon500SteerControllerFactoryBuilder {
         private ControllerImplementation(TalonFX motor,
                                          double motorEncoderPositionCoefficient,
                                          double motorEncoderVelocityCoefficient,
-                                         boolean isMotionMagic,
                                          AbsoluteEncoder absoluteEncoder) {
             this.motor = motor;
             this.motorEncoderPositionCoefficient = motorEncoderPositionCoefficient;
             this.motorEncoderVelocityCoefficient = motorEncoderVelocityCoefficient;
-            this.isMotionMagic = isMotionMagic;
             this.absoluteEncoder = absoluteEncoder;
         }
 
@@ -214,7 +201,7 @@ public final class Falcon500SteerControllerFactoryBuilder {
                 adjustedReferenceAngleRadians += 2.0 * Math.PI;
             }
 
-            motor.setControl(isMotionMagic ? motionMagicVoltage.withPosition(adjustedReferenceAngleRadians / motorEncoderPositionCoefficient) : positionVoltage.withPosition(adjustedReferenceAngleRadians / motorEncoderPositionCoefficient));
+            motor.setControl(controlRequest.withPosition(adjustedReferenceAngleRadians / motorEncoderPositionCoefficient)); 
             
 
             this.referenceAngleRadians = referenceAngleRadians;
