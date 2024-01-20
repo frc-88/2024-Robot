@@ -1,0 +1,16 @@
+{
+    "recommendations": [
+        "editorconfig.editorconfig",
+        "bierner.folder-source-actions",
+        "mhutchie.git-graph",
+        "eamodio.gitlens",
+        "visualstudioexptteam.vscodeintellicode",
+        "ms-vscode-remote.vscode-remote-extensionpack",
+        "ms-vsliveshare.vsliveshare",
+        "esbenp.prettier-vscode",
+        "redhat.vscode-yaml",
+        "ms-vscode-remote.remote-containers",
+        "timonwong.shellcheck",
+        "redhat.vscode-xml"
+    ]
+}

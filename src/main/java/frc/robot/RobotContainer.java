@@ -17,7 +17,8 @@ public class RobotContainer {
     configureSmartDashboardButtons();
   }
 
-  private void configureBindings() {}
+    private void configureBindings() {
+    }
 
   private void configureSmartDashboardButtons() {
     SmartDashboard.putData("CalibratePigeon", m_Pigeon.calibratePigeonFactory());
