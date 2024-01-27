@@ -15,23 +15,25 @@ import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 public class Shooter extends SubsystemBase {
   /** Creates a new Shooter. */
 
-private DoublePreferenceConstant shooterSpeed =
+private DoublePreferenceConstant leftShooterSpeed =
+  new DoublePreferenceConstant("shooter/shooter/speed", 0);
+private DoublePreferenceConstant rightShooterSpeed =
   new DoublePreferenceConstant("shooter/shooter/speed", 0);
 
-  final TalonFX m_Shooter = new TalonFX(8);
-  final TalonFX m_ShooterTwo = new TalonFX(7);
+  final TalonFX m_LeftShooter = new TalonFX(8);
+  final TalonFX m_RightShooter = new TalonFX(7);
   
 
 private double talonFree = 6380;
 
   public void startShooter() {
-    m_Shooter.set(shooterSpeed.getValue()/talonFree);
-    m_ShooterTwo.set(shooterSpeed.getValue()/talonFree);
+    m_LeftShooter.set(leftShooterSpeed.getValue()/talonFree);
+    m_RightShooter.set(rightShooterSpeed.getValue()/talonFree);
     }  
  
   public void stopShooter() {
-    m_Shooter.set(0);
-    m_ShooterTwo.set(0);
+    m_LeftShooter.set(0);
+    m_RightShooter.set(0);
     }
  
   public Command runShooterCommand(){
