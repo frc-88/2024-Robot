@@ -12,8 +12,15 @@ public class Indexer extends SubsystemBase {
 
     private double talonFree = 6380;
 
+
+
+
     private DoublePreferenceConstant indexerSpeed =
   new DoublePreferenceConstant("shooter/indexer/speed", 0);
+
+  public Indexer(){
+    m_Indexer.setInverted(true);
+  }
 
   public void startIndexer() {
     m_Indexer.set(indexerSpeed.getValue()/talonFree);

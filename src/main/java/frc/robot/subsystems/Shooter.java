@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -25,6 +26,11 @@ private DoublePreferenceConstant rightShooterSpeed =
   
 
 private double talonFree = 6380;
+
+  public Shooter (){
+    m_LeftShooter.setInverted(true);
+    m_RightShooter.setInverted(false);
+  }
 
   public void startShooter() {
     m_LeftShooter.set(leftShooterSpeed.getValue()/talonFree);
@@ -47,6 +53,7 @@ private double talonFree = 6380;
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-
+    SmartDashboard.putNumber("Left Shooter Speed", m_LeftShooter.getVelocity().getValueAsDouble()*60);
+    SmartDashboard.putNumber("Right Shooter Speed", m_RightShooter.getVelocity().getValueAsDouble()*60);
   }
 }
