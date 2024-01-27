@@ -16,9 +16,9 @@ public class Shooter extends SubsystemBase {
   /** Creates a new Shooter. */
 
 private DoublePreferenceConstant leftShooterSpeed =
-  new DoublePreferenceConstant("shooter/shooter/speed", 0);
+  new DoublePreferenceConstant("shooter/shooter/Leftspeed", 0);
 private DoublePreferenceConstant rightShooterSpeed =
-  new DoublePreferenceConstant("shooter/shooter/speed", 0);
+  new DoublePreferenceConstant("shooter/shooter/Rightspeed", 0);
 
   final TalonFX m_LeftShooter = new TalonFX(8);
   final TalonFX m_RightShooter = new TalonFX(7);
