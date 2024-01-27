@@ -44,8 +44,8 @@ public class RobotContainer {
                                                                                                    // negative Y
                                                                                                    // (forward)
                         .withVelocityY(joystick.getLeftY() * MaxSpeed) // Drive left with negative X (left)
-                        .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with
-                                                                                    // negative X (left)
+                        .withRotationalRate(joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with
+                                                                                   // negative X (left)
                 ));
 
         joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
@@ -55,10 +55,10 @@ public class RobotContainer {
         joystick.rightTrigger()
                 .whileTrue(drivetrain.applyRequest(() -> robotCentric.withVelocityX(-joystick.getLeftX() * MaxSpeed)
                         .withVelocityY(joystick.getLeftY() * MaxSpeed)
-                        .withRotationalRate(-joystick.getRightX() * MaxAngularRate)));
+                        .withRotationalRate(joystick.getRightX() * MaxAngularRate)));
 
-        joystick.x().whileTrue(drivetrain.applyRequest(() -> snapToAngle.withVelocityX(joystick.getLeftY() * MaxSpeed)
-                .withVelocityY(-joystick.getLeftX() * MaxSpeed).withTargetDirection(Rotation2d.fromDegrees(180))));
+        joystick.x().whileTrue(drivetrain.applyRequest(() -> snapToAngle.withVelocityX(-joystick.getLeftX() * MaxSpeed)
+                .withVelocityY(joystick.getLeftY() * MaxSpeed).withTargetDirection(Rotation2d.fromDegrees(0))));
 
         // reset the field-centric heading on left bumper press
         joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
