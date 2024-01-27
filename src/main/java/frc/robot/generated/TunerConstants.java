@@ -115,13 +115,13 @@ public class TunerConstants {
     private static final int kBackRightDriveMotorId = 0;
     private static final int kBackRightSteerMotorId = 1;
     private static final int kBackRightEncoderId = 1;
-    private static final double kBackRightEncoderOffset = -.057;
-
-    public static final double[] kModuleOffsets = { kFrontLeftEncoderOffset, kFrontRightEncoderOffset,
-            kBackLeftEncoderOffset, kBackRightEncoderOffset };
+    private static final double kBackRightEncoderOffset = -0.95458984375;
 
     private static final double kBackRightXPosInches = -11.5;
     private static final double kBackRightYPosInches = -11.25;
+
+    public static final double[] kModuleOffsets = { kFrontLeftEncoderOffset, kFrontRightEncoderOffset,
+            kBackLeftEncoderOffset, kBackRightEncoderOffset };
 
     private static final SwerveModuleConstants FrontLeft = ConstantCreator.createModuleConstants(
             kFrontLeftSteerMotorId, kFrontLeftDriveMotorId, kFrontLeftEncoderId, kFrontLeftEncoderOffset,
