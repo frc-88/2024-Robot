@@ -9,8 +9,19 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackTy
 
 import edu.wpi.first.math.util.Units;
 import frc.robot.CommandSwerveDrivetrain;
+import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 
 public class TunerConstants {
+
+    private static DoublePreferenceConstant frontLeftEncoderOffset = new DoublePreferenceConstant(
+            "swervedrive/FrontLeft/Offset", 0);
+    private static DoublePreferenceConstant frontRightEncoderOffset = new DoublePreferenceConstant(
+            "swervedrive/FrontRight/Offset", 0);
+    private static DoublePreferenceConstant backLeftEncoderOffset = new DoublePreferenceConstant(
+            "swervedrive/BackLeft/Offset", 0);
+    private static DoublePreferenceConstant backRightEncoderOffset = new DoublePreferenceConstant(
+            "swervedrive/BackRight/Offset", 0);
+
     // Both sets of gains need to be tuned to your individual robot.
 
     // The steer motor uses any SwerveModule.SteerRequestType control request with
@@ -88,7 +99,7 @@ public class TunerConstants {
     private static final int kFrontLeftDriveMotorId = 12;
     private static final int kFrontLeftSteerMotorId = 13;
     private static final int kFrontLeftEncoderId = 13;
-    private static final double kFrontLeftEncoderOffset = .33;
+    private static final double kFrontLeftEncoderOffset = frontLeftEncoderOffset.getValue();
 
     private static final double kFrontLeftXPosInches = 11.5;
     private static final double kFrontLeftYPosInches = 11.25;
@@ -97,7 +108,7 @@ public class TunerConstants {
     private static final int kFrontRightDriveMotorId = 3;
     private static final int kFrontRightSteerMotorId = 2;
     private static final int kFrontRightEncoderId = 2;
-    private static final double kFrontRightEncoderOffset = .34;
+    private static final double kFrontRightEncoderOffset = frontRightEncoderOffset.getValue();
 
     private static final double kFrontRightXPosInches = 11.5;
     private static final double kFrontRightYPosInches = -11.25;
@@ -106,7 +117,7 @@ public class TunerConstants {
     private static final int kBackLeftDriveMotorId = 15;
     private static final int kBackLeftSteerMotorId = 14;
     private static final int kBackLeftEncoderId = 14;
-    private static final double kBackLeftEncoderOffset = .067;
+    private static final double kBackLeftEncoderOffset = backLeftEncoderOffset.getValue();
 
     private static final double kBackLeftXPosInches = -11.5;
     private static final double kBackLeftYPosInches = 11.25;
@@ -115,7 +126,7 @@ public class TunerConstants {
     private static final int kBackRightDriveMotorId = 0;
     private static final int kBackRightSteerMotorId = 1;
     private static final int kBackRightEncoderId = 1;
-    private static final double kBackRightEncoderOffset = -1.045;
+    private static final double kBackRightEncoderOffset = backRightEncoderOffset.getValue();
 
     private static final double kBackRightXPosInches = -11.5;
     private static final double kBackRightYPosInches = -11.25;
