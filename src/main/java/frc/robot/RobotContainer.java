@@ -10,56 +10,63 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.utility.PhoenixPIDController;
 
 import java.util.function.Supplier;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.generated.TunerConstants;
+import frc.robot.util.DriveUtils;
 
 public class RobotContainer {
     private double MaxSpeed = 6; // 6 meters per second desired top speed
     private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
-    private final SlewRateLimiter filterY = new SlewRateLimiter(3);
-    private final SlewRateLimiter filterX = new SlewRateLimiter(3);
+    private final SlewRateLimiter filterY = new SlewRateLimiter(500);
+    private final SlewRateLimiter filterX = new SlewRateLimiter(500);
 
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
 
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
                                                                      // driving in open loop
 
     private final SwerveRequest.RobotCentric robotCentric = new SwerveRequest.RobotCentric()
-            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.FieldCentricFacingAngle snapToAngle = new SwerveRequest.FieldCentricFacingAngle()
-            .withDeadband(MaxSpeed * 0.1).withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-    private final PhoenixPIDController headingController = snapToAngle.HeadingController;
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+    private final SwerveRequest.PointWheelsAt pointWheelsAt = new SwerveRequest.PointWheelsAt();
+    private final PhoenixPIDController headingController = new PhoenixPIDController(10, 0, 0) {
+        @Override
+        public double calculate(double measurement, double setpoint, double currentTimestamp) {
+            double output = super.calculate(measurement, setpoint, currentTimestamp);
+            output = MathUtil.clamp(output, -MaxAngularRate / 2, MaxAngularRate / 2);
+            return output;
+        }
+    };
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private void configureBindings() {
         drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
-                drivetrain.applyRequest(() -> drive.withVelocityX(filterX.calculate(joystick.getLeftX() * MaxSpeed))// Drive
-                                                                                                                    // Forward
-                                                                                                                    // with
-                                                                                                                    // negative
-                                                                                                                    // Y
-                        .withVelocityY(-filterY.calculate(joystick.getLeftY() * MaxSpeed)) // Drive left with negative X
-                                                                                           // (left)
-                        .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with
-                                                                                    // negative X (left)
-                ));
+                drivetrain.applyRequest(
+                        () -> drive
+                                .withVelocityX(
+                                        filterX.calculate(DriveUtils.signedPow(-joystick.getLeftX() * MaxSpeed, 2)))
+                                .withVelocityY(
+                                        -filterY.calculate(DriveUtils.signedPow(joystick.getLeftY() * MaxSpeed, 2)))
+                                .withRotationalRate(DriveUtils.signedPow(-joystick.getRightX() * MaxAngularRate, 2))));
 
         headingController.enableContinuousInput(-Math.PI, Math.PI);
-        headingController.setPID(.8, 0.0025, 0);
+        snapToAngle.HeadingController = headingController;
 
         joystick.b().whileTrue(drivetrain.applyRequest(getSnapToAngleRequest(270)));
         joystick.x().whileTrue(drivetrain.applyRequest(getSnapToAngleRequest(90)));
