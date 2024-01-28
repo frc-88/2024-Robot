@@ -16,10 +16,10 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.DriveUtils;
 
@@ -60,7 +60,7 @@ public class RobotContainer {
                 drivetrain.applyRequest(
                         () -> drive
                                 .withVelocityX(
-                                        filterX.calculate(DriveUtils.signedPow(-joystick.getLeftX() * MaxSpeed, 2)))
+                                        filterX.calculate(DriveUtils.signedPow(joystick.getLeftX() * MaxSpeed, 2)))
                                 .withVelocityY(
                                         -filterY.calculate(DriveUtils.signedPow(joystick.getLeftY() * MaxSpeed, 2)))
                                 .withRotationalRate(DriveUtils.signedPow(-joystick.getRightX() * MaxAngularRate, 2))));
@@ -72,6 +72,9 @@ public class RobotContainer {
         joystick.x().whileTrue(drivetrain.applyRequest(getSnapToAngleRequest(90)));
         joystick.y().whileTrue(drivetrain.applyRequest(getSnapToAngleRequest(0)));
         joystick.a().whileTrue(drivetrain.applyRequest(getSnapToAngleRequest(180)));
+        isNotMoving().whileTrue(drivetrain
+                .applyRequest(() -> pointWheelsAt.withModuleDirection(Rotation2d.fromDegrees(
+                        (drivetrain.getModule(0).getCANcoder().getAbsolutePosition().getValueAsDouble() * 360)))));
 
         joystick.rightTrigger()
                 .whileTrue(drivetrain.applyRequest(
@@ -96,6 +99,11 @@ public class RobotContainer {
         return () -> snapToAngle.withVelocityX(filterX.calculate(joystick.getLeftX() * MaxSpeed))
                 .withVelocityY(-filterY.calculate(joystick.getLeftY() * MaxSpeed))
                 .withTargetDirection(Rotation2d.fromDegrees(degrees));
+    }
+
+    private Trigger isNotMoving() {
+        return new Trigger(() -> joystick.getLeftX() == 0 && joystick.getLeftY() == 0 && joystick.getRightX() == 0
+                && joystick.getRightY() == 0);
     }
 
     public RobotContainer() {
