@@ -25,6 +25,8 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.ros.bridge.CoprocessorBridge;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.util.Aiming;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.Intake;
 
 public class RobotContainer {
     private double MaxSpeed = 6; // 6 meters per second desired top speed
@@ -33,6 +35,7 @@ public class RobotContainer {
     private final Aiming m_aiming = new Aiming();
     private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(m_aiming); // My drivetrain
+    private Intake m_intake = new Intake();
 
     private Command runAuto = new WaitCommand(1.0);
 
@@ -95,6 +98,7 @@ public class RobotContainer {
 
     public void teleopInit() {
         drivetrain.setTargetHeading(drivetrain.getState().Pose.getRotation().getDegrees());
+        joystick.a().whileTrue(m_intake.intakeFactory().until(() -> m_intake.getSensorValue()));
     }
 
     public Command getAutonomousCommand() {
