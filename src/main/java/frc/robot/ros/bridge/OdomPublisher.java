@@ -50,9 +50,9 @@ public class OdomPublisher implements Publisher {
 
     public void publish() {
         Pose2d pose = CommandSwerveDrivetrain.getState().Pose;
-        ChassisSpeeds velocity = CommandSwerveDrivetrain.getState().ModuleStates.
+        ChassisSpeeds velocity = CommandSwerveDrivetrain.getState().ModuleStates;
 
-                odomMsg.setHeader(odomPub.getHeader(Frames.ODOM_FRAME));
+        odomMsg.setHeader(odomPub.getHeader(Frames.ODOM_FRAME));
         odomMsg.getPose().setPose(ROSConversions.wpiToRosPose(new Pose3d(pose)));
         odomMsg.getTwist().getTwist()
                 .setLinear(new Vector3(velocity.vxMetersPerSecond, velocity.vyMetersPerSecond, 0.0));

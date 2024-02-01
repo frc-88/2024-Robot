@@ -7,8 +7,6 @@ package frc.robot;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.subsystems.CoprocessorBridge;
-
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
 import frc.team88.ros.conversions.TFListenerCompact;
 
@@ -22,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
+import frc.robot.ros.bridge.CoprocessorBridge;
 
 public class RobotContainer {
     private double MaxSpeed = 6; // 6 meters per second desired top speed
@@ -88,7 +87,7 @@ public class RobotContainer {
 
         ROSNetworkTablesBridge bridge = new ROSNetworkTablesBridge(instance.getTable(""), 0.02);
         tfListenerCompact = new TFListenerCompact(bridge, "/tf_compact");
-        coprocessorBridge = new CoprocessorBridge(tfListenerCompact);
+        coprocessorBridge = new CoprocessorBridge(drivetrain, bridge, tfListenerCompact);
     }
 
     public Command getAutonomousCommand() {
