@@ -25,6 +25,10 @@ import frc.robot.util.DriveUtils;
  * Class that extends the Phoenix SwerveDrivetrain class and implements
  * subsystem
  * so it can be used in command-based projects easily.
+ * 
+ * why did the chicken
+ * cross the road? electronics!
+ * that's why we did it
  */
 public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsystem {
     private double MaxSpeed = 6; // 6 meters per second desired top speed
