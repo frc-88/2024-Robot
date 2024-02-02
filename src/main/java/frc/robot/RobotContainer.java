@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix6.Utils;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -37,9 +39,11 @@ public class RobotContainer {
         joystick.x().whileTrue(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick, 90)));
         joystick.y().whileTrue(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick, 0)));
         joystick.a().whileTrue(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick, 180)));
-        isNotMoving().whileTrue(drivetrain.applyRequest(drivetrain.pointWheelsAtRequest()));
-        isRightStickZero()
-                .whileTrue(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick, getCurrentRobotAngle())));
+        // isNotMoving().whileTrue(drivetrain.applyRequest(drivetrain.pointWheelsAtRequest()));
+        // isRightStickZero()
+        // .whileTrue(drivetrain
+        // .applyRequest(drivetrain.SnapToAngleRequest(joystick, () ->
+        // getCurrentRobotAngle())));
         joystick.rightTrigger().whileTrue(drivetrain.applyRequest(drivetrain.robotCentricRequest(joystick)));
         joystick.rightBumper().whileTrue(drivetrain.applyRequest(drivetrain.brakeRequest()));
         // reset the field-centric heading on left bumper press
@@ -60,7 +64,8 @@ public class RobotContainer {
     }
 
     private Trigger isRightStickZero() {
-        return new Trigger(() -> joystick.getRightX() == 0 && joystick.getRightY() == 0 && joystick.getLeftX() != 0
+        return new Trigger(() -> Math.abs(joystick.getRightX()) < 0.1 && Math.abs(joystick.getRightY()) < 0.1
+                && joystick.getLeftX() != 0
                 && joystick.getLeftY() != 0);
     }
 

@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.Utils;
@@ -107,20 +108,26 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public Supplier<SwerveRequest> fieldCentricRequest(CommandXboxController controller) {
-        return () -> drive.withVelocityX(filterX.calculate(DriveUtils.signedPow(controller.getLeftY() * MaxSpeed, 2)))
-                .withVelocityY(-filterY.calculate(DriveUtils.signedPow(controller.getLeftX() * MaxSpeed, 2)))
-                .withRotationalRate(DriveUtils.signedPow(-controller.getRightX() * MaxAngularRate, 2));
+        return () -> drive.withVelocityX(filterX.calculate(DriveUtils.signedPow(-controller.getLeftY() * MaxSpeed, 2)))
+                .withVelocityY(filterY.calculate(DriveUtils.signedPow(-controller.getLeftX() * MaxSpeed, 2)))
+                .withRotationalRate(DriveUtils.signedPow(controller.getRightX() * MaxAngularRate, 2));
     }
 
     public Supplier<SwerveRequest> SnapToAngleRequest(CommandXboxController controller, double degrees) {
-        return () -> snapToAngle.withVelocityX(filterX.calculate(controller.getLeftY() * MaxSpeed))
-                .withVelocityY(-filterY.calculate(controller.getLeftX() * MaxSpeed))
+        return () -> snapToAngle.withVelocityX(filterX.calculate(-controller.getLeftY() * MaxSpeed))
+                .withVelocityY(filterY.calculate(-controller.getLeftX() * MaxSpeed))
                 .withTargetDirection(Rotation2d.fromDegrees(degrees));
     }
 
+    public Supplier<SwerveRequest> SnapToAngleRequest(CommandXboxController controller, DoubleSupplier degrees) {
+        return () -> snapToAngle.withVelocityX(filterX.calculate(-controller.getLeftY() * MaxSpeed))
+                .withVelocityY(filterY.calculate(-controller.getLeftX() * MaxSpeed))
+                .withTargetDirection(Rotation2d.fromDegrees(degrees.getAsDouble()));
+    }
+
     public Supplier<SwerveRequest> robotCentricRequest(CommandXboxController controller) {
-        return () -> robotCentric.withVelocityX(filterX.calculate(controller.getLeftY() * MaxSpeed))
-                .withVelocityY(-filterY.calculate(controller.getLeftX() * MaxSpeed))
+        return () -> robotCentric.withVelocityX(filterX.calculate(-controller.getLeftY() * MaxSpeed))
+                .withVelocityY(-filterY.calculate(-controller.getLeftX() * MaxSpeed))
                 .withRotationalRate(-controller.getRightX() * MaxAngularRate);
     }
 
