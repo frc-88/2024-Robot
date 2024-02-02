@@ -4,10 +4,9 @@
 
 package frc.robot.ros.bridge;
 
-import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
-
 import edu.wpi.first.networktables.TimestampedDouble;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
 import frc.team88.ros.conversions.TFListenerCompact;
 
@@ -23,7 +22,7 @@ public class CoprocessorBridge extends SubsystemBase {
     private final ROSNetworkTablesBridge bridge;
     private boolean coprocessorAlive = false;
 
-    public CoprocessorBridge(SwerveDrivetrain drive, ROSNetworkTablesBridge bridge,
+    public CoprocessorBridge(CommandSwerveDrivetrain drive, ROSNetworkTablesBridge bridge,
             TFListenerCompact tfListenerCompact) {
         this.bridge = bridge;
         this.tfListenerCompact = tfListenerCompact;
