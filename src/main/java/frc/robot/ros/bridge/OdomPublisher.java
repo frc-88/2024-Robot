@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.CommandSwerveDrivetrain;
+import frc.robot.generated.TunerConstants;
 import frc.team88.ros.bridge.BridgePublisher;
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
 import frc.team88.ros.conversions.ROSConversions;
@@ -21,11 +22,11 @@ import frc.team88.ros.messages.nav_msgs.Odometry;
 import frc.team88.ros.messages.std_msgs.RosHeader;
 
 public class OdomPublisher implements Publisher {
-    private final SwerveDrivetrain CommandSwerveDrivetrain;
+    private final CommandSwerveDrivetrain commandDriveTrain;
     private final BridgePublisher<Odometry> odomPub;
 
-    public OdomPublisher(SwerveDrivetrain drive, ROSNetworkTablesBridge bridge) {
-        CommandSwerveDrivetrain = drive;
+    public OdomPublisher(CommandSwerveDrivetrain drive, ROSNetworkTablesBridge bridge) {
+        commandDriveTrain = drive;
         odomPub = new BridgePublisher<>(bridge, "odom");
     }
 
@@ -49,10 +50,10 @@ public class OdomPublisher implements Publisher {
             }));
 
     public void publish() {
-        Pose2d pose = CommandSwerveDrivetrain.getState().Pose;
-        ChassisSpeeds velocity = CommandSwerveDrivetrain.getState().ModuleStates.
+        Pose2d pose = commandDriveTrain.getState().Pose;
+        ChassisSpeeds velocity = commandDriveTrain.getChassisSpeeds();
 
-                odomMsg.setHeader(odomPub.getHeader(Frames.ODOM_FRAME));
+        odomMsg.setHeader(odomPub.getHeader(Frames.ODOM_FRAME));
         odomMsg.getPose().setPose(ROSConversions.wpiToRosPose(new Pose3d(pose)));
         odomMsg.getTwist().getTwist()
                 .setLinear(new Vector3(velocity.vxMetersPerSecond, velocity.vyMetersPerSecond, 0.0));
