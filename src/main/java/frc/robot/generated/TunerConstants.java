@@ -8,7 +8,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.ClosedLoopOutputType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackType;
 
 import edu.wpi.first.math.util.Units;
-import frc.robot.CommandSwerveDrivetrain;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 
 public class TunerConstants {
