@@ -9,11 +9,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Indexer;
 
 public class RobotContainer {
   private final Shooter m_shooter = new Shooter();
   private final Indexer m_indexer = new Indexer();
+  private final Elevator m_elevator = new Elevator();
+
   public RobotContainer() {
     DataLogManager.start();
     configureBindings();
@@ -26,6 +29,11 @@ private void configureSmartDashboardButtons() {
   SmartDashboard.putData("Run Indexer", m_indexer.runIndexerCommand());
   SmartDashboard.putData("Stop Shooter", m_shooter.stopShooterCommand());
   SmartDashboard.putData("Stop Indexer", m_indexer.stopIndexerCommand());
+  SmartDashboard.putData("CalibratePivotMotor", m_elevator.calibrateAngleFactory());
+  SmartDashboard.putData("GoToStow", m_elevator.setStowFactory());
+  SmartDashboard.putData("GoToFlat", m_elevator.setFlatFactory());
+
+
 }
 
   private void configureBindings() {
