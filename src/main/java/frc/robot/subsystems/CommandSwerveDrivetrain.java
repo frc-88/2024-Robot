@@ -13,6 +13,7 @@ import com.ctre.phoenix6.mechanisms.swerve.utility.PhoenixPIDController;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -22,6 +23,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.ros.bridge.Frames;
@@ -48,6 +50,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private final SlewRateLimiter filterY = new SlewRateLimiter(500);
     private final SlewRateLimiter filterX = new SlewRateLimiter(500);
     private TFListenerCompact tf_compact;
+    private Pose2d rosPose;
 
     public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
@@ -156,18 +159,29 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 Rotation2d.fromDegrees(getModule(0).getCANcoder().getAbsolutePosition().getValueAsDouble() * 360));
     }
 
+    public void localize() {
+        Transform3dStamped tfStamped = tf_compact.lookupTransform(Frames.MAP_FRAME, Frames.BASE_FRAME);
+        Translation2d XYTranslation = tfStamped.transform.getTranslation().toTranslation2d();
+        Rotation2d rotation = tfStamped.transform.getRotation().toRotation2d();
+        rosPose = new Pose2d(XYTranslation, rotation);
+        seedFieldRelative(rosPose);
+    }
+
+    public Command localizeFactory() {
+        return new InstantCommand(() -> {
+            localize();
+        }, this);
+    }
+
     @Override
     public void periodic() {
-        if (tf_compact != null) {
-            Transform3dStamped tfStamped = tf_compact.lookupTransform(Frames.MAP_FRAME, Frames.BASE_FRAME);
-            Translation2d XYTranslation = tfStamped.transform.getTranslation().toTranslation2d();
-            Rotation2d rotation = tfStamped.transform.getRotation().toRotation2d();
+        Transform3dStamped tfStamped = tf_compact.lookupTransform(Frames.MAP_FRAME, Frames.BASE_FRAME);
+        Translation2d XYTranslation = tfStamped.transform.getTranslation().toTranslation2d();
+        Rotation2d rotation = tfStamped.transform.getRotation().toRotation2d();
 
-            SmartDashboard.putNumber("ROS  X Translation", XYTranslation.getX());
-            SmartDashboard.putNumber("ROS  Y Translation", XYTranslation.getY());
-            SmartDashboard.putNumber("ROS Rotation", rotation.getDegrees());
-        }
-
+        SmartDashboard.putNumber("ROS  X Translation", XYTranslation.getX());
+        SmartDashboard.putNumber("ROS  Y Translation", XYTranslation.getY());
+        SmartDashboard.putNumber("ROS Rotation", rotation.getDegrees());
         SmartDashboard.putNumber("Pigeon Yaw", getPigeon2().getYaw().getValueAsDouble());
     }
 }

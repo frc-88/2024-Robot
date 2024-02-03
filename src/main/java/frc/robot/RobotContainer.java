@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
@@ -96,6 +97,7 @@ public class RobotContainer {
         ROSNetworkTablesBridge bridge = new ROSNetworkTablesBridge(instance.getTable(""), 0.02);
         tfListenerCompact = new TFListenerCompact(bridge, "/tf_compact");
         coprocessorBridge = new CoprocessorBridge(drivetrain, bridge, tfListenerCompact);
+        SmartDashboard.putData("Localize", drivetrain.localizeFactory());
     }
 
     public Command getAutonomousCommand() {
