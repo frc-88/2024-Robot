@@ -16,7 +16,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import frc.robot.util.preferenceconstants.PIDPreferenceConstants;
 
@@ -37,15 +39,16 @@ public class Climber extends SubsystemBase {
   private final MotionMagicVoltage m_motionMagic = new MotionMagicVoltage(0);
   private double rightStartPosition;
   private double leftStartPosition;
+  private final double kMotorRotationsToClimberPosition = 360.0 / 250.0;
 
   /** Creates a new Climber. */
   public Climber() {
     configureTalons(m_armRight);
     configureTalons(m_armLeft);
-    m_armRight.setNeutralMode(NeutralModeValue.Brake);
+    m_armRight.setNeutralMode(NeutralModeValue.Brake); 
     m_armLeft.setNeutralMode(NeutralModeValue.Brake);
-    rightStartPosition = m_armRight.getPosition().getValueAsDouble();
-    leftStartPosition = m_armLeft.getPosition().getValueAsDouble();
+    rightStartPosition = m_armRight.getPosition().getValueAsDouble() * kMotorRotationsToClimberPosition;
+    leftStartPosition = m_armLeft.getPosition().getValueAsDouble() * kMotorRotationsToClimberPosition;
   }
 
   private void configureTalons(TalonFX talon) {
@@ -67,8 +70,8 @@ public class Climber extends SubsystemBase {
   }
 
   public void setPostion(double rightPosition, double leftPosition) {
-    m_armRight.setControl(m_motionMagic.withPosition(rightPosition));
-    m_armLeft.setControl(m_motionMagic.withPosition(leftPosition));
+    m_armRight.setControl(m_motionMagic.withPosition(rightPosition / kMotorRotationsToClimberPosition));
+    m_armLeft.setControl(m_motionMagic.withPosition(leftPosition / kMotorRotationsToClimberPosition));
   }
 
   public void set(double speed) {
@@ -77,8 +80,8 @@ public class Climber extends SubsystemBase {
   }
 
   public void calibrate() {
-    rightStartPosition = m_armRight.getPosition().getValueAsDouble();
-    leftStartPosition = m_armLeft.getPosition().getValueAsDouble();
+    rightStartPosition = m_armRight.getPosition().getValueAsDouble() * kMotorRotationsToClimberPosition;
+    leftStartPosition = m_armLeft.getPosition().getValueAsDouble() * kMotorRotationsToClimberPosition;
   }
 
   public void enableCoastMode() {
@@ -126,12 +129,17 @@ public class Climber extends SubsystemBase {
     return new RunCommand(() -> {setPostion(rightStartPosition, leftStartPosition);});
   }
 
+  public Command upDownFactory() {
+    return new SequentialCommandGroup(setPositionFactory().withTimeout(3), new WaitCommand(1), goToStartFactory());
+  }
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Climber:ArmRight", m_armRight.getPosition().getValueAsDouble());
-    SmartDashboard.putNumber("Climber:ArmLeft", m_armLeft.getPosition().getValueAsDouble());
+    SmartDashboard.putNumber("Climber:ArmRight", m_armRight.getPosition().getValueAsDouble() * kMotorRotationsToClimberPosition);
+    SmartDashboard.putNumber("Climber:ArmLeft", m_armLeft.getPosition().getValueAsDouble() * kMotorRotationsToClimberPosition);
     SmartDashboard.putNumber("Climber:TargetLeft", p_targetLeftPosition.getValue());
     SmartDashboard.putNumber("Climber:TargetRigt", p_targetRightPosition.getValue());
+    SmartDashboard.putNumber("Climber:StartLeft", leftStartPosition);
+    SmartDashboard.putNumber("Climber:StartRight", rightStartPosition);
   }
 }
