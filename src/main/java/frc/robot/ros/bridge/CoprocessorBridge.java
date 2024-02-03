@@ -4,7 +4,6 @@
 
 package frc.robot.ros.bridge;
 
-import edu.wpi.first.networktables.TimestampedDouble;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
@@ -44,8 +43,7 @@ public class CoprocessorBridge extends SubsystemBase {
 
     @Override
     public void periodic() {
-        TimestampedDouble time_sync = bridge.getTimeSyncSub().getAtomic();
-        if (time_sync.timestamp != 0 && !coprocessorAlive) {
+        if (bridge.isAlive() && !coprocessorAlive) {
             coprocessorAlive = true;
             onCoprocessorAlive();
         }

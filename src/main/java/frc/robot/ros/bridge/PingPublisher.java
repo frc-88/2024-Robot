@@ -1,5 +1,7 @@
 package frc.robot.ros.bridge;
 
+import java.util.Optional;
+
 import frc.team88.ros.bridge.BridgePublisher;
 import frc.team88.ros.bridge.BridgeSubscriber;
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
@@ -15,9 +17,9 @@ public class PingPublisher implements Publisher {
     }
 
     public void publish() {
-        RosFloat64 ping;
-        if ((ping = pingSendSub.receive()) != null) {
-            pingReturnPub.send(ping);
+        Optional<RosFloat64> ping;
+        if ((ping = pingSendSub.receive()).isPresent()) {
+            pingReturnPub.send(ping.get());
         }
     }
 }
