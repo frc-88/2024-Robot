@@ -86,6 +86,8 @@ public class Telemetry {
                 pose.getRotation().getDegrees()
         });
 
+        SmartDashboard.putNumber("Angle of Robot", state.Pose.getRotation().getDegrees());
+
         /* Telemeterize the robot's general speeds */
         double currentTime = Utils.getCurrentTimeSeconds();
         double diffTime = currentTime - lastTime;
