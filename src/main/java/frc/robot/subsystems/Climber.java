@@ -76,12 +76,38 @@ public class Climber extends SubsystemBase {
     m_armLeft.setControl(m_armFollowerRequest.withOutput(speed));
   }
 
+  public void calibrate() {
+    rightStartPosition = m_armRight.getPosition().getValueAsDouble();
+    leftStartPosition = m_armLeft.getPosition().getValueAsDouble();
+  }
+
+  public void enableCoastMode() {
+    m_armLeft.setNeutralMode(NeutralModeValue.Coast);
+    m_armRight.setNeutralMode(NeutralModeValue.Coast);
+  }
+  public void enableBrakeMode() {
+    m_armLeft.setNeutralMode(NeutralModeValue.Brake);
+    m_armRight.setNeutralMode(NeutralModeValue.Brake);
+  }
+  
   public void run() {
     set(p_armSpeed.getValue());
   }
 
   public void stop() {
     set(0);
+  }
+
+  public Command calibrateFactory() {
+    return new InstantCommand(() -> {calibrate();}, this);
+  }
+
+  public Command enableCoastModeFactory() {
+    return new InstantCommand(() -> {enableCoastMode();}, this);
+  }
+
+  public Command enableBrakeModeFactory() {
+    return new InstantCommand(() -> {enableBrakeMode();}, this);
   }
 
   public Command runFactory() {
@@ -105,5 +131,7 @@ public class Climber extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Climber:ArmRight", m_armRight.getPosition().getValueAsDouble());
     SmartDashboard.putNumber("Climber:ArmLeft", m_armLeft.getPosition().getValueAsDouble());
+    SmartDashboard.putNumber("Climber:TargetLeft", p_targetLeftPosition.getValue());
+    SmartDashboard.putNumber("Climber:TargetRigt", p_targetRightPosition.getValue());
   }
 }

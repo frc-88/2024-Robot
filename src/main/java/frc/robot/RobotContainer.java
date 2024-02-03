@@ -22,13 +22,12 @@ public class RobotContainer {
   private void configureBindings() {}
 
   private void configureSmartDashboardButtons(){
-    SmartDashboard.putData("ClimberRun", m_climber.runFactory());
-    SmartDashboard.putData("ClimberStop", m_climber.stopFactory());
     SmartDashboard.putData("ClimberGoToPostition", m_climber.setPositionFactory());
     SmartDashboard.putData("ClimberGoToStart", m_climber.goToStartFactory());
+    SmartDashboard.putData("ClimberCalibrate", m_climber.calibrateFactory());
+    SmartDashboard.putData("ClimberCoastMode", m_climber.enableCoastModeFactory().ignoringDisable(true));
+    SmartDashboard.putData("ClimberBrakeMode", m_climber.enableBrakeModeFactory().ignoringDisable(true));
   } 
-
-
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
