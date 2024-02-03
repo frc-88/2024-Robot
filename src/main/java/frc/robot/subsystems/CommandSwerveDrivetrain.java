@@ -14,6 +14,7 @@ import com.ctre.phoenix6.mechanisms.swerve.utility.PhoenixPIDController;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.units.Velocity;
@@ -23,7 +24,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.ros.bridge.Frames;
 import frc.robot.util.DriveUtils;
+import frc.team88.ros.conversions.TFListenerCompact;
+import frc.team88.ros.conversions.Transform3dStamped;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements
@@ -43,6 +47,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private double m_fieldRelativeOffset = 0;
     private final SlewRateLimiter filterY = new SlewRateLimiter(500);
     private final SlewRateLimiter filterX = new SlewRateLimiter(500);
+    private TFListenerCompact tf_compact;
 
     public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
@@ -80,6 +85,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         }
         headingController.enableContinuousInput(-Math.PI, Math.PI);
         snapToAngle.HeadingController = headingController;
+    }
+
+    public void setTFListener(TFListenerCompact tfListener) {
+        tf_compact = tfListener;
     }
 
     public ChassisSpeeds getChassisSpeeds() {
@@ -149,7 +158,16 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     @Override
     public void periodic() {
+        if (tf_compact != null) {
+            Transform3dStamped tfStamped = tf_compact.lookupTransform(Frames.MAP_FRAME, Frames.BASE_FRAME);
+            Translation2d XYTranslation = tfStamped.transform.getTranslation().toTranslation2d();
+            Rotation2d rotation = tfStamped.transform.getRotation().toRotation2d();
+
+            SmartDashboard.putNumber("ROS  X Translation", XYTranslation.getX());
+            SmartDashboard.putNumber("ROS  Y Translation", XYTranslation.getY());
+            SmartDashboard.putNumber("ROS Rotation", rotation.getDegrees());
+        }
+
         SmartDashboard.putNumber("Pigeon Yaw", getPigeon2().getYaw().getValueAsDouble());
     }
-
 }
