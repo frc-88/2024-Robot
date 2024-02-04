@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
 import frc.robot.ros.bridge.CoprocessorBridge;
+import frc.robot.subsystems.Aiming;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class RobotContainer {
@@ -28,8 +29,9 @@ public class RobotContainer {
     private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
     /* Setting up bindings for necessary control of the swerve drive platform */
+    private final Aiming m_aiming = new Aiming();
     private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
-    private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
+    private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(m_aiming); // My drivetrain
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
     private TFListenerCompact tfListenerCompact;
@@ -47,7 +49,6 @@ public class RobotContainer {
         joystick.x().onTrue(drivetrain.setHeadingFactory(90));
         joystick.y().onTrue(drivetrain.setHeadingFactory(0));
         joystick.a().onTrue(drivetrain.setHeadingFactory(180));
-        // isNotMoving().whileTrue(drivetrain.applyRequest(drivetrain.pointWheelsAtRequest()));
         isRightStickZero().debounce(0.25, DebounceType.kRising)
                 .onTrue(drivetrain.setHeadingFactory(() -> drivetrain.getState().Pose.getRotation().getDegrees()))
                 .whileFalse(drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick)));
@@ -63,14 +64,6 @@ public class RobotContainer {
             drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
         }
         drivetrain.registerTelemetry(logger::telemeterize);
-
-        drivetrain.setTFListener(tfListenerCompact);
-
-    }
-
-    private Trigger isNotMoving() {
-        return new Trigger(() -> joystick.getLeftX() == 0 && joystick.getLeftY() == 0 && joystick.getRightX() == 0
-                && joystick.getRightY() == 0);
     }
 
     private Trigger isRightStickZero() {
@@ -82,7 +75,7 @@ public class RobotContainer {
         configureBindings();
     }
 
-    public void configureRosNetworkTablesBridge() {
+    private void configureRosNetworkTablesBridge() {
         NetworkTableInstance instance = NetworkTableInstance.getDefault();
 
         ROSNetworkTablesBridge bridge = new ROSNetworkTablesBridge(instance.getTable(""), 0.02);

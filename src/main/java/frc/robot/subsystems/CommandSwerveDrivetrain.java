@@ -49,6 +49,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private TFListenerCompact tf_compact;
     private Pose2d rosPose;
     private double targetHeading = 0;
+    private final Aiming m_aiming;
+    private final Pose2d redSpeakerPose = new Pose2d(new Translation2d(16.579342, 5.547868), new Rotation2d(180));
 
     public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
@@ -77,15 +79,19 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         }
         headingController.enableContinuousInput(-Math.PI, Math.PI);
         snapToAngle.HeadingController = headingController;
+        m_aiming = aiming;
     }
 
-    public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
+    public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, Aiming aiming,
+            SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
         if (Utils.isSimulation()) {
             startSimThread();
         }
         headingController.enableContinuousInput(-Math.PI, Math.PI);
         snapToAngle.HeadingController = headingController;
+
+        m_aiming = aiming;
     }
 
     public void setTargetHeading(double target) {
@@ -94,10 +100,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public void setTargetHeading(DoubleSupplier target) {
         targetHeading = target.getAsDouble();
-    }
-
-    public void setTFListener(TFListenerCompact tfListener) {
-        tf_compact = tfListener;
     }
 
     public ChassisSpeeds getChassisSpeeds() {
@@ -160,11 +162,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public void localize() {
-        Transform3dStamped tfStamped = tf_compact.lookupTransform(Frames.MAP_FRAME, Frames.BASE_FRAME);
-        Translation2d XYTranslation = tfStamped.transform.getTranslation().toTranslation2d();
-        Rotation2d rotation = tfStamped.transform.getRotation().toRotation2d();
-        rosPose = new Pose2d(XYTranslation, rotation);
-        seedFieldRelative(rosPose);
+        m_aiming.getROSPose();
     }
 
     public double getCurrentRobotAngle() {
