@@ -10,15 +10,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
 import frc.team88.ros.conversions.TFListenerCompact;
-import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.Utils;
 
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
@@ -40,20 +38,19 @@ public class RobotContainer {
 
     private void configureBindings() {
 
-        drivetrain.setDefaultCommand(drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick))); // Drivetrain
-                                                                                                         // will execute
-                                                                                                         // this command
-                                                                                                         // periodically
+        drivetrain.setDefaultCommand(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick))); // Drivetrain
+                                                                                                        // will execute
+                                                                                                        // this command
+                                                                                                        // periodically
 
-        joystick.b().whileTrue(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick, 270)));
-        joystick.x().whileTrue(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick, 90)));
-        joystick.y().whileTrue(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick, 0)));
-        joystick.a().whileTrue(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick, 180)));
+        joystick.b().onTrue(drivetrain.setHeadingFactory(270));
+        joystick.x().onTrue(drivetrain.setHeadingFactory(90));
+        joystick.y().onTrue(drivetrain.setHeadingFactory(0));
+        joystick.a().onTrue(drivetrain.setHeadingFactory(180));
         // isNotMoving().whileTrue(drivetrain.applyRequest(drivetrain.pointWheelsAtRequest()));
-        // isRightStickZero()
-        // .whileTrue(drivetrain
-        // .applyRequest(drivetrain.SnapToAngleRequest(joystick, () ->
-        // getCurrentRobotAngle())));
+        isRightStickZero().debounce(0.25, DebounceType.kRising)
+                .onTrue(drivetrain.setHeadingFactory(() -> drivetrain.getState().Pose.getRotation().getDegrees()))
+                .whileFalse(drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick)));
         joystick.rightTrigger().whileTrue(drivetrain.applyRequest(drivetrain.robotCentricRequest(joystick)));
         joystick.rightBumper().whileTrue(drivetrain.applyRequest(drivetrain.brakeRequest()));
         // reset the field-centric heading on left bumper press
@@ -77,13 +74,7 @@ public class RobotContainer {
     }
 
     private Trigger isRightStickZero() {
-        return new Trigger(() -> Math.abs(joystick.getRightX()) < 0.1 && Math.abs(joystick.getRightY()) < 0.1
-                && joystick.getLeftX() != 0
-                && joystick.getLeftY() != 0);
-    }
-
-    private double getCurrentRobotAngle() {
-        return drivetrain.getState().Pose.getRotation().getDegrees();
+        return new Trigger(() -> Math.abs(joystick.getRightX()) < 0.01 && Math.abs(joystick.getRightY()) < 0.01);
     }
 
     public RobotContainer() {
@@ -98,6 +89,10 @@ public class RobotContainer {
         tfListenerCompact = new TFListenerCompact(bridge, "/tf_compact");
         coprocessorBridge = new CoprocessorBridge(drivetrain, bridge, tfListenerCompact);
         SmartDashboard.putData("Localize", drivetrain.localizeFactory());
+    }
+
+    public void teleopInit() {
+        drivetrain.setTargetHeading(drivetrain.getState().Pose.getRotation().getDegrees());
     }
 
     public Command getAutonomousCommand() {

@@ -17,11 +17,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.units.Velocity;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -51,6 +48,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private final SlewRateLimiter filterX = new SlewRateLimiter(500);
     private TFListenerCompact tf_compact;
     private Pose2d rosPose;
+    private double targetHeading = 0;
 
     public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
@@ -88,6 +86,14 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         }
         headingController.enableContinuousInput(-Math.PI, Math.PI);
         snapToAngle.HeadingController = headingController;
+    }
+
+    public void setTargetHeading(double target) {
+        targetHeading = target;
+    }
+
+    public void setTargetHeading(DoubleSupplier target) {
+        targetHeading = target.getAsDouble();
     }
 
     public void setTFListener(TFListenerCompact tfListener) {
@@ -132,16 +138,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 .withRotationalRate(DriveUtils.signedPow(controller.getRightX() * MaxAngularRate, 2));
     }
 
-    public Supplier<SwerveRequest> SnapToAngleRequest(CommandXboxController controller, double degrees) {
+    public Supplier<SwerveRequest> SnapToAngleRequest(CommandXboxController controller) {
         return () -> snapToAngle.withVelocityX(filterX.calculate(-controller.getLeftY() * MaxSpeed))
                 .withVelocityY(filterY.calculate(-controller.getLeftX() * MaxSpeed))
-                .withTargetDirection(Rotation2d.fromDegrees(degrees));
-    }
-
-    public Supplier<SwerveRequest> SnapToAngleRequest(CommandXboxController controller, DoubleSupplier degrees) {
-        return () -> snapToAngle.withVelocityX(filterX.calculate(-controller.getLeftY() * MaxSpeed))
-                .withVelocityY(filterY.calculate(-controller.getLeftX() * MaxSpeed))
-                .withTargetDirection(Rotation2d.fromDegrees(degrees.getAsDouble()));
+                .withTargetDirection(Rotation2d.fromDegrees(targetHeading));
     }
 
     public Supplier<SwerveRequest> robotCentricRequest(CommandXboxController controller) {
@@ -167,21 +167,36 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         seedFieldRelative(rosPose);
     }
 
+    public double getCurrentRobotAngle() {
+        return getState().Pose.getRotation().getDegrees();
+    }
+
     public Command localizeFactory() {
         return new InstantCommand(() -> {
             localize();
         }, this);
     }
 
+    public Command setHeadingFactory(double target) {
+        return new InstantCommand(() -> setTargetHeading(target));
+    }
+
+    public Command setHeadingFactory(DoubleSupplier target) {
+        return new InstantCommand(() -> setTargetHeading(target));
+    }
+
     @Override
     public void periodic() {
-        Transform3dStamped tfStamped = tf_compact.lookupTransform(Frames.MAP_FRAME, Frames.BASE_FRAME);
-        Translation2d XYTranslation = tfStamped.transform.getTranslation().toTranslation2d();
-        Rotation2d rotation = tfStamped.transform.getRotation().toRotation2d();
+        // Transform3dStamped tfStamped = tf_compact.lookupTransform(Frames.MAP_FRAME,
+        // Frames.BASE_FRAME);
+        // Translation2d XYTranslation =
+        // tfStamped.transform.getTranslation().toTranslation2d();
+        // Rotation2d rotation = tfStamped.transform.getRotation().toRotation2d();
 
-        SmartDashboard.putNumber("ROS  X Translation", XYTranslation.getX());
-        SmartDashboard.putNumber("ROS  Y Translation", XYTranslation.getY());
-        SmartDashboard.putNumber("ROS Rotation", rotation.getDegrees());
-        SmartDashboard.putNumber("Pigeon Yaw", getPigeon2().getYaw().getValueAsDouble());
+        // SmartDashboard.putNumber("ROS X Translation", XYTranslation.getX());
+        // SmartDashboard.putNumber("ROS Y Translation", XYTranslation.getY());
+        // SmartDashboard.putNumber("ROS Rotation", rotation.getDegrees());
+        // SmartDashboard.putNumber("Pigeon Yaw",
+        // getPigeon2().getYaw().getValueAsDouble());
     }
 }
