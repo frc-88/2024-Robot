@@ -33,7 +33,7 @@ public class RobotContainer {
     private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(m_aiming); // My drivetrain
 
-    private final Telemetry logger = new Telemetry(MaxSpeed);
+    private final Telemetry logger = new Telemetry(MaxSpeed, drivetrain);
     private TFListenerCompact tfListenerCompact;
     @SuppressWarnings("unused")
     private CoprocessorBridge coprocessorBridge;
@@ -56,8 +56,7 @@ public class RobotContainer {
         joystick.rightBumper().whileTrue(drivetrain.applyRequest(drivetrain.brakeRequest()));
         // reset the field-centric heading on left bumper press
         joystick.leftBumper().onTrue(drivetrain.runOnce(() -> {
-            drivetrain.seedFieldRelative();
-            drivetrain.setRobotOffset();
+            drivetrain.getPigeon2().setYaw(0);
         }));
 
         if (Utils.isSimulation()) {
@@ -81,7 +80,7 @@ public class RobotContainer {
         ROSNetworkTablesBridge bridge = new ROSNetworkTablesBridge(instance.getTable(""), 0.02);
         tfListenerCompact = new TFListenerCompact(bridge, "/tf_compact");
         coprocessorBridge = new CoprocessorBridge(drivetrain, bridge, tfListenerCompact);
-        SmartDashboard.putData("Localize", drivetrain.localizeFactory());
+        // SmartDashboard.putData("Localize", drivetrain.localizeFactory());
     }
 
     public void teleopInit() {

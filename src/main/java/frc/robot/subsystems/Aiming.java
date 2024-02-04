@@ -9,6 +9,8 @@ import frc.team88.ros.conversions.TFListenerCompact;
 import frc.team88.ros.conversions.Transform3dStamped;
 
 public class Aiming extends SubsystemBase {
+    private final Pose2d redSpeakerPose = new Pose2d(new Translation2d(16.579342, 5.547868), new Rotation2d(180));
+    private final Pose2d blueSpeakerPose = new Pose2d(new Translation2d(-0.0381, 5.547868), new Rotation2d(0));
 
     private TFListenerCompact tf_compact;
 

@@ -19,6 +19,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -47,10 +48,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private final SlewRateLimiter filterY = new SlewRateLimiter(500);
     private final SlewRateLimiter filterX = new SlewRateLimiter(500);
     private TFListenerCompact tf_compact;
-    private Pose2d rosPose;
     private double targetHeading = 0;
-    private final Aiming m_aiming;
-    private final Pose2d redSpeakerPose = new Pose2d(new Translation2d(16.579342, 5.547868), new Rotation2d(180));
 
     public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
@@ -79,7 +77,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         }
         headingController.enableContinuousInput(-Math.PI, Math.PI);
         snapToAngle.HeadingController = headingController;
-        m_aiming = aiming;
     }
 
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, Aiming aiming,
@@ -90,8 +87,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         }
         headingController.enableContinuousInput(-Math.PI, Math.PI);
         snapToAngle.HeadingController = headingController;
-
-        m_aiming = aiming;
     }
 
     public void setTargetHeading(double target) {
@@ -161,19 +156,19 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 Rotation2d.fromDegrees(getModule(0).getCANcoder().getAbsolutePosition().getValueAsDouble() * 360));
     }
 
-    public void localize() {
-        m_aiming.getROSPose();
-    }
+    // public void localize() {
+    // seedFieldRelative(m_aiming.getROSPose());
+    // }
 
     public double getCurrentRobotAngle() {
         return getState().Pose.getRotation().getDegrees();
     }
 
-    public Command localizeFactory() {
-        return new InstantCommand(() -> {
-            localize();
-        }, this);
-    }
+    // public Command localizeFactory() {
+    // return new InstantCommand(() -> {
+    // localize();
+    // }, this);
+    // }
 
     public Command setHeadingFactory(double target) {
         return new InstantCommand(() -> setTargetHeading(target));
@@ -194,7 +189,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         // SmartDashboard.putNumber("ROS X Translation", XYTranslation.getX());
         // SmartDashboard.putNumber("ROS Y Translation", XYTranslation.getY());
         // SmartDashboard.putNumber("ROS Rotation", rotation.getDegrees());
-        // SmartDashboard.putNumber("Pigeon Yaw",
-        // getPigeon2().getYaw().getValueAsDouble());
+        SmartDashboard.putNumber("Pigeon Yaw",
+                getPigeon2().getYaw().getValueAsDouble());
     }
 }
