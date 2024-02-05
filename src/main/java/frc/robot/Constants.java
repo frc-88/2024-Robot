@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.XboxController;
 
 /**
@@ -117,8 +120,8 @@ public final class Constants {
     public static final double COPROCESSOR_SLOW_UPDATE_DELAY_OFFSET = 0.02;
 
     // Aiming
-    public static final double AIM_HIGH_OUTREACH = -30;
-    public static final double AIM_MIDDLE_OUTREACH = -20;
-    public static final double AIM_LOW_OUTREACH = -10;
-    public static final double ANGLE_CONSTANT = 90;
+    public static final Pose2d RED_SPEAKER_POSE = new Pose2d(new Translation2d(16.579342, 5.547868),
+            Rotation2d.fromDegrees(180));
+    public static final Pose2d BLUE_SPEAKER_POSE = new Pose2d(new Translation2d(-0.0381, 5.547868),
+            Rotation2d.fromDegrees(0));
 }
