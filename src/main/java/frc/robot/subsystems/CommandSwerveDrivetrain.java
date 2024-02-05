@@ -13,17 +13,21 @@ import com.ctre.phoenix6.mechanisms.swerve.utility.PhoenixPIDController;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.units.Velocity;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.ros.bridge.Frames;
 import frc.robot.util.DriveUtils;
+import frc.team88.ros.conversions.TFListenerCompact;
+import frc.team88.ros.conversions.Transform3dStamped;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements
@@ -43,6 +47,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private double m_fieldRelativeOffset = 0;
     private final SlewRateLimiter filterY = new SlewRateLimiter(500);
     private final SlewRateLimiter filterX = new SlewRateLimiter(500);
+    private TFListenerCompact tf_compact;
+    private double targetHeading = 0;
 
     public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
@@ -73,13 +79,22 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         snapToAngle.HeadingController = headingController;
     }
 
-    public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
+    public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, Aiming aiming,
+            SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
         if (Utils.isSimulation()) {
             startSimThread();
         }
         headingController.enableContinuousInput(-Math.PI, Math.PI);
         snapToAngle.HeadingController = headingController;
+    }
+
+    public void setTargetHeading(double target) {
+        targetHeading = target;
+    }
+
+    public void setTargetHeading(DoubleSupplier target) {
+        targetHeading = target.getAsDouble();
     }
 
     public ChassisSpeeds getChassisSpeeds() {
@@ -120,16 +135,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 .withRotationalRate(DriveUtils.signedPow(controller.getRightX() * MaxAngularRate, 2));
     }
 
-    public Supplier<SwerveRequest> SnapToAngleRequest(CommandXboxController controller, double degrees) {
+    public Supplier<SwerveRequest> SnapToAngleRequest(CommandXboxController controller) {
         return () -> snapToAngle.withVelocityX(filterX.calculate(-controller.getLeftY() * MaxSpeed))
                 .withVelocityY(filterY.calculate(-controller.getLeftX() * MaxSpeed))
-                .withTargetDirection(Rotation2d.fromDegrees(degrees));
-    }
-
-    public Supplier<SwerveRequest> SnapToAngleRequest(CommandXboxController controller, DoubleSupplier degrees) {
-        return () -> snapToAngle.withVelocityX(filterX.calculate(-controller.getLeftY() * MaxSpeed))
-                .withVelocityY(filterY.calculate(-controller.getLeftX() * MaxSpeed))
-                .withTargetDirection(Rotation2d.fromDegrees(degrees.getAsDouble()));
+                .withTargetDirection(Rotation2d.fromDegrees(targetHeading));
     }
 
     public Supplier<SwerveRequest> robotCentricRequest(CommandXboxController controller) {
@@ -147,9 +156,40 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 Rotation2d.fromDegrees(getModule(0).getCANcoder().getAbsolutePosition().getValueAsDouble() * 360));
     }
 
-    @Override
-    public void periodic() {
-        SmartDashboard.putNumber("Pigeon Yaw", getPigeon2().getYaw().getValueAsDouble());
+    // public void localize() {
+    // seedFieldRelative(m_aiming.getROSPose());
+    // }
+
+    public double getCurrentRobotAngle() {
+        return getState().Pose.getRotation().getDegrees();
     }
 
+    // public Command localizeFactory() {
+    // return new InstantCommand(() -> {
+    // localize();
+    // }, this);
+    // }
+
+    public Command setHeadingFactory(double target) {
+        return new InstantCommand(() -> setTargetHeading(target));
+    }
+
+    public Command setHeadingFactory(DoubleSupplier target) {
+        return new InstantCommand(() -> setTargetHeading(target));
+    }
+
+    @Override
+    public void periodic() {
+        // Transform3dStamped tfStamped = tf_compact.lookupTransform(Frames.MAP_FRAME,
+        // Frames.BASE_FRAME);
+        // Translation2d XYTranslation =
+        // tfStamped.transform.getTranslation().toTranslation2d();
+        // Rotation2d rotation = tfStamped.transform.getRotation().toRotation2d();
+
+        // SmartDashboard.putNumber("ROS X Translation", XYTranslation.getX());
+        // SmartDashboard.putNumber("ROS Y Translation", XYTranslation.getY());
+        // SmartDashboard.putNumber("ROS Rotation", rotation.getDegrees());
+        SmartDashboard.putNumber("Pigeon Yaw",
+                getPigeon2().getYaw().getValueAsDouble());
+    }
 }
