@@ -55,9 +55,10 @@ public class RobotContainer {
         joystick.rightTrigger().whileTrue(drivetrain.applyRequest(drivetrain.robotCentricRequest(joystick)));
         joystick.rightBumper().whileTrue(drivetrain.applyRequest(drivetrain.brakeRequest()));
         // reset the field-centric heading on left bumper press
-        joystick.leftBumper().onTrue(drivetrain.runOnce(() -> {
+        joystick.leftTrigger().onTrue(drivetrain.runOnce(() -> {
             drivetrain.getPigeon2().setYaw(0);
         }));
+        joystick.leftBumper().whileTrue(drivetrain.aimAtSpeakerFactory());
 
         if (Utils.isSimulation()) {
             drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
@@ -81,7 +82,7 @@ public class RobotContainer {
         tfListenerCompact = new TFListenerCompact(bridge, "/tf_compact");
         coprocessorBridge = new CoprocessorBridge(drivetrain, bridge, tfListenerCompact);
         m_aiming.setTFListener(tfListenerCompact);
-        // SmartDashboard.putData("Localize", drivetrain.localizeFactory());
+        SmartDashboard.putData("Localize", drivetrain.localizeFactory());
     }
 
     public void teleopInit() {

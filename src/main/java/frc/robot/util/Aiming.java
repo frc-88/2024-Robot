@@ -11,7 +11,6 @@ import frc.team88.ros.conversions.Transform3dStamped;
 import frc.robot.Constants;
 
 public class Aiming {
-    private Pose2d relativePose;
     private Pose2d robotPose;
     private Alliance alliance;
     private TFListenerCompact tf_compact;
@@ -38,7 +37,7 @@ public class Aiming {
         Pose2d robotPose = getROSPose();
         robotPose = (getAlliance() == DriverStation.Alliance.Red) ? robotPose.relativeTo(Constants.RED_SPEAKER_POSE)
                 : robotPose.relativeTo(Constants.BLUE_SPEAKER_POSE);
-        return Math.atan2(relativePose.getX(), relativePose.getY());
+        return Math.atan2(robotPose.getY(), robotPose.getX()) * (180 / Math.PI);
     }
 
     public double speakerAngleForShooter() {
@@ -49,7 +48,7 @@ public class Aiming {
     public double getAngletoAnyPoint(Pose2d originPoint) {
         Pose2d robotPose = getROSPose();
         robotPose = robotPose.relativeTo(originPoint);
-        return Math.atan2(robotPose.getX(), robotPose.getY());
+        return Math.atan2(robotPose.getY(), robotPose.getX()) * (180 / Math.PI);
     }
 
     private Alliance getAlliance() {

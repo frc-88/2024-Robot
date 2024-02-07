@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.util.Aiming;
@@ -81,6 +82,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, Aiming aiming,
             SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
+        m_aiming = aiming;
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -155,19 +157,19 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 Rotation2d.fromDegrees(getModule(0).getCANcoder().getAbsolutePosition().getValueAsDouble() * 360));
     }
 
-    // public void localize() {
-    // seedFieldRelative(m_aiming.getROSPose());
-    // }
+    public void localize() {
+        seedFieldRelative(m_aiming.getROSPose());
+    }
 
     public double getCurrentRobotAngle() {
         return getState().Pose.getRotation().getDegrees();
     }
 
-    // public Command localizeFactory() {
-    // return new InstantCommand(() -> {
-    // localize();
-    // }, this);
-    // }
+    public Command localizeFactory() {
+        return new InstantCommand(() -> {
+            localize();
+        }, this);
+    }
 
     public Command setHeadingFactory(double target) {
         return new InstantCommand(() -> setTargetHeading(target));
@@ -175,6 +177,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public Command setHeadingFactory(DoubleSupplier target) {
         return new InstantCommand(() -> setTargetHeading(target));
+    }
+
+    public Command aimAtSpeakerFactory() {
+        return new RunCommand(() -> setTargetHeading(m_aiming.getSpeakerAngleForDrivetrian()));
     }
 
     @Override
