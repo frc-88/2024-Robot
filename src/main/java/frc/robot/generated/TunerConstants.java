@@ -9,6 +9,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackTy
 
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.util.Aiming;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 
 public class TunerConstants {
@@ -147,6 +148,7 @@ public class TunerConstants {
             kBackRightSteerMotorId, kBackRightDriveMotorId, kBackRightEncoderId, kBackRightEncoderOffset,
             Units.inchesToMeters(kBackRightXPosInches), Units.inchesToMeters(kBackRightYPosInches), kInvertRightSide);
 
-    public static final CommandSwerveDrivetrain DriveTrain = new CommandSwerveDrivetrain(DrivetrainConstants, FrontLeft,
-            FrontRight, BackLeft, BackRight);
+    public static CommandSwerveDrivetrain createDrivetrain(Aiming aiming) {
+        return new CommandSwerveDrivetrain(DrivetrainConstants, aiming, FrontLeft, FrontRight, BackLeft, BackRight);
+    }
 }
