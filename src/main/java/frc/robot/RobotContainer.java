@@ -21,8 +21,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
 import frc.robot.ros.bridge.CoprocessorBridge;
-import frc.robot.subsystems.Aiming;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.util.Aiming;
 
 public class RobotContainer {
     private double MaxSpeed = 6; // 6 meters per second desired top speed
@@ -80,6 +80,7 @@ public class RobotContainer {
         ROSNetworkTablesBridge bridge = new ROSNetworkTablesBridge(instance.getTable(""), 20);
         tfListenerCompact = new TFListenerCompact(bridge, "/tf_compact");
         coprocessorBridge = new CoprocessorBridge(drivetrain, bridge, tfListenerCompact);
+        m_aiming.setTFListener(tfListenerCompact);
         // SmartDashboard.putData("Localize", drivetrain.localizeFactory());
     }
 

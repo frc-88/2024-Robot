@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.util.Aiming;
 import frc.robot.util.DriveUtils;
 import frc.team88.ros.conversions.TFListenerCompact;
 
@@ -43,8 +44,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private double m_fieldRelativeOffset = 0;
     private final SlewRateLimiter filterY = new SlewRateLimiter(500);
     private final SlewRateLimiter filterX = new SlewRateLimiter(500);
-    private TFListenerCompact tf_compact;
     private double targetHeading = 0;
+    private Aiming m_aiming;
 
     public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
@@ -65,9 +66,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         }
     };
 
-    public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency,
+    public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, Aiming aiming,
+            double OdometryUpdateFrequency,
             SwerveModuleConstants... modules) {
         super(driveTrainConstants, OdometryUpdateFrequency, modules);
+        m_aiming = aiming;
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -176,16 +179,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     @Override
     public void periodic() {
-        // Transform3dStamped tfStamped = tf_compact.lookupTransform(Frames.MAP_FRAME,
-        // Frames.BASE_FRAME);
-        // Translation2d XYTranslation =
-        // tfStamped.transform.getTranslation().toTranslation2d();
-        // Rotation2d rotation = tfStamped.transform.getRotation().toRotation2d();
-
-        // SmartDashboard.putNumber("ROS X Translation", XYTranslation.getX());
-        // SmartDashboard.putNumber("ROS Y Translation", XYTranslation.getY());
-        // SmartDashboard.putNumber("ROS Rotation", rotation.getDegrees());
-        SmartDashboard.putNumber("Pigeon Yaw",
-                getPigeon2().getYaw().getValueAsDouble());
+        SmartDashboard.putNumber("Speaker Angle", m_aiming.getSpeakerAngleForDrivetrian());
+        SmartDashboard.putNumber("ROS X Translation", m_aiming.getROSPose().getX());
+        SmartDashboard.putNumber("ROS Y Translation", m_aiming.getROSPose().getY());
+        SmartDashboard.putNumber("ROS Rotation", m_aiming.getROSPose().getRotation().getDegrees());
+        SmartDashboard.putNumber("Pigeon Yaw", getPigeon2().getYaw().getValueAsDouble());
     }
 }

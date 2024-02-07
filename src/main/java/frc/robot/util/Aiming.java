@@ -1,18 +1,18 @@
-package frc.robot.subsystems;
+package frc.robot.util;
 
 import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.ros.bridge.Frames;
 import frc.team88.ros.conversions.TFListenerCompact;
 import frc.team88.ros.conversions.Transform3dStamped;
 import frc.robot.Constants;
 
-public class Aiming extends SubsystemBase {
+public class Aiming {
     private Pose2d relativePose;
+    private Pose2d robotPose;
     private Alliance alliance;
     private TFListenerCompact tf_compact;
 
@@ -29,13 +29,14 @@ public class Aiming extends SubsystemBase {
         if (tfStamped.isEmpty()) {
             return new Pose2d();
         }
-        return new Pose2d(tfStamped.get().transform.getTranslation().toTranslation2d(),
+        robotPose = new Pose2d(tfStamped.get().transform.getTranslation().toTranslation2d(),
                 tfStamped.get().transform.getRotation().toRotation2d());
+        return (getAlliance() == DriverStation.Alliance.Red) ? DriveUtils.redBlueTransform(robotPose) : robotPose;
     }
 
-    public double speakerAngleForDrivetrian() {
+    public double getSpeakerAngleForDrivetrian() {
         Pose2d robotPose = getROSPose();
-        relativePose = (getAlliance() == DriverStation.Alliance.Red) ? robotPose.relativeTo(Constants.RED_SPEAKER_POSE)
+        robotPose = (getAlliance() == DriverStation.Alliance.Red) ? robotPose.relativeTo(Constants.RED_SPEAKER_POSE)
                 : robotPose.relativeTo(Constants.BLUE_SPEAKER_POSE);
         return Math.atan2(relativePose.getX(), relativePose.getY());
     }
@@ -44,16 +45,17 @@ public class Aiming extends SubsystemBase {
         return 0;
     }
 
+    // originPoint should be relative to the origin of whatever alliance we are on
+    public double getAngletoAnyPoint(Pose2d originPoint) {
+        Pose2d robotPose = getROSPose();
+        robotPose = robotPose.relativeTo(originPoint);
+        return Math.atan2(robotPose.getX(), robotPose.getY());
+    }
+
     private Alliance getAlliance() {
         if (DriverStation.getAlliance().isPresent()) {
             alliance = DriverStation.getAlliance().get();
         }
         return alliance;
     }
-
-    @Override
-    public void periodic() {
-        // This method will be called once per scheduler run
-    }
-
 }
