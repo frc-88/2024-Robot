@@ -17,17 +17,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class Telemetry {
     private final double MaxSpeed;
+    CommandSwerveDrivetrain drive;
 
     /**
      * Construct a telemetry object, with the specified max speed of the robot
      * 
      * @param maxSpeed Maximum speed in meters per second
      */
-    public Telemetry(double maxSpeed) {
+    public Telemetry(double maxSpeed, CommandSwerveDrivetrain drivetrain) {
         MaxSpeed = maxSpeed;
+        drive = drivetrain;
     }
 
     /* What to publish over networktables for telemetry */
@@ -86,6 +89,8 @@ public class Telemetry {
                 pose.getRotation().getDegrees()
         });
 
+        SmartDashboard.putNumber("Drivetrain X", state.Pose.getX());
+        SmartDashboard.putNumber("Drivetrain Y", state.Pose.getY());
         SmartDashboard.putNumber("Angle of Robot", state.Pose.getRotation().getDegrees());
 
         /* Telemeterize the robot's general speeds */
@@ -109,7 +114,7 @@ public class Telemetry {
             m_moduleSpeeds[i].setLength(state.ModuleStates[i].speedMetersPerSecond / (2 * MaxSpeed));
 
             SmartDashboard.putData("Module " + i, m_moduleMechanisms[i]);
-            SwerveModule module = TunerConstants.DriveTrain.getModule(i);
+            SwerveModule module = drive.getModule(i);
             SmartDashboard.putNumber("Module " + i + " Raw Angle",
                     module.getCANcoder().getAbsolutePosition().getValueAsDouble()
                             - TunerConstants.kModuleOffsets[i]);
