@@ -7,10 +7,15 @@ package frc.robot;
 import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.Utils;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -25,6 +30,8 @@ public class RobotContainer {
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
+
+    private Command runAuto = drivetrain.getAutoPath("Example Path Auto");
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -74,10 +81,14 @@ public class RobotContainer {
     }
 
     public RobotContainer() {
+
         configureBindings();
+
     }
 
     public Command getAutonomousCommand() {
-        return Commands.print("No autonomous command configured");
+
+        return runAuto;
+
     }
 }

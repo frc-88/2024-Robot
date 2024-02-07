@@ -11,6 +11,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.utility.PhoenixPIDController;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -28,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Telemetry;
+import frc.robot.generated.TunerConstants;
 import frc.robot.util.DriveUtils;
 
 /**
@@ -101,6 +103,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return run(() -> this.setControl(requestSupplier.get()));
     }
 
+    public Command getAutoPath(String pathName) {
+        return new PathPlannerAuto(pathName);
+    }
+
     public Pose2d getPose() {
         return getState().Pose;
     }
@@ -110,12 +116,18 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     private void configureAutoBuilder() {
+
+        double driveBaseRadius = 0;
+        for (var moduleLocation : m_moduleLocations) {
+            driveBaseRadius = Math.max(driveBaseRadius, moduleLocation.getNorm());
+        }
+
         AutoBuilder.configureHolonomic(this::getPose, this::seedFieldRelative, this::getChassisSpeeds,
                 (speeds) -> this.setControl(autoRequest.withSpeeds(speeds)),
-                new HolonomicPathFollowerConfig(new PIDConstants(5.0, 0.0, 0.0), // Translational constant
-                        new PIDConstants(5.0, 0.0, 0.0), // Rotational constant
-                        4.5, // in m/s
-                        0.5, // in meters
+                new HolonomicPathFollowerConfig(new PIDConstants(10.0, 0.0, 0.0), // Translational constant
+                        new PIDConstants(10.0, 0.0, 0.0), // Rotational constant
+                        TunerConstants.kSpeedAt12VoltsMps, // in m/s
+                        driveBaseRadius, // in meters
                         new ReplanningConfig()),
                 () -> {
                     var alliance = DriverStation.getAlliance();
