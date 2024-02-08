@@ -36,6 +36,9 @@ public final class Constants {
      */
     public static final double DRIVETRAIN_WHEELBASE_INCHES = 23.0; // TODO get from CAD
 
+    public static final String DRIVETRAIN_CANBUS = "";
+    public static final int DRIVETRAIN_PIGEON_ID = 0;
+
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 12;
     public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 13;
     public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 13;
