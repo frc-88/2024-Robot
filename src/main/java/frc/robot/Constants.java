@@ -26,31 +26,33 @@ public final class Constants {
     /**
      * The left-to-right distance between the drivetrain wheels
      *
-     * Should be measured from center to center.
+     * Should be measured from module center to module center.
+     * Units: inches
      */
-    public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.55245; // TODO
+    public static final double DRIVETRAIN_TRACKWIDTH_METERS = 22.5; // TODO
     /**
      * The front-to-back distance between the drivetrain wheels.
      *
-     * Should be measured from center to center.
+     * Should be measured from module center to module center.
+     * Units: inches
      */
-    public static final double DRIVETRAIN_WHEELBASE_METERS = 0.55245; // TODO
+    public static final double DRIVETRAIN_WHEELBASE_METERS = 23.0; // TODO
 
-    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 18;
-    public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 19;
-    public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 19;
+    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 12;
+    public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 13;
+    public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 13;
 
-    public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 10;
-    public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 11;
-    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 11;
+    public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 3;
+    public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 2;
+    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 2;
 
-    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 0;
-    public static final int BACK_LEFT_MODULE_STEER_MOTOR = 1;
-    public static final int BACK_LEFT_MODULE_STEER_ENCODER = 1;
+    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 15;
+    public static final int BACK_LEFT_MODULE_STEER_MOTOR = 14;
+    public static final int BACK_LEFT_MODULE_STEER_ENCODER = 14;
 
-    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 8;
-    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 9;
-    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 9;
+    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 0;
+    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 1;
+    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 1;
 
     // Intake
 
