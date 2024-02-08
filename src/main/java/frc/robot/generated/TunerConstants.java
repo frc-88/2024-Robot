@@ -15,13 +15,13 @@ import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 
 public class TunerConstants {
 
-    private static DoublePreferenceConstant frontLeftEncoderOffset = new DoublePreferenceConstant(
+    private static DoublePreferenceConstant p_frontLeftEncoderOffset = new DoublePreferenceConstant(
             "swervedrive/FrontLeft/Offset", .33);
-    private static DoublePreferenceConstant frontRightEncoderOffset = new DoublePreferenceConstant(
+    private static DoublePreferenceConstant p_frontRightEncoderOffset = new DoublePreferenceConstant(
             "swervedrive/FrontRight/Offset", .34);
-    private static DoublePreferenceConstant backLeftEncoderOffset = new DoublePreferenceConstant(
+    private static DoublePreferenceConstant p_backLeftEncoderOffset = new DoublePreferenceConstant(
             "swervedrive/BackLeft/Offset", .067);
-    private static DoublePreferenceConstant backRightEncoderOffset = new DoublePreferenceConstant(
+    private static DoublePreferenceConstant p_backRightEncoderOffset = new DoublePreferenceConstant(
             "swervedrive/BackRight/Offset", -1.045);
 
     // Both sets of gains need to be tuned to your individual robot.
@@ -101,7 +101,7 @@ public class TunerConstants {
     private static final int kFrontLeftDriveMotorId = 12;
     private static final int kFrontLeftSteerMotorId = 13;
     private static final int kFrontLeftEncoderId = 13;
-    private static final double kFrontLeftEncoderOffset = frontLeftEncoderOffset.getValue();
+    private static final double kFrontLeftEncoderOffset = p_frontLeftEncoderOffset.getValue();
 
     private static final double kFrontLeftXPosInches = Constants.DRIVETRAIN_WHEELBASE_INCHES / 2.0;
     private static final double kFrontLeftYPosInches = Constants.DRIVETRAIN_TRACKWIDTH_INCHES / 2.0;
@@ -110,7 +110,7 @@ public class TunerConstants {
     private static final int kFrontRightDriveMotorId = 3;
     private static final int kFrontRightSteerMotorId = 2;
     private static final int kFrontRightEncoderId = 2;
-    private static final double kFrontRightEncoderOffset = frontRightEncoderOffset.getValue();
+    private static final double kFrontRightEncoderOffset = p_frontRightEncoderOffset.getValue();
 
     private static final double kFrontRightXPosInches = 11.5;
     private static final double kFrontRightYPosInches = -11.25;
@@ -119,7 +119,7 @@ public class TunerConstants {
     private static final int kBackLeftDriveMotorId = 15;
     private static final int kBackLeftSteerMotorId = 14;
     private static final int kBackLeftEncoderId = 14;
-    private static final double kBackLeftEncoderOffset = backLeftEncoderOffset.getValue();
+    private static final double kBackLeftEncoderOffset = p_backLeftEncoderOffset.getValue();
 
     private static final double kBackLeftXPosInches = -11.5;
     private static final double kBackLeftYPosInches = 11.25;
@@ -128,7 +128,7 @@ public class TunerConstants {
     private static final int kBackRightDriveMotorId = 0;
     private static final int kBackRightSteerMotorId = 1;
     private static final int kBackRightEncoderId = 1;
-    private static final double kBackRightEncoderOffset = backRightEncoderOffset.getValue();
+    private static final double kBackRightEncoderOffset = p_backRightEncoderOffset.getValue();
 
     private static final double kBackRightXPosInches = -11.5;
     private static final double kBackRightYPosInches = -11.25;
