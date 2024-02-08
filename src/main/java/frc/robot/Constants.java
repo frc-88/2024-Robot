@@ -27,16 +27,14 @@ public final class Constants {
      * The left-to-right distance between the drivetrain wheels
      *
      * Should be measured from module center to module center.
-     * Units: inches
      */
-    public static final double DRIVETRAIN_TRACKWIDTH_METERS = 22.5; // TODO
+    public static final double DRIVETRAIN_TRACKWIDTH_INCHES = 22.5; // TODO get from CAD
     /**
      * The front-to-back distance between the drivetrain wheels.
      *
      * Should be measured from module center to module center.
-     * Units: inches
      */
-    public static final double DRIVETRAIN_WHEELBASE_METERS = 23.0; // TODO
+    public static final double DRIVETRAIN_WHEELBASE_INCHES = 23.0; // TODO get from CAD
 
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 12;
     public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 13;
