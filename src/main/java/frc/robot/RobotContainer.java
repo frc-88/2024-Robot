@@ -10,31 +10,102 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Indexer;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import frc.team88.ros.bridge.ROSNetworkTablesBridge;
+import frc.team88.ros.conversions.TFListenerCompact;
+
+import com.ctre.phoenix6.Utils;
+
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.generated.TunerConstants;
+import frc.robot.ros.bridge.CoprocessorBridge;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.util.Aiming;
 
 public class RobotContainer {
-  private final Shooter m_shooter = new Shooter();
-  private final Indexer m_indexer = new Indexer();
+    private double MaxSpeed = 6; // 6 meters per second desired top speed
+    private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
-  public RobotContainer() {
-    DataLogManager.start();
-    configureBindings();
-    configureSmartDashboardButtons();
-  }
+    private final Aiming m_aiming = new Aiming();
+    private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
+    private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(m_aiming); // My drivetrain
+    private final Shooter m_shooter = new Shooter();
+    private final Indexer m_indexer = new Indexer();
 
-private void configureSmartDashboardButtons() {
-  //Shooter
-  SmartDashboard.putData("Run Shooter", m_shooter.runShooterCommand());
-  SmartDashboard.putData("Run Indexer", m_indexer.runIndexerCommand());
-  SmartDashboard.putData("Stop Shooter", m_shooter.stopShooterCommand());
-  SmartDashboard.putData("Stop Indexer", m_indexer.stopIndexerCommand());
-}
+    private final Telemetry logger = new Telemetry(MaxSpeed, drivetrain);
+    private TFListenerCompact tfListenerCompact;
+    @SuppressWarnings("unused")
+    private CoprocessorBridge coprocessorBridge;
 
-  private void configureBindings() {
-    m_shooter.setDefaultCommand(m_shooter.stopShooterCommand());
-    m_indexer.setDefaultCommand(m_indexer.stopIndexerCommand());
-  }
+    public RobotContainer() {
+        DataLogManager.start();
+        configureRosNetworkTablesBridge();
+        configureDriverController();
+        configureSmartDashboardButtons();
+        configureBindings();
 
-  public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
-  }
+        // set default commands
+        drivetrain.setDefaultCommand(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)));
+        m_shooter.setDefaultCommand(m_shooter.stopShooterCommand());
+        m_indexer.setDefaultCommand(m_indexer.stopIndexerCommand());
+    }
+
+    private void configureRosNetworkTablesBridge() {
+        NetworkTableInstance instance = NetworkTableInstance.getDefault();
+
+        ROSNetworkTablesBridge bridge = new ROSNetworkTablesBridge(instance.getTable(""), 20);
+        tfListenerCompact = new TFListenerCompact(bridge, "/tf_compact");
+        coprocessorBridge = new CoprocessorBridge(drivetrain, bridge, tfListenerCompact);
+        m_aiming.setTFListener(tfListenerCompact);
+        SmartDashboard.putData("Localize", drivetrain.localizeFactory());
+    }
+
+    private void configureDriverController() {
+        joystick.b().onTrue(drivetrain.setHeadingFactory(270));
+        joystick.x().onTrue(drivetrain.setHeadingFactory(90));
+        joystick.y().onTrue(drivetrain.setHeadingFactory(0));
+        joystick.a().onTrue(drivetrain.setHeadingFactory(180));
+        isRightStickZero().debounce(0.25, DebounceType.kRising)
+                .onTrue(drivetrain.setHeadingFactory(() -> drivetrain.getState().Pose.getRotation().getDegrees()))
+                .whileFalse(drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick)));
+        joystick.rightTrigger().whileTrue(drivetrain.applyRequest(drivetrain.robotCentricRequest(joystick)));
+        joystick.rightBumper().whileTrue(drivetrain.applyRequest(drivetrain.brakeRequest()));
+        // reset the field-centric heading on left bumper press
+        joystick.leftTrigger().onTrue(drivetrain.runOnce(() -> {
+            drivetrain.getPigeon2().setYaw(0);
+        }));
+        joystick.leftBumper().whileTrue(drivetrain.aimAtSpeakerFactory());
+    }
+
+    private void configureSmartDashboardButtons() {
+        // Shooter
+        SmartDashboard.putData("Run Shooter", m_shooter.runShooterCommand());
+        SmartDashboard.putData("Run Indexer", m_indexer.runIndexerCommand());
+        SmartDashboard.putData("Stop Shooter", m_shooter.stopShooterCommand());
+        SmartDashboard.putData("Stop Indexer", m_indexer.stopIndexerCommand());
+    }
+
+    private void configureBindings() {
+        if (Utils.isSimulation()) {
+            drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
+        }
+        drivetrain.registerTelemetry(logger::telemeterize);
+    }
+
+    private Trigger isRightStickZero() {
+        return new Trigger(() -> Math.abs(joystick.getRightX()) < 0.01 && Math.abs(joystick.getRightY()) < 0.01);
+    }
+
+    public void teleopInit() {
+        drivetrain.setTargetHeading(drivetrain.getState().Pose.getRotation().getDegrees());
+    }
+
+    public Command getAutonomousCommand() {
+        return Commands.print("No autonomous command configured");
+    }
 }
