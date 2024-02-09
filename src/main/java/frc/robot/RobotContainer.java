@@ -7,23 +7,15 @@ package frc.robot;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
 import frc.team88.ros.conversions.TFListenerCompact;
 
 import com.ctre.phoenix6.Utils;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
@@ -35,7 +27,6 @@ public class RobotContainer {
     private double MaxSpeed = 6; // 6 meters per second desired top speed
     private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
-    /* Setting up bindings for necessary control of the swerve drive platform */
     private final Aiming m_aiming = new Aiming();
     private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(m_aiming); // My drivetrain
@@ -47,13 +38,26 @@ public class RobotContainer {
     @SuppressWarnings("unused")
     private CoprocessorBridge coprocessorBridge;
 
-    private void configureBindings() {
+    public RobotContainer() {
+        configureRosNetworkTablesBridge();
+        configureDriverController();
+        configureBindings();
 
-        drivetrain.setDefaultCommand(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick))); // Drivetrain
-                                                                                                        // will execute
-                                                                                                        // this command
-                                                                                                        // periodically
+        // set default commands
+        drivetrain.setDefaultCommand(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)));
+    }
 
+    private void configureRosNetworkTablesBridge() {
+        NetworkTableInstance instance = NetworkTableInstance.getDefault();
+
+        ROSNetworkTablesBridge bridge = new ROSNetworkTablesBridge(instance.getTable(""), 20);
+        tfListenerCompact = new TFListenerCompact(bridge, "/tf_compact");
+        coprocessorBridge = new CoprocessorBridge(drivetrain, bridge, tfListenerCompact);
+        m_aiming.setTFListener(tfListenerCompact);
+        SmartDashboard.putData("Localize", drivetrain.localizeFactory());
+    }
+
+    private void configureDriverController() {
         joystick.b().onTrue(drivetrain.setHeadingFactory(270));
         joystick.x().onTrue(drivetrain.setHeadingFactory(90));
         joystick.y().onTrue(drivetrain.setHeadingFactory(0));
@@ -68,7 +72,9 @@ public class RobotContainer {
             drivetrain.getPigeon2().setYaw(0);
         }));
         joystick.leftBumper().whileTrue(drivetrain.aimAtSpeakerFactory());
+    }
 
+    private void configureBindings() {
         if (Utils.isSimulation()) {
             drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
         }
@@ -77,22 +83,6 @@ public class RobotContainer {
 
     private Trigger isRightStickZero() {
         return new Trigger(() -> Math.abs(joystick.getRightX()) < 0.01 && Math.abs(joystick.getRightY()) < 0.01);
-    }
-
-    public RobotContainer() {
-        configureRosNetworkTablesBridge();
-        configureBindings();
-
-    }
-
-    private void configureRosNetworkTablesBridge() {
-        NetworkTableInstance instance = NetworkTableInstance.getDefault();
-
-        ROSNetworkTablesBridge bridge = new ROSNetworkTablesBridge(instance.getTable(""), 20);
-        tfListenerCompact = new TFListenerCompact(bridge, "/tf_compact");
-        coprocessorBridge = new CoprocessorBridge(drivetrain, bridge, tfListenerCompact);
-        m_aiming.setTFListener(tfListenerCompact);
-        SmartDashboard.putData("Localize", drivetrain.localizeFactory());
     }
 
     public void teleopInit() {
