@@ -18,32 +18,34 @@ public class PIDPreferenceConstants {
     private DoublePreferenceConstant iMax;
     private DoublePreferenceConstant tolerance;
     private DoublePreferenceConstant kS;
+
     /**
      * Constructor. All values given are defaults that will be overriden if a
      * preference for them already exists.
      * 
      * @param name
-     *                      The name to pre-pend to all preference names
+     *                  The name to pre-pend to all preference names
      * @param kP
-     *                      The proportional gain
+     *                  The proportional gain
      * @param kI
-     *                      The integral gain
+     *                  The integral gain
      * @param kD
-     *                      The differential gain
+     *                  The differential gain
      * @param kF
-     *                      The static friction value
+     *                  The feedforward gain
      * @param kS
-     *                      The feedforward gain
+     *                  The static friction value
      * @param iZone
-     *                      The error range in which the integral accumulates
+     *                  The error range in which the integral accumulates
      * @param iMax
-     *                      The max error absolute value that the integral will
-     *                      acumulate
+     *                  The max error absolute value that the integral will
+     *                  acumulate
      * @param tolerance
-     *                      The minimim error absolute value where an output will be
-     *                      applied
+     *                  The minimim error absolute value where an output will be
+     *                  applied
      */
-    public PIDPreferenceConstants(String name, double kP, double kI, double kD, double kF, double kS, double iZone, double iMax,
+    public PIDPreferenceConstants(String name, double kP, double kI, double kD, double kF, double kS, double iZone,
+            double iMax,
             double tolerance) {
         Objects.requireNonNull(name);
         this.kP = new DoublePreferenceConstant(name + " kP", kP);
@@ -54,13 +56,13 @@ public class PIDPreferenceConstants {
         this.iZone = new DoublePreferenceConstant(name + " iZone", iZone);
         this.iMax = new DoublePreferenceConstant(name + " iMax", iMax);
         this.tolerance = new DoublePreferenceConstant(name + " tolerance", tolerance);
-    }   
+    }
 
     /**
      * Constructor. Sets all defaults to 0.
      * 
      * @param name
-     *                The name to pre-pend to all preference names
+     *             The name to pre-pend to all preference names
      */
     public PIDPreferenceConstants(String name) {
         this(name, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -116,7 +118,7 @@ public class PIDPreferenceConstants {
         return kF;
     }
 
-     /**
+    /**
      * Get the kP preference constant.
      * 
      * @return The kP preference constant
