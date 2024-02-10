@@ -25,7 +25,6 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.util.Aiming;
 import frc.robot.util.DriveUtils;
-import frc.team88.ros.conversions.TFListenerCompact;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements
@@ -49,8 +48,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private boolean lowPowerMode = false;
 
     public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-    private final SwerveRequest.RobotCentric robotCentric = new SwerveRequest.RobotCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.FieldCentricFacingAngle snapToAngle = new SwerveRequest.FieldCentricFacingAngle()
@@ -113,7 +110,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public void setRobotOffset() {
-        // m_fieldRelativeOffset = getState().Pose.getRotation().getDegrees();
         getPigeon2().setYaw(0);
     }
 
@@ -156,13 +152,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                     .withTargetDirection(Rotation2d.fromDegrees(targetHeading));
         };
     }
-
-    // public Supplier<SwerveRequest> robotCentricRequest(CommandXboxController
-    // controller) {
-    // return () -> robotCentric.withVelocityX(filterX.calculate(leftY * MaxSpeed))
-    // .withVelocityY(-filterY.calculate(leftX * MaxSpeed))
-    // .withRotationalRate(-controller.getRightX() * MaxAngularRate);
-    // }
 
     public Supplier<SwerveRequest> brakeRequest() {
         return () -> brake;
