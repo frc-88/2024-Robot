@@ -53,7 +53,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private final SwerveRequest.FieldCentricFacingAngle snapToAngle = new SwerveRequest.FieldCentricFacingAngle()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     private final SwerveRequest.PointWheelsAt pointWheelsAt = new SwerveRequest.PointWheelsAt();
-    private final PhoenixPIDController headingController = new PhoenixPIDController(10, 0, 0) {
+    private final PhoenixPIDController headingController = new PhoenixPIDController(12.0, 0, 1.0) {
         @Override
         public double calculate(double measurement, double setpoint, double currentTimestamp) {
             double output = super.calculate(measurement, setpoint, currentTimestamp);
