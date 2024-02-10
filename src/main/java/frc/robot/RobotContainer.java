@@ -11,6 +11,8 @@ import frc.team88.ros.bridge.ROSNetworkTablesBridge;
 import frc.team88.ros.conversions.TFListenerCompact;
 
 import com.ctre.phoenix6.Utils;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -92,8 +94,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-
-        return runAuto;
-
+        PathPlannerPath path = PathPlannerPath.fromPathFile("RedCenterPathOne");
+        return AutoBuilder.followPath(path);
     }
 }
