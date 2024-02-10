@@ -65,6 +65,7 @@ public class RobotContainer {
         }
         drivetrain.registerTelemetry(logger::telemeterize);
         SmartDashboard.putData("SetLowPowerMode", drivetrain.lowPowerModeFactory());
+        SmartDashboard.putData("SetHighPowerMode", drivetrain.highPowerModeFactory());
     }
 
     private Trigger isRightStickZero() {

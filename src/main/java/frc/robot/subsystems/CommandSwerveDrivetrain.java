@@ -103,6 +103,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return m_kinematics.toChassisSpeeds(getState().ModuleStates);
     }
 
+    public void setHighPowerMode() {
+        lowPowerMode = false;
+    }
+
     public void setLowPowerMode() {
         lowPowerMode = true;
     }
@@ -180,6 +184,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return getState().Pose.getRotation().getDegrees();
     }
 
+    public Command highPowerModeFactory() {
+        return new InstantCommand(() -> setHighPowerMode(), this);
+    }
+
     public Command lowPowerModeFactory() {
         return new InstantCommand(() -> setLowPowerMode(), this);
     }
@@ -209,5 +217,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         SmartDashboard.putNumber("ROS Y Translation", m_aiming.getROSPose().getY());
         SmartDashboard.putNumber("ROS Rotation", m_aiming.getROSPose().getRotation().getDegrees());
         SmartDashboard.putNumber("Pigeon Yaw", getPigeon2().getYaw().getValueAsDouble());
+        SmartDashboard.putString("PowerMode", lowPowerMode ? "LowPowerMode" : "HighPowerMode");
     }
 }
