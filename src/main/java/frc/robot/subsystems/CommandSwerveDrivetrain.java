@@ -137,9 +137,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             double leftY = lowPowerMode ? (-controller.getLeftY() / 2) : -controller.getLeftY();
             double leftX = lowPowerMode ? (-controller.getLeftX() / 2) : -controller.getLeftX();
             double angularRate = lowPowerMode ? (controller.getRightX() / 2) : controller.getRightX();
-            return drive.withVelocityX(filterX.calculate(DriveUtils.signedPow(leftY * MaxSpeed, 2)))
-                    .withVelocityY(filterY.calculate(DriveUtils.signedPow(leftX * MaxSpeed, 2)))
-                    .withRotationalRate(DriveUtils.signedPow(angularRate * MaxAngularRate, 2));
+            return drive.withVelocityX(filterX.calculate(DriveUtils.signedPow(leftY, 2) * MaxSpeed))
+                    .withVelocityY(filterY.calculate(DriveUtils.signedPow(leftX, 2) * MaxSpeed))
+                    .withRotationalRate(DriveUtils.signedPow(angularRate, 2) * MaxAngularRate);
         };
     }
 
