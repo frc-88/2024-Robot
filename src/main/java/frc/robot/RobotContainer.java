@@ -98,7 +98,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        PathPlannerPath path = PathPlannerPath.fromPathFile("RedCenterPathOne");
+        PathPlannerPath path = PathPlannerPath.fromPathFile("TwoPieceAuto");
         return AutoBuilder.followPath(path);
     }
 }
