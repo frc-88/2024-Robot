@@ -137,6 +137,37 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return getState().Pose;
     }
 
+    private Pose2d getPoseAutoBuilder() {
+        Pose2d pose = getState().Pose;
+
+        if (redAlliance()) {
+            pose = DriveUtils.redBlueTransform(pose);
+        }
+        return pose;
+    }
+
+    private void resetPoseAutoBuilder(Pose2d pose) {
+        if (redAlliance()) {
+            pose = DriveUtils.redBlueTransform(pose);
+        }
+        seedFieldRelative(pose);
+    }
+
+    private ChassisSpeeds getChassisSpeedsAutoBuilder() {
+        ChassisSpeeds speeds = m_kinematics.toChassisSpeeds(getState().ModuleStates);
+        if (redAlliance()) {
+            speeds.vxMetersPerSecond = -speeds.vxMetersPerSecond;
+        }
+        return speeds;
+    }
+
+    private void driveAutoBuilder(ChassisSpeeds speeds) {
+        if (redAlliance()) {
+            speeds.vxMetersPerSecond = -speeds.vxMetersPerSecond;
+        }
+        this.setControl(autoRequest.withSpeeds(speeds));
+    }
+
     private void configureAutoBuilder() {
 
         double driveBaseRadius = 0;
@@ -144,21 +175,23 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             driveBaseRadius = Math.max(driveBaseRadius, moduleLocation.getNorm());
         }
 
-        AutoBuilder.configureHolonomic(this::getPose, this::seedFieldRelative, this::getChassisSpeeds,
-                (speeds) -> this.setControl(autoRequest.withSpeeds(speeds)),
+        AutoBuilder.configureHolonomic(this::getPoseAutoBuilder, this::resetPoseAutoBuilder,
+                this::getChassisSpeedsAutoBuilder, this::driveAutoBuilder,
                 new HolonomicPathFollowerConfig(new PIDConstants(10.0, 0.0, 0.0), // Translational constant
                         new PIDConstants(10.0, 0.0, 0.0), // Rotational constant
                         TunerConstants.kSpeedAt12VoltsMps, // in m/s
                         driveBaseRadius, // in meters
                         new ReplanningConfig()),
-                () -> {
-                    var alliance = DriverStation.getAlliance();
-                    if (alliance.isPresent()) {
-                        return alliance.get() == DriverStation.Alliance.Red;
-                    }
-                    return false;
-                }, this);
+                this::redAlliance,
+                this);
+    }
 
+    private boolean redAlliance() {
+        var alliance = DriverStation.getAlliance();
+        if (alliance.isPresent()) {
+            return alliance.get() == DriverStation.Alliance.Red;
+        }
+        return false;
     }
 
     private void startSimThread() {
