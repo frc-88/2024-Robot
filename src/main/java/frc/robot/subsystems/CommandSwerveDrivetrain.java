@@ -151,6 +151,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         // pose = DriveUtils.redBlueTransform(pose);
         // }
         seedFieldRelative(pose);
+        setTargetHeading(pose.getRotation().getDegrees());
     }
 
     private ChassisSpeeds getChassisSpeedsAutoBuilder() {
