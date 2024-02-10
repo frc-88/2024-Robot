@@ -102,6 +102,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return m_kinematics.toChassisSpeeds(getState().ModuleStates);
     }
 
+    public void setLowPowerMode() {
+        MaxSpeed /= 2.0;
+        MaxAngularRate /= 2.0;
+    }
+
     public double getRobotOffset() {
         return m_fieldRelativeOffset;
     }
@@ -163,6 +168,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public double getCurrentRobotAngle() {
         return getState().Pose.getRotation().getDegrees();
+    }
+
+    public Command lowPowerModeFactory() {
+        return new InstantCommand(() -> setLowPowerMode(), this);
     }
 
     public Command localizeFactory() {

@@ -64,6 +64,7 @@ public class RobotContainer {
             drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
         }
         drivetrain.registerTelemetry(logger::telemeterize);
+        SmartDashboard.putData("SetLowPowerMode", drivetrain.lowPowerModeFactory());
     }
 
     private Trigger isRightStickZero() {
