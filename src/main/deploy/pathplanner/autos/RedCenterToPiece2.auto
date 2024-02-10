@@ -16,12 +16,6 @@
           "data": {
             "pathName": "RedCenterPathOne"
           }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "GetPiece"
-          }
         }
       ]
     }
