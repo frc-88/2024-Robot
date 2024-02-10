@@ -25,7 +25,6 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.util.Aiming;
 import frc.robot.util.DriveUtils;
-import frc.team88.ros.conversions.TFListenerCompact;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements
@@ -37,7 +36,7 @@ import frc.team88.ros.conversions.TFListenerCompact;
  */
 public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsystem {
     private double MaxSpeed = 6; // 6 meters per second desired top speed
-    private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
+    private double MaxAngularRate = 2 * Math.PI; // 3/4 of a rotation per second max angular velocity
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
@@ -46,10 +45,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private final SlewRateLimiter filterX = new SlewRateLimiter(500);
     private double targetHeading = 0;
     private Aiming m_aiming;
+    private boolean lowPowerMode = false;
 
     public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-    private final SwerveRequest.RobotCentric robotCentric = new SwerveRequest.RobotCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.FieldCentricFacingAngle snapToAngle = new SwerveRequest.FieldCentricFacingAngle()
@@ -99,12 +97,19 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return m_kinematics.toChassisSpeeds(getState().ModuleStates);
     }
 
+    public void setHighPowerMode() {
+        lowPowerMode = false;
+    }
+
+    public void setLowPowerMode() {
+        lowPowerMode = true;
+    }
+
     public double getRobotOffset() {
         return m_fieldRelativeOffset;
     }
 
     public void setRobotOffset() {
-        // m_fieldRelativeOffset = getState().Pose.getRotation().getDegrees();
         getPigeon2().setYaw(0);
     }
 
@@ -128,21 +133,24 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public Supplier<SwerveRequest> fieldCentricRequest(CommandXboxController controller) {
-        return () -> drive.withVelocityX(filterX.calculate(DriveUtils.signedPow(-controller.getLeftY() * MaxSpeed, 2)))
-                .withVelocityY(filterY.calculate(DriveUtils.signedPow(-controller.getLeftX() * MaxSpeed, 2)))
-                .withRotationalRate(DriveUtils.signedPow(controller.getRightX() * MaxAngularRate, 2));
+        return () -> {
+            double leftY = lowPowerMode ? (-controller.getLeftY() / 2) : -controller.getLeftY();
+            double leftX = lowPowerMode ? (-controller.getLeftX() / 2) : -controller.getLeftX();
+            double angularRate = lowPowerMode ? (controller.getRightX() / 2) : controller.getRightX();
+            return drive.withVelocityX(filterX.calculate(DriveUtils.signedPow(leftY, 2) * MaxSpeed))
+                    .withVelocityY(filterY.calculate(DriveUtils.signedPow(leftX, 2) * MaxSpeed))
+                    .withRotationalRate(DriveUtils.signedPow(angularRate, 2) * MaxAngularRate);
+        };
     }
 
     public Supplier<SwerveRequest> SnapToAngleRequest(CommandXboxController controller) {
-        return () -> snapToAngle.withVelocityX(filterX.calculate(-controller.getLeftY() * MaxSpeed))
-                .withVelocityY(filterY.calculate(-controller.getLeftX() * MaxSpeed))
-                .withTargetDirection(Rotation2d.fromDegrees(targetHeading));
-    }
-
-    public Supplier<SwerveRequest> robotCentricRequest(CommandXboxController controller) {
-        return () -> robotCentric.withVelocityX(filterX.calculate(-controller.getLeftY() * MaxSpeed))
-                .withVelocityY(-filterY.calculate(-controller.getLeftX() * MaxSpeed))
-                .withRotationalRate(-controller.getRightX() * MaxAngularRate);
+        return () -> {
+            double leftY = lowPowerMode ? (-controller.getLeftY() / 2) : -controller.getLeftY();
+            double leftX = lowPowerMode ? (-controller.getLeftX() / 2) : -controller.getLeftX();
+            return snapToAngle.withVelocityX(filterX.calculate(DriveUtils.signedPow(leftY, 2) * MaxSpeed))
+                    .withVelocityY(filterY.calculate(DriveUtils.signedPow(leftX, 2) * MaxSpeed))
+                    .withTargetDirection(Rotation2d.fromDegrees(targetHeading));
+        };
     }
 
     public Supplier<SwerveRequest> brakeRequest() {
@@ -160,6 +168,14 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public double getCurrentRobotAngle() {
         return getState().Pose.getRotation().getDegrees();
+    }
+
+    public Command highPowerModeFactory() {
+        return new InstantCommand(() -> setHighPowerMode(), this);
+    }
+
+    public Command lowPowerModeFactory() {
+        return new InstantCommand(() -> setLowPowerMode(), this);
     }
 
     public Command localizeFactory() {
@@ -187,5 +203,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         SmartDashboard.putNumber("ROS Y Translation", m_aiming.getROSPose().getY());
         SmartDashboard.putNumber("ROS Rotation", m_aiming.getROSPose().getRotation().getDegrees());
         SmartDashboard.putNumber("Pigeon Yaw", getPigeon2().getYaw().getValueAsDouble());
+        SmartDashboard.putString("PowerMode", lowPowerMode ? "LowPowerMode" : "HighPowerMode");
     }
 }
