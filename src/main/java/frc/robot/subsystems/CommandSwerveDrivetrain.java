@@ -78,6 +78,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             double OdometryUpdateFrequency,
             SwerveModuleConstants... modules) {
         super(driveTrainConstants, OdometryUpdateFrequency, modules);
+        configureAutoBuilder();
         m_aiming = aiming;
         if (Utils.isSimulation()) {
             startSimThread();
@@ -89,6 +90,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, Aiming aiming,
             SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
+        configureAutoBuilder();
         m_aiming = aiming;
         if (Utils.isSimulation()) {
             startSimThread();
