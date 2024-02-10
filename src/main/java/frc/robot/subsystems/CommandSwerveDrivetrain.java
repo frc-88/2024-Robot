@@ -140,31 +140,32 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private Pose2d getPoseAutoBuilder() {
         Pose2d pose = getState().Pose;
 
-        if (redAlliance()) {
-            pose = DriveUtils.redBlueTransform(pose);
-        }
+        // if (redAlliance()) {
+        // pose = DriveUtils.redBlueTransform(pose);
+        // }
         return pose;
     }
 
     private void resetPoseAutoBuilder(Pose2d pose) {
-        if (redAlliance()) {
-            pose = DriveUtils.redBlueTransform(pose);
-        }
+        // if (redAlliance()) {
+        // pose = DriveUtils.redBlueTransform(pose);
+        // }
         seedFieldRelative(pose);
     }
 
     private ChassisSpeeds getChassisSpeedsAutoBuilder() {
         ChassisSpeeds speeds = m_kinematics.toChassisSpeeds(getState().ModuleStates);
-        if (redAlliance()) {
-            speeds.vxMetersPerSecond = -speeds.vxMetersPerSecond;
-        }
+
+        // if (redAlliance()) {
+        // speeds.vxMetersPerSecond = -speeds.vxMetersPerSecond;
+        // }
         return speeds;
     }
 
     private void driveAutoBuilder(ChassisSpeeds speeds) {
-        if (redAlliance()) {
-            speeds.vxMetersPerSecond = -speeds.vxMetersPerSecond;
-        }
+        // if (redAlliance()) {
+        // speeds.vxMetersPerSecond = -speeds.vxMetersPerSecond;
+        // }
         this.setControl(autoRequest.withSpeeds(speeds));
     }
 
