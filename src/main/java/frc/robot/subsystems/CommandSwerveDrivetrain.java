@@ -137,48 +137,23 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return getState().Pose;
     }
 
-    private Pose2d getPoseAutoBuilder() {
-        Pose2d pose = getState().Pose;
-
-        // if (redAlliance()) {
-        // pose = DriveUtils.redBlueTransform(pose);
-        // }
-        return pose;
-    }
-
-    private void resetPoseAutoBuilder(Pose2d pose) {
-        // if (redAlliance()) {
-        // pose = DriveUtils.redBlueTransform(pose);
-        // }
+    private void resetPose(Pose2d pose) {
         seedFieldRelative(pose);
         setTargetHeading(pose.getRotation().getDegrees());
     }
 
-    private ChassisSpeeds getChassisSpeedsAutoBuilder() {
-        ChassisSpeeds speeds = m_kinematics.toChassisSpeeds(getState().ModuleStates);
-
-        // if (redAlliance()) {
-        // speeds.vxMetersPerSecond = -speeds.vxMetersPerSecond;
-        // }
-        return speeds;
-    }
-
-    private void driveAutoBuilder(ChassisSpeeds speeds) {
-        // if (redAlliance()) {
-        // speeds.vxMetersPerSecond = -speeds.vxMetersPerSecond;
-        // }
+    private void setChassisSpeeds(ChassisSpeeds speeds) {
         this.setControl(autoRequest.withSpeeds(speeds));
     }
 
     private void configureAutoBuilder() {
-
         double driveBaseRadius = 0;
         for (var moduleLocation : m_moduleLocations) {
             driveBaseRadius = Math.max(driveBaseRadius, moduleLocation.getNorm());
         }
 
-        AutoBuilder.configureHolonomic(this::getPoseAutoBuilder, this::resetPoseAutoBuilder,
-                this::getChassisSpeedsAutoBuilder, this::driveAutoBuilder,
+        AutoBuilder.configureHolonomic(this::getPose, this::resetPose,
+                this::getChassisSpeeds, this::setChassisSpeeds,
                 new HolonomicPathFollowerConfig(new PIDConstants(10.0, 0.0, 0.0), // Translational constant
                         new PIDConstants(10.0, 0.0, 0.0), // Rotational constant
                         TunerConstants.kSpeedAt12VoltsMps, // in m/s
