@@ -16,12 +16,6 @@
           "data": {
             "pathName": "CenterToPiece1"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Piece1ToPiece2"
-          }
         }
       ]
     }
