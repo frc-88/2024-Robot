@@ -147,8 +147,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return () -> {
             double leftY = lowPowerMode ? (-controller.getLeftY() / 2) : -controller.getLeftY();
             double leftX = lowPowerMode ? (-controller.getLeftX() / 2) : -controller.getLeftX();
-            return snapToAngle.withVelocityX(filterX.calculate(leftY * MaxSpeed))
-                    .withVelocityY(filterY.calculate(leftX * MaxSpeed))
+            return snapToAngle.withVelocityX(filterX.calculate(DriveUtils.signedPow(leftY, 2) * MaxSpeed))
+                    .withVelocityY(filterY.calculate(DriveUtils.signedPow(leftX, 2) * MaxSpeed))
                     .withTargetDirection(Rotation2d.fromDegrees(targetHeading));
         };
     }
