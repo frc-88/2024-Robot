@@ -36,7 +36,7 @@ import frc.robot.util.DriveUtils;
  */
 public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsystem {
     private double MaxSpeed = 6; // 6 meters per second desired top speed
-    private double MaxAngularRate = 3 * Math.PI; // 3/4 of a rotation per second max angular velocity
+    private double MaxAngularRate = 2 * Math.PI; // 3/4 of a rotation per second max angular velocity
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
