@@ -86,7 +86,7 @@ public class RobotContainer {
         SmartDashboard.putData("SetHighPowerMode", drivetrain.highPowerModeFactory());
 
         // auto test
-        SmartDashboard.putData("Red Line Auto", drivetrain.getAutoPath("RedCenterToPiece2"));
+        SmartDashboard.putData("Red Line Auto", drivetrain.getAutoPath("TwoPieceAuto"));
     }
 
     private Trigger isRightStickZero() {
