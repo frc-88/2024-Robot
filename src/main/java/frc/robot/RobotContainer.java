@@ -73,7 +73,7 @@ public class RobotContainer {
         isRightStickZero().debounce(0.25, DebounceType.kRising)
                 .onTrue(drivetrain.setHeadingFactory(() -> drivetrain.getState().Pose.getRotation().getDegrees()))
                 .whileFalse(drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick)));
-        joystick.rightTrigger().whileTrue(drivetrain.applyRequest(drivetrain.robotCentricRequest(joystick)));
+        // joystick.rightTrigger().whileTrue(drivetrain.applyRequest(drivetrain.robotCentricRequest(joystick)));
         joystick.rightBumper().whileTrue(drivetrain.applyRequest(drivetrain.brakeRequest()));
         // reset the field-centric heading on left bumper press
         joystick.leftTrigger().onTrue(drivetrain.runOnce(() -> {
@@ -95,6 +95,8 @@ public class RobotContainer {
             drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
         }
         drivetrain.registerTelemetry(logger::telemeterize);
+        SmartDashboard.putData("SetLowPowerMode", drivetrain.lowPowerModeFactory());
+        SmartDashboard.putData("SetHighPowerMode", drivetrain.highPowerModeFactory());
     }
 
     private Trigger isRightStickZero() {
