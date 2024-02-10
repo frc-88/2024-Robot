@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 2.8271243223951488,
-      "y": 3.0123501756437476
+      "x": 2,
+      "y": 2
     },
-    "rotation": -64.88516511385544
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -14,7 +14,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": null
+            "pathName": "RedCenterPathOne"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "GetPiece"
           }
         }
       ]
