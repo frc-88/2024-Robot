@@ -52,7 +52,7 @@ public class RobotContainer {
         isRightStickZero().debounce(0.25, DebounceType.kRising)
                 .onTrue(drivetrain.setHeadingFactory(() -> drivetrain.getState().Pose.getRotation().getDegrees()))
                 .whileFalse(drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick)));
-        joystick.rightTrigger().whileTrue(drivetrain.applyRequest(drivetrain.robotCentricRequest(joystick)));
+        // joystick.rightTrigger().whileTrue(drivetrain.applyRequest(drivetrain.robotCentricRequest(joystick)));
         joystick.rightBumper().whileTrue(drivetrain.applyRequest(drivetrain.brakeRequest()));
         // reset the field-centric heading on left bumper press
         joystick.leftTrigger().onTrue(drivetrain.runOnce(() -> {

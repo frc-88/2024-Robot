@@ -47,6 +47,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private final SlewRateLimiter filterX = new SlewRateLimiter(500);
     private double targetHeading = 0;
     private Aiming m_aiming;
+    private boolean lowPowerMode = false;
 
     public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
@@ -103,8 +104,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public void setLowPowerMode() {
-        MaxSpeed /= 2.0;
-        MaxAngularRate /= 2.0;
+        lowPowerMode = true;
     }
 
     public double getRobotOffset() {
@@ -136,22 +136,28 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public Supplier<SwerveRequest> fieldCentricRequest(CommandXboxController controller) {
-        return () -> drive.withVelocityX(filterX.calculate(DriveUtils.signedPow(-controller.getLeftY() * MaxSpeed, 2)))
-                .withVelocityY(filterY.calculate(DriveUtils.signedPow(-controller.getLeftX() * MaxSpeed, 2)))
-                .withRotationalRate(DriveUtils.signedPow(controller.getRightX() * MaxAngularRate, 2));
+        double leftY = lowPowerMode ? (-controller.getLeftY() / 2) : -controller.getLeftY();
+        double leftX = lowPowerMode ? (-controller.getLeftX() / 2) : -controller.getLeftX();
+        double angularRate = lowPowerMode ? (controller.getRightX() / 2) : controller.getRightX();
+        return () -> drive.withVelocityX(filterX.calculate(DriveUtils.signedPow(leftY * MaxSpeed, 2)))
+                .withVelocityY(filterY.calculate(DriveUtils.signedPow(leftX * MaxSpeed, 2)))
+                .withRotationalRate(DriveUtils.signedPow(angularRate * MaxAngularRate, 2));
     }
 
     public Supplier<SwerveRequest> SnapToAngleRequest(CommandXboxController controller) {
-        return () -> snapToAngle.withVelocityX(filterX.calculate(-controller.getLeftY() * MaxSpeed))
-                .withVelocityY(filterY.calculate(-controller.getLeftX() * MaxSpeed))
+        double leftY = lowPowerMode ? (-controller.getLeftY() / 2) : -controller.getLeftY();
+        double leftX = lowPowerMode ? (-controller.getLeftX() / 2) : -controller.getLeftX();
+        return () -> snapToAngle.withVelocityX(filterX.calculate(leftY * MaxSpeed))
+                .withVelocityY(filterY.calculate(leftX * MaxSpeed))
                 .withTargetDirection(Rotation2d.fromDegrees(targetHeading));
     }
 
-    public Supplier<SwerveRequest> robotCentricRequest(CommandXboxController controller) {
-        return () -> robotCentric.withVelocityX(filterX.calculate(-controller.getLeftY() * MaxSpeed))
-                .withVelocityY(-filterY.calculate(-controller.getLeftX() * MaxSpeed))
-                .withRotationalRate(-controller.getRightX() * MaxAngularRate);
-    }
+    // public Supplier<SwerveRequest> robotCentricRequest(CommandXboxController
+    // controller) {
+    // return () -> robotCentric.withVelocityX(filterX.calculate(leftY * MaxSpeed))
+    // .withVelocityY(-filterY.calculate(leftX * MaxSpeed))
+    // .withRotationalRate(-controller.getRightX() * MaxAngularRate);
+    // }
 
     public Supplier<SwerveRequest> brakeRequest() {
         return () -> brake;
