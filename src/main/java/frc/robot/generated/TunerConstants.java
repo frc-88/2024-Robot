@@ -16,7 +16,7 @@ import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 public class TunerConstants {
 
     private static DoublePreferenceConstant p_frontLeftEncoderOffset = new DoublePreferenceConstant(
-            "swervedrive/FrontLeft/Offset", .33);
+            "swervedrive/FrontLeft/Offset", -0.129150);
     private static DoublePreferenceConstant p_frontRightEncoderOffset = new DoublePreferenceConstant(
             "swervedrive/FrontRight/Offset", .34);
     private static DoublePreferenceConstant p_backLeftEncoderOffset = new DoublePreferenceConstant(
