@@ -32,14 +32,15 @@ public final class Constants {
      *
      * Should be measured from module center to module center.
      */
-    public static final double DRIVETRAIN_TRACKWIDTH_INCHES = 22.5; // TODO get from CAD
+    public static final double DRIVETRAIN_TRACKWIDTH_INCHES = 22.75; // TODO get from CAD
     /**
      * The front-to-back distance between the drivetrain wheels.
      *
      * Should be measured from module center to module center.
      */
-    public static final double DRIVETRAIN_WHEELBASE_INCHES = 23.0; // TODO get from CAD
+    public static final double DRIVETRAIN_WHEELBASE_INCHES = 19.75; // TODO get from CAD
 
+    public static final double DRIVETRAIN_CENTER_OFFSET = 2.3125;
     public static final String DRIVETRAIN_CANBUS = RIO_CANBUS;
     public static final int DRIVETRAIN_PIGEON_ID = 0;
 

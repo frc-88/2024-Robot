@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.io.FileNotFoundException;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -29,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Telemetry;
 import frc.robot.generated.TunerConstants;
@@ -130,7 +132,16 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public Command getAutoPath(String pathName) {
-        return new PathPlannerAuto(pathName);
+        try {
+            Command autoPath = new PathPlannerAuto(pathName);
+            return autoPath;
+        } catch (Exception e) {
+            Command autoPath = new WaitCommand(1.0);
+            System.err.println("Exception loading auto path");
+            e.printStackTrace();
+            return autoPath;
+        }
+
     }
 
     public Pose2d getPose() {
