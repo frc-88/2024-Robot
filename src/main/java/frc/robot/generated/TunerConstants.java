@@ -16,13 +16,13 @@ import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 public class TunerConstants {
 
     private static DoublePreferenceConstant p_frontLeftEncoderOffset = new DoublePreferenceConstant(
-            "swervedrive/FrontLeft/Offset", .33);
+            "swervedrive/FrontLeft/Offset", -0.27099609375);
     private static DoublePreferenceConstant p_frontRightEncoderOffset = new DoublePreferenceConstant(
-            "swervedrive/FrontRight/Offset", .34);
+            "swervedrive/FrontRight/Offset", 0.154052734375);
     private static DoublePreferenceConstant p_backLeftEncoderOffset = new DoublePreferenceConstant(
-            "swervedrive/BackLeft/Offset", .067);
+            "swervedrive/BackLeft/Offset", 0.374267578125);
     private static DoublePreferenceConstant p_backRightEncoderOffset = new DoublePreferenceConstant(
-            "swervedrive/BackRight/Offset", -1.045);
+            "swervedrive/BackRight/Offset", 0.234130859375);
 
     // Both sets of gains need to be tuned to your individual robot.
 
