@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
 import frc.robot.ros.bridge.CoprocessorBridge;
-import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.util.Aiming;
 
@@ -34,7 +33,6 @@ public class RobotContainer {
     private final Aiming m_aiming = new Aiming();
     private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(m_aiming); // My drivetrain
-    private Climber m_climber = new Climber();
 
     private Command runAuto = new WaitCommand(1.0);
 
@@ -81,12 +79,6 @@ public class RobotContainer {
     }
 
     private void configureSmartDashboardButtons() {
-        SmartDashboard.putData("ClimberGoToPostition", m_climber.setPositionFactory());
-        SmartDashboard.putData("ClimberGoToStart", m_climber.goToStartFactory());
-        SmartDashboard.putData("ClimberCalibrate", m_climber.calibrateFactory());
-        SmartDashboard.putData("ClimberCoastMode", m_climber.enableCoastModeFactory().ignoringDisable(true));
-        SmartDashboard.putData("ClimberBrakeMode", m_climber.enableBrakeModeFactory().ignoringDisable(true));
-        SmartDashboard.putData("ClimberUpDown", m_climber.upDownFactory());
     }
 
     private void configureBindings() {
