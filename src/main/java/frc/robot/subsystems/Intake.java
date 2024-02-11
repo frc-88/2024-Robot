@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -15,37 +14,82 @@ import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
 
-    private DoublePreferenceConstant intakeRollerSpeed = new DoublePreferenceConstant("Intake/IntakeRollerSpeed", 0);
-    private DoublePreferenceConstant guideRollerSpeed = new DoublePreferenceConstant("Intake/GuideRollerSpeed", 0);
-    private DoublePreferenceConstant indexRollerSpeed = new DoublePreferenceConstant("Intake/IndexRollerSpeed", 0);
+    private DoublePreferenceConstant intakeRollerSpeed = new DoublePreferenceConstant("Intake/IntakeRollerSpeed", 1);
+    private DoublePreferenceConstant guideRollerSpeed = new DoublePreferenceConstant("Intake/GuideRollerSpeed", 1);
+    private DoublePreferenceConstant indexRollerSpeed = new DoublePreferenceConstant("Intake/IndexRollerSpeed", 0.25);
+    private DoublePreferenceConstant indexShootSpeed = new DoublePreferenceConstant("Intake/IndexerShootSetup", 1);
 
     private final DutyCycleOut m_intakeRequest = new DutyCycleOut(0.0);
-    private final TalonFX m_intakeMotor = new TalonFX(Constants.INTAKE_MOTOR_ID, Constants.INTAKE_CANBUS);
-    private final TalonFX m_guideMotor = new TalonFX(Constants.INTAKE_GUIDE_MOTOR_ID, Constants.INTAKE_CANBUS);
-    private final TalonFX m_indexMotor = new TalonFX(Constants.INTAKE_INDEX_MOTOR_ID, Constants.INTAKE_CANBUS);
+    private final TalonFX m_intakeMotor = new TalonFX(Constants.INTAKE_MOTOR_ID, Constants.RIO_CANBUS);
+    private final TalonFX m_guideMotor = new TalonFX(Constants.INTAKE_GUIDE_MOTOR_ID, Constants.RIO_CANBUS);
+    private final TalonFX m_indexMotor = new TalonFX(Constants.INTAKE_INDEX_MOTOR_ID, Constants.CANIVORE_CANBUS);
+
+    private final TalonFXConfiguration indexConfiguration = new TalonFXConfiguration();
 
     public Intake() {
-        configureTalons(m_intakeMotor, m_guideMotor, m_indexMotor);
+        configureTalons();
     }
 
-    public void configureTalons(TalonFX... talons) {
+    public void configureTalons() {
         // There are many configs we can set
-        TalonFXConfiguration configuration = new TalonFXConfiguration();
-        configuration.CurrentLimits.SupplyCurrentLimit = 60.0;
+        TalonFXConfiguration intakeConfiguration = new TalonFXConfiguration();
+        intakeConfiguration.CurrentLimits.SupplyCurrentLimit = 60.0;
+        m_intakeMotor.getConfigurator().apply(intakeConfiguration);
+        m_intakeMotor.setInverted(true);
 
-        for (TalonFX motor : talons) {
-            motor.getConfigurator().apply(configuration);
-        }
+        TalonFXConfiguration guideConfiguration = new TalonFXConfiguration();
+        guideConfiguration.CurrentLimits.SupplyCurrentLimit = 60.0;
+        m_guideMotor.getConfigurator().apply(guideConfiguration);
+
+        indexConfiguration.CurrentLimits.SupplyCurrentLimit = 60.0;
+        m_indexMotor.getConfigurator().apply(indexConfiguration);
+        m_indexMotor.setInverted(true);
     }
 
     public void intake() {
+        m_indexMotor.getConfigurator().refresh(indexConfiguration);
+        indexConfiguration.HardwareLimitSwitch.ForwardLimitEnable = true;
+        m_indexMotor.getConfigurator().apply(indexConfiguration);
         m_intakeMotor.setControl(m_intakeRequest.withOutput(intakeRollerSpeed.getValue()));
         m_guideMotor.setControl(m_intakeRequest.withOutput(guideRollerSpeed.getValue()));
         m_indexMotor.setControl(m_intakeRequest.withOutput(indexRollerSpeed.getValue()));
     }
 
+    public void stopMoving() {
+        m_intakeMotor.setControl(m_intakeRequest.withOutput(0));
+        m_guideMotor.setControl(m_intakeRequest.withOutput(0));
+        m_indexMotor.setControl(m_intakeRequest.withOutput(0));
+    }
+
+    public void shootIndexer() {
+        m_indexMotor.getConfigurator().refresh(indexConfiguration);
+        indexConfiguration.HardwareLimitSwitch.ForwardLimitEnable = false;
+        m_indexMotor.getConfigurator().apply(indexConfiguration);
+        m_indexMotor.setControl(m_intakeRequest.withOutput(indexShootSpeed.getValue()));
+        m_intakeMotor.setControl(m_intakeRequest.withOutput(0));
+        m_guideMotor.setControl(m_intakeRequest.withOutput(0));
+    }
+
+    public void reject() {
+        m_intakeMotor.setControl(m_intakeRequest.withOutput(-1));
+        m_guideMotor.setControl(m_intakeRequest.withOutput(-1));
+        m_indexMotor.setControl(m_intakeRequest.withOutput(-1));
+    }
+
     public Command intakeFactory() {
         return new RunCommand(() -> intake(), this).until(() -> hasNoteInIndexer());
+    }
+
+    public Command rejectFactory() {
+        return new RunCommand(() -> reject(), this);
+    }
+
+    public Command stopMovingFactory() {
+        return new RunCommand(() -> stopMoving(), this);
+    }
+
+    public Command shootIndexerFactory() {
+        return new RunCommand(() -> shootIndexer(), this);
     }
 
     public boolean hasNoteInIndexer() {

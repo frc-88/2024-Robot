@@ -19,6 +19,7 @@ import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
@@ -34,6 +35,7 @@ public class RobotContainer {
 
     private final Aiming m_aiming = new Aiming();
     private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
+    private final CommandGenericHID buttonBox = new CommandGenericHID(1); // The buttons???
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(m_aiming); // My drivetrain
     private Intake m_intake = new Intake();
 
@@ -51,6 +53,7 @@ public class RobotContainer {
 
         // set default commands
         drivetrain.setDefaultCommand(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)));
+        m_intake.setDefaultCommand(m_intake.stopMovingFactory());
     }
 
     private void configureRosNetworkTablesBridge() {
@@ -98,7 +101,9 @@ public class RobotContainer {
 
     public void teleopInit() {
         drivetrain.setTargetHeading(drivetrain.getState().Pose.getRotation().getDegrees());
-        joystick.a().whileTrue(m_intake.intakeFactory());
+        buttonBox.button(10).whileTrue(m_intake.intakeFactory());
+        buttonBox.button(20).whileTrue(m_intake.shootIndexerFactory());
+        buttonBox.button(18).whileTrue(m_intake.rejectFactory());
     }
 
     public Command getAutonomousCommand() {

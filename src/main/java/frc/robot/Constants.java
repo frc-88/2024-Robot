@@ -61,7 +61,6 @@ public final class Constants {
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 2;
 
     // Intake
-    public static final String INTAKE_CANBUS = "rio";
     public static final int INTAKE_MOTOR_ID = 14;
     public static final int INTAKE_GUIDE_MOTOR_ID = 15;
     public static final int INTAKE_INDEX_MOTOR_ID = 16;
