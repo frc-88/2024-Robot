@@ -16,13 +16,13 @@ import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 public class TunerConstants {
 
     private static DoublePreferenceConstant p_frontLeftEncoderOffset = new DoublePreferenceConstant(
-            "swervedrive/FrontLeft/Offset", .33);
+            "swervedrive/FrontLeft/Offset", -0.27099609375);
     private static DoublePreferenceConstant p_frontRightEncoderOffset = new DoublePreferenceConstant(
-            "swervedrive/FrontRight/Offset", .34);
+            "swervedrive/FrontRight/Offset", 0.154052734375);
     private static DoublePreferenceConstant p_backLeftEncoderOffset = new DoublePreferenceConstant(
-            "swervedrive/BackLeft/Offset", .067);
+            "swervedrive/BackLeft/Offset", 0.374267578125);
     private static DoublePreferenceConstant p_backRightEncoderOffset = new DoublePreferenceConstant(
-            "swervedrive/BackRight/Offset", -1.045);
+            "swervedrive/BackRight/Offset", 0.234130859375);
 
     // Both sets of gains need to be tuned to your individual robot.
 
@@ -51,13 +51,13 @@ public class TunerConstants {
 
     // Theoretical free speed (m/s) at 12v applied output;
     // This needs to be tuned to your individual robot
-    public static final double kSpeedAt12VoltsMps = 4.73;
+    public static final double kSpeedAt12VoltsMps = 5.21;
 
     // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
     // This may need to be tuned to your individual robot
     private static final double kCoupleRatio = 3.5714285714285716;
 
-    private static final double kDriveGearRatio = 6.746031746031747;
+    private static final double kDriveGearRatio = 6.122448979591837;
     private static final double kSteerGearRatio = 21.428571428571427;
     private static final double kWheelRadiusInches = 2;
 
