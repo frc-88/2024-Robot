@@ -98,7 +98,7 @@ public class RobotContainer {
 
     public void teleopInit() {
         drivetrain.setTargetHeading(drivetrain.getState().Pose.getRotation().getDegrees());
-        joystick.a().whileTrue(m_intake.intakeFactory().until(() -> m_intake.getSensorValue()));
+        joystick.a().whileTrue(m_intake.intakeFactory());
     }
 
     public Command getAutonomousCommand() {

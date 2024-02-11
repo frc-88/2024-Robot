@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
@@ -30,7 +31,7 @@ public class Intake extends SubsystemBase {
     public void configureTalons(TalonFX... talons) {
         // There are many configs we can set
         TalonFXConfiguration configuration = new TalonFXConfiguration();
-        configuration.CurrentLimits.SupplyCurrentLimit = 10.0;
+        configuration.CurrentLimits.SupplyCurrentLimit = 60.0;
 
         for (TalonFX motor : talons) {
             motor.getConfigurator().apply(configuration);
@@ -44,15 +45,18 @@ public class Intake extends SubsystemBase {
     }
 
     public Command intakeFactory() {
-        return new RunCommand(() -> intake(), this);
+        return new RunCommand(() -> intake(), this).until(() -> hasNoteInIndexer());
     }
 
-    public boolean getSensorValue() {
+    public boolean hasNoteInIndexer() {
         return m_indexMotor.getForwardLimit().getValueAsDouble() == 0;
     }
 
-    public TalonFX getIndexerMotor() {
-        return m_indexMotor;
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Intake/Intake Speed", m_intakeMotor.getRotorVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("Intake/Guide Speed", m_guideMotor.getRotorVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("Intake/Index Speed", m_indexMotor.getRotorVelocity().getValueAsDouble());
+        SmartDashboard.putBoolean("Intake/Index Has Note", hasNoteInIndexer());
     }
-
 }
