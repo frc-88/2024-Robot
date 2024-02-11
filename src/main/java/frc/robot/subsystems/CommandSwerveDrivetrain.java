@@ -63,11 +63,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private final SwerveRequest.FieldCentricFacingAngle snapToAngle = new SwerveRequest.FieldCentricFacingAngle()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     private final SwerveRequest.PointWheelsAt pointWheelsAt = new SwerveRequest.PointWheelsAt();
-    private final PhoenixPIDController headingController = new PhoenixPIDController(10, 0, 0) {
+    private final PhoenixPIDController headingController = new PhoenixPIDController(12.0, 0, 1.0) {
         @Override
         public double calculate(double measurement, double setpoint, double currentTimestamp) {
             double output = super.calculate(measurement, setpoint, currentTimestamp);
-            output = MathUtil.clamp(output, -MaxAngularRate / 2, MaxAngularRate / 2);
+            output = MathUtil.clamp(output, -MaxAngularRate, MaxAngularRate);
             return output;
         }
     };
@@ -193,7 +193,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             double angularRate = lowPowerMode ? (controller.getRightX() / 2) : controller.getRightX();
             return drive.withVelocityX(filterX.calculate(DriveUtils.signedPow(leftY, 2) * MaxSpeed))
                     .withVelocityY(filterY.calculate(DriveUtils.signedPow(leftX, 2) * MaxSpeed))
-                    .withRotationalRate(DriveUtils.signedPow(angularRate, 2) * MaxAngularRate);
+                    .withRotationalRate(DriveUtils.signedPow(-angularRate, 2) * MaxAngularRate);
         };
     }
 
