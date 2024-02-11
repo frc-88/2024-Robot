@@ -19,13 +19,15 @@ import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
 import frc.robot.ros.bridge.CoprocessorBridge;
-import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.util.Aiming;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.Intake;
 
 public class RobotContainer {
     private double MaxSpeed = 6; // 6 meters per second desired top speed
@@ -33,8 +35,9 @@ public class RobotContainer {
 
     private final Aiming m_aiming = new Aiming();
     private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
+    private final CommandGenericHID buttonBox = new CommandGenericHID(1); // The buttons???
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(m_aiming); // My drivetrain
-    private Climber m_climber = new Climber();
+    private Intake m_intake = new Intake();
 
     private Command runAuto = new WaitCommand(1.0);
 
@@ -51,6 +54,7 @@ public class RobotContainer {
 
         // set default commands
         drivetrain.setDefaultCommand(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)));
+        m_intake.setDefaultCommand(m_intake.stopMovingFactory());
     }
 
     private void configureRosNetworkTablesBridge() {
@@ -81,12 +85,6 @@ public class RobotContainer {
     }
 
     private void configureSmartDashboardButtons() {
-        SmartDashboard.putData("ClimberGoToPostition", m_climber.setPositionFactory());
-        SmartDashboard.putData("ClimberGoToStart", m_climber.goToStartFactory());
-        SmartDashboard.putData("ClimberCalibrate", m_climber.calibrateFactory());
-        SmartDashboard.putData("ClimberCoastMode", m_climber.enableCoastModeFactory().ignoringDisable(true));
-        SmartDashboard.putData("ClimberBrakeMode", m_climber.enableBrakeModeFactory().ignoringDisable(true));
-        SmartDashboard.putData("ClimberUpDown", m_climber.upDownFactory());
     }
 
     private void configureBindings() {
@@ -107,6 +105,9 @@ public class RobotContainer {
 
     public void teleopInit() {
         drivetrain.setTargetHeading(drivetrain.getState().Pose.getRotation().getDegrees());
+        buttonBox.button(10).whileTrue(m_intake.intakeFactory());
+        buttonBox.button(20).whileTrue(m_intake.shootIndexerFactory());
+        buttonBox.button(18).whileTrue(m_intake.rejectFactory());
     }
 
     public Command getAutonomousCommand() {
