@@ -11,10 +11,13 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Indexer;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
 import frc.team88.ros.conversions.TFListenerCompact;
 
 import com.ctre.phoenix6.Utils;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -36,6 +39,8 @@ public class RobotContainer {
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(m_aiming); // My drivetrain
     private final Shooter m_shooter = new Shooter();
     private final Indexer m_indexer = new Indexer();
+
+    private Command runAuto = new WaitCommand(1.0);
 
     private final Telemetry logger = new Telemetry(MaxSpeed, drivetrain);
     private TFListenerCompact tfListenerCompact;
@@ -97,6 +102,9 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
         SmartDashboard.putData("SetLowPowerMode", drivetrain.lowPowerModeFactory());
         SmartDashboard.putData("SetHighPowerMode", drivetrain.highPowerModeFactory());
+
+        // auto test
+        SmartDashboard.putData("Red Line Auto", drivetrain.getAutoPath("TwoPieceAuto"));
     }
 
     private Trigger isRightStickZero() {
@@ -108,6 +116,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return Commands.print("No autonomous command configured");
+        PathPlannerPath path = PathPlannerPath.fromPathFile("TwoPieceAuto");
+        return AutoBuilder.followPath(path);
     }
 }

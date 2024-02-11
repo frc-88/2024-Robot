@@ -10,11 +10,18 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.utility.PhoenixPIDController;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,6 +30,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Telemetry;
+import frc.robot.generated.TunerConstants;
 import frc.robot.util.Aiming;
 import frc.robot.util.DriveUtils;
 
@@ -43,6 +52,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private double m_fieldRelativeOffset = 0;
     private final SlewRateLimiter filterY = new SlewRateLimiter(500);
     private final SlewRateLimiter filterX = new SlewRateLimiter(500);
+    private final SwerveRequest.ApplyChassisSpeeds autoRequest = new SwerveRequest.ApplyChassisSpeeds();
     private double targetHeading = 0;
     private Aiming m_aiming;
     private boolean lowPowerMode = false;
@@ -53,11 +63,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private final SwerveRequest.FieldCentricFacingAngle snapToAngle = new SwerveRequest.FieldCentricFacingAngle()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     private final SwerveRequest.PointWheelsAt pointWheelsAt = new SwerveRequest.PointWheelsAt();
-    private final PhoenixPIDController headingController = new PhoenixPIDController(10, 0, 0) {
+    private final PhoenixPIDController headingController = new PhoenixPIDController(12.0, 0, 1.0) {
         @Override
         public double calculate(double measurement, double setpoint, double currentTimestamp) {
             double output = super.calculate(measurement, setpoint, currentTimestamp);
-            output = MathUtil.clamp(output, -MaxAngularRate / 2, MaxAngularRate / 2);
+            output = MathUtil.clamp(output, -MaxAngularRate, MaxAngularRate);
             return output;
         }
     };
@@ -66,6 +76,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             double OdometryUpdateFrequency,
             SwerveModuleConstants... modules) {
         super(driveTrainConstants, OdometryUpdateFrequency, modules);
+        configureAutoBuilder();
         m_aiming = aiming;
         if (Utils.isSimulation()) {
             startSimThread();
@@ -77,6 +88,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, Aiming aiming,
             SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
+        configureAutoBuilder();
         m_aiming = aiming;
         if (Utils.isSimulation()) {
             startSimThread();
@@ -117,6 +129,48 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return run(() -> this.setControl(requestSupplier.get()));
     }
 
+    public Command getAutoPath(String pathName) {
+        return new PathPlannerAuto(pathName);
+    }
+
+    public Pose2d getPose() {
+        return getState().Pose;
+    }
+
+    private void resetPose(Pose2d pose) {
+        seedFieldRelative(pose);
+        setTargetHeading(pose.getRotation().getDegrees());
+    }
+
+    private void setChassisSpeeds(ChassisSpeeds speeds) {
+        this.setControl(autoRequest.withSpeeds(speeds));
+    }
+
+    private void configureAutoBuilder() {
+        double driveBaseRadius = 0;
+        for (var moduleLocation : m_moduleLocations) {
+            driveBaseRadius = Math.max(driveBaseRadius, moduleLocation.getNorm());
+        }
+
+        AutoBuilder.configureHolonomic(this::getPose, this::resetPose,
+                this::getChassisSpeeds, this::setChassisSpeeds,
+                new HolonomicPathFollowerConfig(new PIDConstants(10.0, 0.0, 0.0), // Translational constant
+                        new PIDConstants(10.0, 0.0, 0.0), // Rotational constant
+                        TunerConstants.kSpeedAt12VoltsMps, // in m/s
+                        driveBaseRadius, // in meters
+                        new ReplanningConfig()),
+                this::redAlliance,
+                this);
+    }
+
+    private boolean redAlliance() {
+        var alliance = DriverStation.getAlliance();
+        if (alliance.isPresent()) {
+            return alliance.get() == DriverStation.Alliance.Red;
+        }
+        return false;
+    }
+
     private void startSimThread() {
         m_lastSimTime = Utils.getCurrentTimeSeconds();
 
@@ -139,7 +193,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             double angularRate = lowPowerMode ? (controller.getRightX() / 2) : controller.getRightX();
             return drive.withVelocityX(filterX.calculate(DriveUtils.signedPow(leftY, 2) * MaxSpeed))
                     .withVelocityY(filterY.calculate(DriveUtils.signedPow(leftX, 2) * MaxSpeed))
-                    .withRotationalRate(DriveUtils.signedPow(angularRate, 2) * MaxAngularRate);
+                    .withRotationalRate(DriveUtils.signedPow(-angularRate, 2) * MaxAngularRate);
         };
     }
 
