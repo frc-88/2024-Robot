@@ -50,6 +50,7 @@ public class RobotContainer {
         configureRosNetworkTablesBridge();
         configureDriverController();
         configureBindings();
+        configureSmartDashboardButtons();
 
         // set default commands
         drivetrain.setDefaultCommand(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)));
@@ -81,6 +82,9 @@ public class RobotContainer {
             drivetrain.getPigeon2().setYaw(0);
         }));
         joystick.leftBumper().whileTrue(drivetrain.aimAtSpeakerFactory());
+    }
+
+    private void configureSmartDashboardButtons() {
     }
 
     private void configureBindings() {
