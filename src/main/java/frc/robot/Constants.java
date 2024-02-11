@@ -19,6 +19,10 @@ import frc.robot.util.DriveUtils;
  * wherever the constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+    public static final String RIO_CANBUS = "rio";
+    public static final String CANIVORE_CANBUS = "1";
+
     ///////////////////////////////////////////////////////
     // DRIVETRAIN
     ///////////////////////////////////////////////////////
@@ -28,40 +32,51 @@ public final class Constants {
      *
      * Should be measured from module center to module center.
      */
-    public static final double DRIVETRAIN_TRACKWIDTH_INCHES = 22.5; // TODO get from CAD
+    public static final double DRIVETRAIN_TRACKWIDTH_INCHES = 22.75;
     /**
      * The front-to-back distance between the drivetrain wheels.
      *
      * Should be measured from module center to module center.
      */
-    public static final double DRIVETRAIN_WHEELBASE_INCHES = 23.0; // TODO get from CAD
+    public static final double DRIVETRAIN_WHEELBASE_INCHES = 19.75;
 
-    public static final String DRIVETRAIN_CANBUS = "";
+    public static final double DRIVETRAIN_CENTER_OFFSET = 2.3125;
+    public static final String DRIVETRAIN_CANBUS = RIO_CANBUS;
     public static final int DRIVETRAIN_PIGEON_ID = 0;
 
-    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 12;
-    public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 13;
-    public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 13;
+    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 5;
+    public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 6;
+    public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 6;
 
     public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 3;
-    public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 2;
-    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 2;
+    public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 4;
+    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 4;
 
-    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 15;
-    public static final int BACK_LEFT_MODULE_STEER_MOTOR = 14;
-    public static final int BACK_LEFT_MODULE_STEER_ENCODER = 14;
+    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 7;
+    public static final int BACK_LEFT_MODULE_STEER_MOTOR = 8;
+    public static final int BACK_LEFT_MODULE_STEER_ENCODER = 8;
 
-    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 0;
-    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 1;
-    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 1;
+    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 1;
+    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 2;
+    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 2;
 
     // Intake
+    public static final int INTAKE_MOTOR_ID = 14;
+    public static final int INTAKE_GUIDE_MOTOR_ID = 15;
+    public static final int INTAKE_INDEX_MOTOR_ID = 16;
 
     // Elevator
+    public static final int ELEVATOR_ANGLER_MOTOR = 10;
+    public static final int ELEVATOR_MOTOR = 13;
+    public static final int ELEVATOR_PIGEON_ID = 0;
 
     // Shooter
+    public static final int SHOOTER_LEFT_MOTOR = 11;
+    public static final int SHOOTER_RIGHT_MOTOR = 12;
 
     // Climber
+    public static final int CLIMBER_LEFT_MOTOR = 9;
+    public static final int CLIMBER_RIGHT_MOTOR = 0;
 
     // Lights
 
