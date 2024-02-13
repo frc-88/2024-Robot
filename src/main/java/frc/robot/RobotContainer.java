@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
 import frc.robot.ros.bridge.CoprocessorBridge;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Elevator;
 import frc.robot.util.Aiming;
 import frc.robot.subsystems.Intake;
 
@@ -42,6 +43,7 @@ public class RobotContainer {
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(m_aiming); // My drivetrain
     private final Shooter m_shooter = new Shooter();
     private final Intake m_intake = new Intake();
+    private final Elevator m_elevator = new Elevator();
 
     private Command runAuto = new WaitCommand(1.0);
 
