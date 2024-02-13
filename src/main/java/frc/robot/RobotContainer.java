@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -84,7 +85,8 @@ public class RobotContainer {
                 .whileFalse(drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick)));
         // joystick.rightTrigger().whileTrue(drivetrain.applyRequest(drivetrain.robotCentricRequest(joystick)));
         joystick.rightTrigger().whileTrue(m_intake.shootIndexerFactory());
-        joystick.rightBumper().whileTrue(m_shooter.runShooterFactory());
+        joystick.rightBumper().whileTrue(m_shooter.runShooterFactory()).whileFalse(
+                buttonBox.button(17).getAsBoolean() ? m_shooter.runIdleSpeedFactory() : m_shooter.stopShooterFactory());
         // joystick.rightBumper().whileTrue(drivetrain.applyRequest(drivetrain.brakeRequest()));
         // reset the field-centric heading on left bumper press
         joystick.leftTrigger().onTrue(drivetrain.runOnce(() -> {
@@ -125,10 +127,16 @@ public class RobotContainer {
 
     public void teleopInit() {
         drivetrain.setTargetHeading(drivetrain.getState().Pose.getRotation().getDegrees());
+        if (buttonBox.button(17).getAsBoolean()) {
+            m_shooter.runIdleSpeedFactory().schedule();
+        } else {
+            m_shooter.stopShooterFactory().schedule();
+        }
     }
 
     public Command getAutonomousCommand() {
         PathPlannerPath path = PathPlannerPath.fromPathFile("TwoPieceAuto");
         return AutoBuilder.followPath(path);
+
     }
 }

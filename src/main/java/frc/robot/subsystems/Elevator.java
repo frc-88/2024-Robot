@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import frc.robot.util.preferenceconstants.PIDPreferenceConstants;
 
@@ -25,7 +26,7 @@ public class Elevator extends SubsystemBase {
     private PIDPreferenceConstants p_PIDPreferenceConstants = new PIDPreferenceConstants("Elevator/PID");
     private final double kMotorRotationToShooterAngle = 360.0 / 25.0;
 
-    private final TalonFX m_pivotMotor = new TalonFX(6);
+    private final TalonFX m_pivotMotor = new TalonFX(Constants.ELEVATOR_ANGLER_MOTOR);
     private MotionMagicVoltage m_pivotRequest = new MotionMagicVoltage(0);
 
     public Elevator() {

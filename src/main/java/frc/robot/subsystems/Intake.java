@@ -33,15 +33,15 @@ public class Intake extends SubsystemBase {
     public void configureTalons() {
         // There are many configs we can set
         TalonFXConfiguration intakeConfiguration = new TalonFXConfiguration();
-        intakeConfiguration.CurrentLimits.SupplyCurrentLimit = 60.0;
+        intakeConfiguration.CurrentLimits.SupplyCurrentLimit = Constants.INTAKE_CURRENT_LIMIT;
         m_intakeMotor.getConfigurator().apply(intakeConfiguration);
         m_intakeMotor.setInverted(true);
 
         TalonFXConfiguration guideConfiguration = new TalonFXConfiguration();
-        guideConfiguration.CurrentLimits.SupplyCurrentLimit = 60.0;
+        guideConfiguration.CurrentLimits.SupplyCurrentLimit = Constants.INTAKE_CURRENT_LIMIT;
         m_guideMotor.getConfigurator().apply(guideConfiguration);
 
-        indexConfiguration.CurrentLimits.SupplyCurrentLimit = 60.0;
+        indexConfiguration.CurrentLimits.SupplyCurrentLimit = Constants.INTAKE_CURRENT_LIMIT;
         m_indexMotor.getConfigurator().apply(indexConfiguration);
         m_indexMotor.setInverted(true);
     }
