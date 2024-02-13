@@ -74,7 +74,6 @@ public class RobotContainer {
         tfListenerCompact = new TFListenerCompact(bridge, "/tf_compact");
         coprocessorBridge = new CoprocessorBridge(drivetrain, bridge, tfListenerCompact);
         m_aiming.setTFListener(tfListenerCompact);
-        SmartDashboard.putData("Localize", drivetrain.localizeFactory());
     }
 
     private void configureDriverController() {
@@ -106,12 +105,22 @@ public class RobotContainer {
     }
 
     private void configureSmartDashboardButtons() {
+        // Drive
+        SmartDashboard.putData("SetLowPowerMode", drivetrain.lowPowerModeFactory());
+        SmartDashboard.putData("SetHighPowerMode", drivetrain.highPowerModeFactory());
+        SmartDashboard.putData("Localize", drivetrain.localizeFactory());
+
         // Shooter
         // SmartDashboard.putData("Run Shooter", m_shooter.runShooterCommand());
         // SmartDashboard.putData("Stop Shooter", m_shooter.stopShooterCommand());
+
+        // Elevator
         SmartDashboard.putData("Calibrate Pivot", m_elevator.calibrateAngleFactory());
         SmartDashboard.putData("Go to Stow", m_elevator.setStowFactory());
         SmartDashboard.putData("Go To Flat", m_elevator.setFlatFactory());
+
+        // Auto Test
+        SmartDashboard.putData("Red Line Auto", drivetrain.getAutoPath("TwoPieceAuto"));
 
     }
 
@@ -120,11 +129,6 @@ public class RobotContainer {
             drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
         }
         drivetrain.registerTelemetry(logger::telemeterize);
-        SmartDashboard.putData("SetLowPowerMode", drivetrain.lowPowerModeFactory());
-        SmartDashboard.putData("SetHighPowerMode", drivetrain.highPowerModeFactory());
-
-        // auto test
-        SmartDashboard.putData("Red Line Auto", drivetrain.getAutoPath("TwoPieceAuto"));
     }
 
     private Trigger isRightStickZero() {
@@ -133,6 +137,7 @@ public class RobotContainer {
 
     public void teleopInit() {
         drivetrain.setTargetHeading(drivetrain.getState().Pose.getRotation().getDegrees());
+
         if (buttonBox.button(17).getAsBoolean()) {
             m_shooter.runIdleSpeedFactory().schedule();
         } else {
