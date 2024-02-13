@@ -109,6 +109,7 @@ public class RobotContainer {
         // Shooter
         // SmartDashboard.putData("Run Shooter", m_shooter.runShooterCommand());
         // SmartDashboard.putData("Stop Shooter", m_shooter.stopShooterCommand());
+        SmartDashboard.putData("Calibrate Pivot", m_elevator.calibrateAngleFactory());
     }
 
     private void configureBindings() {
