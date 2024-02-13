@@ -26,7 +26,7 @@ public class Elevator extends SubsystemBase {
     private PIDPreferenceConstants p_PIDPreferenceConstants = new PIDPreferenceConstants("Elevator/PID");
     private final double kMotorRotationToShooterAngle = 360.0 / 25.0;
 
-    private final TalonFX m_pivotMotor = new TalonFX(Constants.ELEVATOR_ANGLER_MOTOR);
+    private final TalonFX m_pivotMotor = new TalonFX(Constants.ELEVATOR_ANGLER_MOTOR, Constants.CANIVORE_CANBUS);
     private MotionMagicVoltage m_pivotRequest = new MotionMagicVoltage(0);
 
     public Elevator() {
