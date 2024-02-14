@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import java.io.FileNotFoundException;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -49,7 +48,7 @@ import frc.robot.util.DriveUtils;
  * that's why we did it
  */
 public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsystem {
-    private double MaxSpeed = 6; // 6 meters per second desired top speed
+    private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps;
     private double MaxAngularRate = 2 * Math.PI; // 3/4 of a rotation per second max angular velocity
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier m_simNotifier = null;
