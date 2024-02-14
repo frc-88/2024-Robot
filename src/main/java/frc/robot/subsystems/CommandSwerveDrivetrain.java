@@ -237,7 +237,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public void localize() {
-        seedFieldRelative(m_aiming.getROSPose());
+        resetPose(m_aiming.getROSPose());
     }
 
     public double getCurrentRobotAngle() {
