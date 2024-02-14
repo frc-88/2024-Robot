@@ -5,13 +5,10 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
 import frc.team88.ros.conversions.TFListenerCompact;
 
@@ -34,9 +31,6 @@ import frc.robot.util.Aiming;
 import frc.robot.subsystems.Intake;
 
 public class RobotContainer {
-    private double MaxSpeed = 6; // 6 meters per second desired top speed
-    private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
-
     private final Aiming m_aiming = new Aiming();
     private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
     private final CommandGenericHID buttonBox = new CommandGenericHID(1); // The buttons???
@@ -45,9 +39,7 @@ public class RobotContainer {
     private final Intake m_intake = new Intake();
     private final Elevator m_elevator = new Elevator();
 
-    private Command runAuto = new WaitCommand(1.0);
-
-    private final Telemetry logger = new Telemetry(MaxSpeed, drivetrain);
+    private final Telemetry logger = new Telemetry(TunerConstants.kSpeedAt12VoltsMps, drivetrain);
     private TFListenerCompact tfListenerCompact;
     @SuppressWarnings("unused")
     private CoprocessorBridge coprocessorBridge;
@@ -57,7 +49,6 @@ public class RobotContainer {
         configureRosNetworkTablesBridge();
         configureDriverController();
         configureButtonBox();
-        configureSmartDashboardButtons();
         configureBindings();
         configureSmartDashboardButtons();
 
