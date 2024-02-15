@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,6 +28,7 @@ public class Elevator extends SubsystemBase {
     private final double kMotorRotationToShooterAngle = 360.0 / 25.0;
 
     private final TalonFX m_pivotMotor = new TalonFX(Constants.ELEVATOR_ANGLER_MOTOR, Constants.CANIVORE_CANBUS);
+    private final TalonFX m_elevatorMotor = new TalonFX(Constants.ELEVATOR_MOTOR, Constants.RIO_CANBUS);
     private MotionMagicVoltage m_pivotRequest = new MotionMagicVoltage(0);
 
     public Elevator() {
@@ -35,6 +37,7 @@ public class Elevator extends SubsystemBase {
         p_maxAcceleration.addChangeHandler((Double unused) -> configureTalons());
         p_maxJerk.addChangeHandler((Double unused) -> configureTalons());
         p_PIDPreferenceConstants.addChangeHandler((Double unused) -> configureTalons());
+        m_elevatorMotor.setNeutralMode(NeutralModeValue.Brake);
     }
 
     private void configureTalons() {
@@ -62,8 +65,12 @@ public class Elevator extends SubsystemBase {
         m_pivotMotor.setControl(m_pivotRequest.withPosition(position / kMotorRotationToShooterAngle));
     }
 
-    public void calibrateAngle() {
+    public void calibrateShooterAngle() {
         m_pivotMotor.setPosition(0);
+    }
+
+    public void calibrateElevator() {
+        m_elevatorMotor.setPosition(0);
     }
 
     public Command setStowFactory() {
@@ -74,8 +81,12 @@ public class Elevator extends SubsystemBase {
         return new RunCommand(() -> setPosition(p_pivotFlat.getValue()), this);
     }
 
-    public Command calibrateAngleFactory() {
-        return new InstantCommand(() -> calibrateAngle(), this).ignoringDisable(true);
+    public Command calibrateShooterAngleFactory() {
+        return new InstantCommand(() -> calibrateShooterAngle(), this).ignoringDisable(true);
+    }
+
+    public Command calibrateElevatorFactory() {
+        return new InstantCommand(() -> calibrateElevator(), this).ignoringDisable(true);
     }
 
     @Override
