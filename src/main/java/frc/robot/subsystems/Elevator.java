@@ -42,7 +42,7 @@ public class Elevator extends SubsystemBase {
 
     private void configureTalons() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.CurrentLimits.StatorCurrentLimit = 20;
+        config.CurrentLimits.StatorCurrentLimit = 50;
 
         MotionMagicConfigs mm = config.MotionMagic;
         mm.MotionMagicAcceleration = p_maxAcceleration.getValue();
