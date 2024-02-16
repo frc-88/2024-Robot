@@ -5,22 +5,15 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-<<<<<<< HEAD
-import edu.wpi.first.wpilibj2.command.CommandBase;
-=======
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.networktables.NetworkTableInstance;
->>>>>>> 105337d80b961167eb68683f3fea4f5a435e64cd
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
 import frc.team88.ros.conversions.TFListenerCompact;
 
 import com.ctre.phoenix6.Utils;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -43,14 +36,10 @@ public class RobotContainer {
     private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
     private final CommandGenericHID buttonBox = new CommandGenericHID(1); // The buttons???
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(m_aiming); // My drivetrain
-<<<<<<< HEAD
-    private Intake m_intake = new Intake();
     private String m_autoCommandName = "Wait";
     private Command m_autoCommand = new WaitCommand(15);
-=======
     private final Shooter m_shooter = new Shooter();
     private final Intake m_intake = new Intake();
->>>>>>> 105337d80b961167eb68683f3fea4f5a435e64cd
 
     private Command runAuto = new WaitCommand(1.0);
 
@@ -108,11 +97,7 @@ public class RobotContainer {
         buttonBox.button(10).whileTrue(m_intake.intakeFactory());
         buttonBox.button(20).whileTrue(m_intake.shootIndexerFactory());
         buttonBox.button(18).whileTrue(m_intake.rejectFactory());
-<<<<<<< HEAD
-
-=======
         buttonBox.button(17).whileFalse(m_shooter.stopShooterFactory());
->>>>>>> 105337d80b961167eb68683f3fea4f5a435e64cd
     }
 
     private void configureSmartDashboardButtons() {
