@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
 import frc.team88.ros.conversions.TFListenerCompact;
@@ -38,6 +39,8 @@ public class RobotContainer {
     private final CommandGenericHID buttonBox = new CommandGenericHID(1); // The buttons???
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(m_aiming); // My drivetrain
     private Intake m_intake = new Intake();
+    private String m_autoCommandName = "Wait";
+    private Command m_autoCommand = new WaitCommand(15);
 
     private Command runAuto = new WaitCommand(1.0);
 
@@ -45,6 +48,8 @@ public class RobotContainer {
     private TFListenerCompact tfListenerCompact;
     @SuppressWarnings("unused")
     private CoprocessorBridge coprocessorBridge;
+
+    private
 
     public RobotContainer() {
         configureRosNetworkTablesBridge();
@@ -84,6 +89,13 @@ public class RobotContainer {
         joystick.leftBumper().whileTrue(drivetrain.aimAtSpeakerFactory());
     }
 
+    private void configureButtonBox() {
+        buttonBox.button(10).whileTrue(m_intake.intakeFactory());
+        buttonBox.button(20).whileTrue(m_intake.shootIndexerFactory());
+        buttonBox.button(18).whileTrue(m_intake.rejectFactory());
+
+    }
+
     private void configureSmartDashboardButtons() {
     }
 
@@ -110,8 +122,21 @@ public class RobotContainer {
         buttonBox.button(18).whileTrue(m_intake.rejectFactory());
     }
 
+    public void disabledPeriodic() {
+        if (buttonBox.button(12).getAsBoolean() && m_autoCommandName.equals("TwoPieceAuto")) {
+            m_autoCommand = drivetrain.getAutoPath("TwoPieceAuto");
+            m_autoCommandName = "TwoPieceAuto";
+        }
+
+        if (buttonBox.button(13).getAsBoolean()) {
+            m_autoCommand = new WaitCommand(15);
+            m_autoCommandName = "Waiting";
+        }
+        SmartDashboard.putString("Auto", m_autoCommandName);
+
+    }
+
     public Command getAutonomousCommand() {
-        PathPlannerPath path = PathPlannerPath.fromPathFile("TwoPieceAuto");
-        return AutoBuilder.followPath(path);
+        return m_autoCommand;
     }
 }
