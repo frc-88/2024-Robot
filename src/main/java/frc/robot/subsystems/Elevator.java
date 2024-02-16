@@ -8,6 +8,8 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -18,18 +20,20 @@ import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import frc.robot.util.preferenceconstants.PIDPreferenceConstants;
 
 public class Elevator extends SubsystemBase {
-    private DoublePreferenceConstant p_pivotStow = new DoublePreferenceConstant("Elevator/Stow", 0);
-    private DoublePreferenceConstant p_pivotFlat = new DoublePreferenceConstant("Elevator/Flat", 50);
+    private DoublePreferenceConstant p_pivotPodium = new DoublePreferenceConstant("Elevator/Podium", 60);
+    private DoublePreferenceConstant p_pivotFlat = new DoublePreferenceConstant("Elevator/Flat", 90);
     private DoublePreferenceConstant p_maxVelocity = new DoublePreferenceConstant("Elevator/MotionMagicVelocity", 0);
     private DoublePreferenceConstant p_maxAcceleration = new DoublePreferenceConstant(
             "Elevator/MotionMagicAcceleration", 0);
     private DoublePreferenceConstant p_maxJerk = new DoublePreferenceConstant("Elevator/MotionMagicJerk", 0);
+    private DoublePreferenceConstant p_stowSpeed = new DoublePreferenceConstant("Elevator/StowSpeed", 0.05);
     private PIDPreferenceConstants p_PIDPreferenceConstants = new PIDPreferenceConstants("Elevator/PID");
     private final double kMotorRotationToShooterAngle = 360.0 / 25.0;
 
     private final TalonFX m_pivotMotor = new TalonFX(Constants.ELEVATOR_ANGLER_MOTOR, Constants.CANIVORE_CANBUS);
     private final TalonFX m_elevatorMotor = new TalonFX(Constants.ELEVATOR_MOTOR, Constants.RIO_CANBUS);
     private MotionMagicVoltage m_pivotRequest = new MotionMagicVoltage(0);
+    private final Debouncer pivotDebouncer = new Debouncer(1, DebounceType.kRising);
 
     public Elevator() {
         configureTalons();
@@ -42,7 +46,7 @@ public class Elevator extends SubsystemBase {
 
     private void configureTalons() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.CurrentLimits.StatorCurrentLimit = 50;
+        config.CurrentLimits.StatorCurrentLimit = 60;
 
         MotionMagicConfigs mm = config.MotionMagic;
         mm.MotionMagicAcceleration = p_maxAcceleration.getValue();
@@ -61,20 +65,27 @@ public class Elevator extends SubsystemBase {
         m_pivotMotor.setInverted(true);
     }
 
+    public void stow() {
+        m_pivotMotor.setControl(new DutyCycleOut(-p_stowSpeed.getValue()));
+        if (pivotDebouncer.calculate(m_pivotMotor.getVelocity().getValueAsDouble() > -1)) {
+            calibrateShooterAngle();
+        }
+    }
+
     public void setPosition(double position) {
         m_pivotMotor.setControl(m_pivotRequest.withPosition(position / kMotorRotationToShooterAngle));
     }
 
     public void calibrateShooterAngle() {
-        m_pivotMotor.setPosition(0);
+        m_pivotMotor.setPosition(42 / kMotorRotationToShooterAngle);
     }
 
     public void calibrateElevator() {
         m_elevatorMotor.setPosition(0);
     }
 
-    public Command setStowFactory() {
-        return new RunCommand(() -> setPosition(p_pivotStow.getValue()), this);
+    public Command setPodiumFactory() {
+        return new RunCommand(() -> setPosition(p_pivotPodium.getValue()), this);
     }
 
     public Command setFlatFactory() {
@@ -87,6 +98,10 @@ public class Elevator extends SubsystemBase {
 
     public Command calibrateElevatorFactory() {
         return new InstantCommand(() -> calibrateElevator(), this).ignoringDisable(true);
+    }
+
+    public Command stowFactory() {
+        return new RunCommand(this::stow, this).beforeStarting(() -> pivotDebouncer.calculate(false));
     }
 
     @Override

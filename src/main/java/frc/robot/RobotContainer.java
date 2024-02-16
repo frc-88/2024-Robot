@@ -65,6 +65,7 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)));
         m_shooter.setDefaultCommand(m_shooter.runIdleSpeedFactory());
         m_intake.setDefaultCommand(m_intake.stopMovingFactory());
+        m_elevator.setDefaultCommand(m_elevator.stowFactory());
     }
 
     private void configureRosNetworkTablesBridge() {
@@ -102,6 +103,7 @@ public class RobotContainer {
         buttonBox.button(20).whileTrue(m_intake.shootIndexerFactory());
         buttonBox.button(18).whileTrue(m_intake.rejectFactory());
         buttonBox.button(17).whileFalse(m_shooter.stopShooterFactory());
+        buttonBox.button(23).whileTrue(m_elevator.setPodiumFactory());
     }
 
     private void configureSmartDashboardButtons() {
@@ -117,7 +119,7 @@ public class RobotContainer {
         // Elevator
         SmartDashboard.putData("Calibrate Pivot", m_elevator.calibrateShooterAngleFactory());
         SmartDashboard.putData("Calibrate Elevator", m_elevator.calibrateElevatorFactory());
-        SmartDashboard.putData("Go to Stow", m_elevator.setStowFactory());
+        SmartDashboard.putData("Go to Stow", m_elevator.stowFactory());
         SmartDashboard.putData("Go To Flat", m_elevator.setFlatFactory());
 
         // Auto Test
