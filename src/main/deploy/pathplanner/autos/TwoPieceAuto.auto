@@ -12,16 +12,9 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "SpeakerToPiece2"
-                }
-              }
-            ]
+            "pathName": "SpeakerToPiece2"
           }
         }
       ]
