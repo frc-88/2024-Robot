@@ -179,16 +179,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                         TunerConstants.kSpeedAt12VoltsMps, // in m/s
                         driveBaseRadius, // in meters
                         new ReplanningConfig()),
-                this::redAlliance,
+                DriveUtils::redAlliance,
                 this);
-    }
-
-    private boolean redAlliance() {
-        var alliance = DriverStation.getAlliance();
-        if (alliance.isPresent()) {
-            return alliance.get() == DriverStation.Alliance.Red;
-        }
-        return false;
     }
 
     private void startSimThread() {
@@ -273,6 +265,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private void sendROSPose() {
         /* Telemeterize the pose */
         Pose2d pose = m_aiming.getROSPose();
+        if (DriveUtils.redAlliance()) {
+            pose = DriveUtils.redBlueTransform(pose);
+        }
         fieldTypePub.set("Field2d");
         fieldPub.set(new double[] {
                 pose.getX(),
