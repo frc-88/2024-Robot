@@ -4,10 +4,16 @@
 
 package frc.robot;
 
-import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+<<<<<<< HEAD
 import edu.wpi.first.wpilibj2.command.CommandBase;
+=======
+import frc.robot.subsystems.Shooter;
+import edu.wpi.first.networktables.NetworkTableInstance;
+>>>>>>> 105337d80b961167eb68683f3fea4f5a435e64cd
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
 import frc.team88.ros.conversions.TFListenerCompact;
@@ -27,7 +33,6 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.ros.bridge.CoprocessorBridge;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.util.Aiming;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.Intake;
 
 public class RobotContainer {
@@ -38,9 +43,14 @@ public class RobotContainer {
     private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
     private final CommandGenericHID buttonBox = new CommandGenericHID(1); // The buttons???
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(m_aiming); // My drivetrain
+<<<<<<< HEAD
     private Intake m_intake = new Intake();
     private String m_autoCommandName = "Wait";
     private Command m_autoCommand = new WaitCommand(15);
+=======
+    private final Shooter m_shooter = new Shooter();
+    private final Intake m_intake = new Intake();
+>>>>>>> 105337d80b961167eb68683f3fea4f5a435e64cd
 
     private Command runAuto = new WaitCommand(1.0);
 
@@ -50,13 +60,17 @@ public class RobotContainer {
     private CoprocessorBridge coprocessorBridge;
 
     public RobotContainer() {
+        DataLogManager.start();
         configureRosNetworkTablesBridge();
         configureDriverController();
+        configureButtonBox();
+        configureSmartDashboardButtons();
         configureBindings();
         configureSmartDashboardButtons();
 
         // set default commands
         drivetrain.setDefaultCommand(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)));
+        m_shooter.setDefaultCommand(m_shooter.runIdleSpeedFactory());
         m_intake.setDefaultCommand(m_intake.stopMovingFactory());
     }
 
@@ -79,10 +93,13 @@ public class RobotContainer {
                 .onTrue(drivetrain.setHeadingFactory(() -> drivetrain.getState().Pose.getRotation().getDegrees()))
                 .whileFalse(drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick)));
         // joystick.rightTrigger().whileTrue(drivetrain.applyRequest(drivetrain.robotCentricRequest(joystick)));
-        joystick.rightBumper().whileTrue(drivetrain.applyRequest(drivetrain.brakeRequest()));
+        joystick.rightTrigger().whileTrue(m_intake.shootIndexerFactory());
+        joystick.rightBumper().whileTrue(m_shooter.runShooterFactory());
+        // joystick.rightBumper().whileTrue(drivetrain.applyRequest(drivetrain.brakeRequest()));
         // reset the field-centric heading on left bumper press
         joystick.leftTrigger().onTrue(drivetrain.runOnce(() -> {
             drivetrain.getPigeon2().setYaw(0);
+            drivetrain.setTargetHeading(drivetrain.getPose().getRotation().getDegrees());
         }));
         joystick.leftBumper().whileTrue(drivetrain.aimAtSpeakerFactory());
     }
@@ -91,10 +108,17 @@ public class RobotContainer {
         buttonBox.button(10).whileTrue(m_intake.intakeFactory());
         buttonBox.button(20).whileTrue(m_intake.shootIndexerFactory());
         buttonBox.button(18).whileTrue(m_intake.rejectFactory());
+<<<<<<< HEAD
 
+=======
+        buttonBox.button(17).whileFalse(m_shooter.stopShooterFactory());
+>>>>>>> 105337d80b961167eb68683f3fea4f5a435e64cd
     }
 
     private void configureSmartDashboardButtons() {
+        // Shooter
+        // SmartDashboard.putData("Run Shooter", m_shooter.runShooterCommand());
+        // SmartDashboard.putData("Stop Shooter", m_shooter.stopShooterCommand());
     }
 
     private void configureBindings() {
@@ -115,9 +139,6 @@ public class RobotContainer {
 
     public void teleopInit() {
         drivetrain.setTargetHeading(drivetrain.getState().Pose.getRotation().getDegrees());
-        buttonBox.button(10).whileTrue(m_intake.intakeFactory());
-        buttonBox.button(20).whileTrue(m_intake.shootIndexerFactory());
-        buttonBox.button(18).whileTrue(m_intake.rejectFactory());
     }
 
     public void disabledPeriodic() {

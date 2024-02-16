@@ -98,9 +98,9 @@ public class Intake extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Intake/Intake Speed", m_intakeMotor.getRotorVelocity().getValueAsDouble());
-        SmartDashboard.putNumber("Intake/Guide Speed", m_guideMotor.getRotorVelocity().getValueAsDouble());
-        SmartDashboard.putNumber("Intake/Index Speed", m_indexMotor.getRotorVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("Intake/Intake Speed", m_intakeMotor.getVelocity().getValueAsDouble() * 60);
+        SmartDashboard.putNumber("Intake/Guide Speed", m_guideMotor.getVelocity().getValueAsDouble() * 60);
+        SmartDashboard.putNumber("Intake/Index Speed", m_indexMotor.getVelocity().getValueAsDouble() * 60);
         SmartDashboard.putBoolean("Intake/Index Has Note", hasNoteInIndexer());
     }
 }
