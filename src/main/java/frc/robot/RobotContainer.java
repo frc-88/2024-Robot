@@ -139,9 +139,13 @@ public class RobotContainer {
     }
 
     public void disabledPeriodic() {
-        if (buttonBox.button(12).getAsBoolean() && m_autoCommandName.equals("TwoPieceAuto")) {
+        if (buttonBox.button(12).getAsBoolean() && !m_autoCommandName.equals("TwoPieceAuto")) {
             m_autoCommand = drivetrain.getAutoPath("TwoPieceAuto");
             m_autoCommandName = "TwoPieceAuto";
+        }
+        if ((buttonBox.button(14)).getAsBoolean() && !m_autoCommandName.equals("ThreePieceAuto")) {
+            m_autoCommand = drivetrain.getAutoPath("ThreePieceAuto");
+            m_autoCommandName = "ThreePieceAuto";
         }
 
         if (buttonBox.button(13).getAsBoolean()) {
