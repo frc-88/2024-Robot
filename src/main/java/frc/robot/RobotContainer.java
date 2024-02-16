@@ -49,8 +49,6 @@ public class RobotContainer {
     @SuppressWarnings("unused")
     private CoprocessorBridge coprocessorBridge;
 
-    private
-
     public RobotContainer() {
         configureRosNetworkTablesBridge();
         configureDriverController();
