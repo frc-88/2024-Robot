@@ -14,13 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "SpeakerToPiece1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Piece1ToPiece2"
+            "pathName": "SpeakerToPiece2"
           }
         }
       ]
