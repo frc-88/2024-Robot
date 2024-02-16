@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
@@ -78,15 +79,13 @@ public class RobotContainer {
                 .whileFalse(drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick)));
         // joystick.rightTrigger().whileTrue(drivetrain.applyRequest(drivetrain.robotCentricRequest(joystick)));
         joystick.rightTrigger().whileTrue(m_intake.shootIndexerFactory());
-        joystick.rightBumper().whileTrue(m_shooter.runShooterFactory()).whileFalse(
-                buttonBox.button(17).getAsBoolean() ? m_shooter.runIdleSpeedFactory() : m_shooter.stopShooterFactory());
+        joystick.rightBumper().whileTrue(m_shooter.runShooterFactory()).whileTrue(drivetrain.aimAtSpeakerFactory());
+        joystick.leftBumper().and(joystick.rightBumper()).whileFalse(
+                buttonBox.button(17).getAsBoolean() ? m_shooter.runIdleSpeedFactory()
+                        : m_shooter.stopShooterFactory());
         // joystick.rightBumper().whileTrue(drivetrain.applyRequest(drivetrain.brakeRequest()));
         // reset the field-centric heading on left bumper press
-        joystick.leftTrigger().onTrue(drivetrain.runOnce(() -> {
-            drivetrain.getPigeon2().setYaw(0);
-            drivetrain.setTargetHeading(drivetrain.getPose().getRotation().getDegrees());
-        }));
-        joystick.leftBumper().whileTrue(drivetrain.aimAtSpeakerFactory());
+        joystick.leftBumper().whileTrue(m_shooter.runShooterFactory());
     }
 
     private void configureButtonBox() {
@@ -94,7 +93,7 @@ public class RobotContainer {
         buttonBox.button(20).whileTrue(m_intake.shootIndexerFactory());
         buttonBox.button(18).whileTrue(m_intake.rejectFactory());
         buttonBox.button(17).whileFalse(m_shooter.stopShooterFactory());
-        buttonBox.button(23).whileTrue(m_elevator.setPodiumFactory());
+        buttonBox.button(5).whileTrue(m_elevator.setPodiumFactory());
     }
 
     private void configureSmartDashboardButtons() {
@@ -139,9 +138,14 @@ public class RobotContainer {
         }
     }
 
-    public Command getAutonomousCommand() {
-        PathPlannerPath path = PathPlannerPath.fromPathFile("TwoPieceAuto");
-        return AutoBuilder.followPath(path);
+    public void autonomousInit() {
+        m_elevator.calibrateShooterAngle();
+        drivetrain.localize();
+    }
 
+    public Command getAutonomousCommand() {
+        // PathPlannerPath path = PathPlannerPath.fromPathFile("TwoPieceAuto");
+        // return AutoBuilder.followPath(path);
+        return new WaitCommand(1);
     }
 }
