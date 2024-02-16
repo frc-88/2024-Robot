@@ -12,8 +12,10 @@ import frc.robot.subsystems.Shooter;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
 import frc.team88.ros.conversions.TFListenerCompact;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import com.ctre.phoenix6.Utils;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -52,6 +54,12 @@ public class RobotContainer {
         configureButtonBox();
         configureBindings();
         configureSmartDashboardButtons();
+
+        // PathPlanner Named Commands
+        NamedCommands.registerCommand("Prep Shooter", m_shooter.runShooterFactory());
+        NamedCommands.registerCommand("Shoot", m_intake.shootIndexerFactory());
+        NamedCommands.registerCommand("Localize", drivetrain.localizeFactory());
+        NamedCommands.registerCommand("Intake", m_intake.intakeFactory());
 
         // set default commands
         drivetrain.setDefaultCommand(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)));
