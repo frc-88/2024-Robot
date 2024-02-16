@@ -7,9 +7,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
 import frc.team88.ros.conversions.TFListenerCompact;
 
@@ -25,13 +25,11 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
 import frc.robot.ros.bridge.CoprocessorBridge;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Elevator;
 import frc.robot.util.Aiming;
 import frc.robot.subsystems.Intake;
 
 public class RobotContainer {
-    private double MaxSpeed = 6; // 6 meters per second desired top speed
-    private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
-
     private final Aiming m_aiming = new Aiming();
     private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
     private final CommandGenericHID buttonBox = new CommandGenericHID(1); // The buttons???
@@ -40,10 +38,9 @@ public class RobotContainer {
     private Command m_autoCommand = new WaitCommand(15);
     private final Shooter m_shooter = new Shooter();
     private final Intake m_intake = new Intake();
+    private final Elevator m_elevator = new Elevator();
 
-    private Command runAuto = new WaitCommand(1.0);
-
-    private final Telemetry logger = new Telemetry(MaxSpeed, drivetrain);
+    private final Telemetry logger = new Telemetry(TunerConstants.kSpeedAt12VoltsMps, drivetrain);
     private TFListenerCompact tfListenerCompact;
     @SuppressWarnings("unused")
     private CoprocessorBridge coprocessorBridge;
@@ -53,7 +50,6 @@ public class RobotContainer {
         configureRosNetworkTablesBridge();
         configureDriverController();
         configureButtonBox();
-        configureSmartDashboardButtons();
         configureBindings();
         configureSmartDashboardButtons();
 
@@ -70,7 +66,6 @@ public class RobotContainer {
         tfListenerCompact = new TFListenerCompact(bridge, "/tf_compact");
         coprocessorBridge = new CoprocessorBridge(drivetrain, bridge, tfListenerCompact);
         m_aiming.setTFListener(tfListenerCompact);
-        SmartDashboard.putData("Localize", drivetrain.localizeFactory());
     }
 
     private void configureDriverController() {
@@ -83,7 +78,8 @@ public class RobotContainer {
                 .whileFalse(drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick)));
         // joystick.rightTrigger().whileTrue(drivetrain.applyRequest(drivetrain.robotCentricRequest(joystick)));
         joystick.rightTrigger().whileTrue(m_intake.shootIndexerFactory());
-        joystick.rightBumper().whileTrue(m_shooter.runShooterFactory());
+        joystick.rightBumper().whileTrue(m_shooter.runShooterFactory()).whileFalse(
+                buttonBox.button(17).getAsBoolean() ? m_shooter.runIdleSpeedFactory() : m_shooter.stopShooterFactory());
         // joystick.rightBumper().whileTrue(drivetrain.applyRequest(drivetrain.brakeRequest()));
         // reset the field-centric heading on left bumper press
         joystick.leftTrigger().onTrue(drivetrain.runOnce(() -> {
@@ -101,9 +97,24 @@ public class RobotContainer {
     }
 
     private void configureSmartDashboardButtons() {
+        // Drive
+        SmartDashboard.putData("SetLowPowerMode", drivetrain.lowPowerModeFactory());
+        SmartDashboard.putData("SetHighPowerMode", drivetrain.highPowerModeFactory());
+        SmartDashboard.putData("Localize", drivetrain.localizeFactory());
+
         // Shooter
         // SmartDashboard.putData("Run Shooter", m_shooter.runShooterCommand());
         // SmartDashboard.putData("Stop Shooter", m_shooter.stopShooterCommand());
+
+        // Elevator
+        SmartDashboard.putData("Calibrate Pivot", m_elevator.calibrateShooterAngleFactory());
+        SmartDashboard.putData("Calibrate Elevator", m_elevator.calibrateElevatorFactory());
+        SmartDashboard.putData("Go to Stow", m_elevator.setStowFactory());
+        SmartDashboard.putData("Go To Flat", m_elevator.setFlatFactory());
+
+        // Auto Test
+        SmartDashboard.putData("Red Line Auto", drivetrain.getAutoPath("TwoPieceAuto"));
+
     }
 
     private void configureBindings() {
@@ -111,11 +122,6 @@ public class RobotContainer {
             drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
         }
         drivetrain.registerTelemetry(logger::telemeterize);
-        SmartDashboard.putData("SetLowPowerMode", drivetrain.lowPowerModeFactory());
-        SmartDashboard.putData("SetHighPowerMode", drivetrain.highPowerModeFactory());
-
-        // auto test
-        SmartDashboard.putData("Red Line Auto", drivetrain.getAutoPath("TwoPieceAuto"));
     }
 
     private Trigger isRightStickZero() {
@@ -124,6 +130,12 @@ public class RobotContainer {
 
     public void teleopInit() {
         drivetrain.setTargetHeading(drivetrain.getState().Pose.getRotation().getDegrees());
+
+        if (buttonBox.button(17).getAsBoolean()) {
+            m_shooter.runIdleSpeedFactory().schedule();
+        } else {
+            m_shooter.stopShooterFactory().schedule();
+        }
     }
 
     public void disabledPeriodic() {

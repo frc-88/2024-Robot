@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -33,15 +34,15 @@ public class Intake extends SubsystemBase {
     public void configureTalons() {
         // There are many configs we can set
         TalonFXConfiguration intakeConfiguration = new TalonFXConfiguration();
-        intakeConfiguration.CurrentLimits.SupplyCurrentLimit = 60.0;
+        intakeConfiguration.CurrentLimits.SupplyCurrentLimit = Constants.INTAKE_CURRENT_LIMIT;
         m_intakeMotor.getConfigurator().apply(intakeConfiguration);
         m_intakeMotor.setInverted(true);
 
         TalonFXConfiguration guideConfiguration = new TalonFXConfiguration();
-        guideConfiguration.CurrentLimits.SupplyCurrentLimit = 60.0;
+        guideConfiguration.CurrentLimits.SupplyCurrentLimit = Constants.INTAKE_CURRENT_LIMIT;
         m_guideMotor.getConfigurator().apply(guideConfiguration);
 
-        indexConfiguration.CurrentLimits.SupplyCurrentLimit = 60.0;
+        indexConfiguration.CurrentLimits.SupplyCurrentLimit = Constants.INTAKE_CURRENT_LIMIT;
         m_indexMotor.getConfigurator().apply(indexConfiguration);
         m_indexMotor.setInverted(true);
     }
@@ -102,5 +103,8 @@ public class Intake extends SubsystemBase {
         SmartDashboard.putNumber("Intake/Guide Speed", m_guideMotor.getVelocity().getValueAsDouble() * 60);
         SmartDashboard.putNumber("Intake/Index Speed", m_indexMotor.getVelocity().getValueAsDouble() * 60);
         SmartDashboard.putBoolean("Intake/Index Has Note", hasNoteInIndexer());
+        SmartDashboard.putNumber("Intake/Intake Current", m_intakeMotor.getStatorCurrent().getValueAsDouble());
+        SmartDashboard.putNumber("Intake/Guide Current", m_guideMotor.getStatorCurrent().getValueAsDouble());
+        SmartDashboard.putNumber("Intake/Index Current", m_indexMotor.getStatorCurrent().getValueAsDouble());
     }
 }
