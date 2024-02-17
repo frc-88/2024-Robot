@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.9714695645607505,
-        "y": 1.3404819602431999
+        "x": 6.079261888253505,
+        "y": 7.127666147224186
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.792676089856684,
-        "y": 1.5253760237250213
+        "x": 6.726391110439878,
+        "y": 6.702409801216
       },
       "isLocked": false,
       "linkedName": "ShotZone"
     },
     {
       "anchor": {
-        "x": 7.90046841354944,
-        "y": 2.32966519987094
+        "x": 7.872734304027166,
+        "y": 5.759450077458713
       },
       "prevControl": {
-        "x": 6.985242799314428,
-        "y": 2.0708135109963917
+        "x": 7.318052113581703,
+        "y": 6.092259391725991
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,12 +34,12 @@
   "globalConstraints": {
     "maxVelocity": 4.73,
     "maxAcceleration": 2.0,
-    "maxAngularVelocity": 360.0,
+    "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 17.020525611519833,
+    "rotation": 0.0,
     "rotateFast": false
   },
   "reversed": false,
