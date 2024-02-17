@@ -51,7 +51,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("Shoot", new WaitCommand(1));
         NamedCommands.registerCommand("Intake", new WaitCommand(1));
         NamedCommands.registerCommand("Localize", drivetrain.localizeFactory());
-        NamedCommands.registerCommand("Reset Target Heading",
+        NamedCommands.registerCommand("ResetHeading",
                 drivetrain.setHeadingFactory(() -> drivetrain.getState().Pose.getRotation().getDegrees()));
 
         // set default commands
