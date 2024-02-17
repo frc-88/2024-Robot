@@ -13,8 +13,7 @@ import frc.team88.ros.bridge.ROSNetworkTablesBridge;
 import frc.team88.ros.conversions.TFListenerCompact;
 
 import com.ctre.phoenix6.Utils;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -31,8 +30,8 @@ public class RobotContainer {
     private final Aiming m_aiming = new Aiming();
     private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(m_aiming); // My drivetrain
-
-    private Command runAuto = new WaitCommand(1.0);
+    private String m_autoCommandName = "Wait";
+    private Command m_autoCommand = new WaitCommand(15);
 
     private final Telemetry logger = new Telemetry(TunerConstants.kSpeedAt12VoltsMps, drivetrain);
     private TFListenerCompact tfListenerCompact;
@@ -45,6 +44,12 @@ public class RobotContainer {
         configureDriverController();
         configureBindings();
         configureSmartDashboardButtons();
+
+        // PathPlanner Named Commands
+        NamedCommands.registerCommand("Prep Shooter", new WaitCommand(1));
+        NamedCommands.registerCommand("Shoot", new WaitCommand(1));
+        NamedCommands.registerCommand("Localize", new WaitCommand(1));
+        NamedCommands.registerCommand("Intake", new WaitCommand(1));
 
         // set default commands
         drivetrain.setDefaultCommand(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)));
@@ -102,8 +107,24 @@ public class RobotContainer {
         drivetrain.setTargetHeading(drivetrain.getState().Pose.getRotation().getDegrees());
     }
 
+    public void disabledPeriodic() {
+        if (joystick.button(0).getAsBoolean() && !m_autoCommandName.equals("TwoPieceAuto")) {
+            m_autoCommand = drivetrain.getAutoPath("TwoPieceAuto");
+            m_autoCommandName = "TwoPieceAuto";
+        }
+        if (joystick.button(1).getAsBoolean() && !m_autoCommandName.equals("ThreePieceAuto")) {
+            m_autoCommand = drivetrain.getAutoPath("ThreePieceAuto");
+            m_autoCommandName = "ThreePieceAuto";
+        }
+
+        if (joystick.button(2).getAsBoolean()) {
+            m_autoCommand = new WaitCommand(15);
+            m_autoCommandName = "Waiting";
+        }
+        SmartDashboard.putString("Auto", m_autoCommandName);
+    }
+
     public Command getAutonomousCommand() {
-        PathPlannerPath path = PathPlannerPath.fromPathFile("TwoPieceAuto");
-        return AutoBuilder.followPath(path);
+        return m_autoCommand;
     }
 }
