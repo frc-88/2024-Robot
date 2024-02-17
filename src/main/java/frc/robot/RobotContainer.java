@@ -43,8 +43,6 @@ public class RobotContainer {
         configureRosNetworkTablesBridge();
         configureDriverController();
         configureBindings();
-        configureSmartDashboardButtons();
-        drivetrain.resetPose(new Pose2d());
 
         // PathPlanner Named Commands
         NamedCommands.registerCommand("Prep Shooter", new WaitCommand(1));
@@ -54,8 +52,12 @@ public class RobotContainer {
         NamedCommands.registerCommand("ResetHeading",
                 drivetrain.setHeadingFactory(() -> drivetrain.getState().Pose.getRotation().getDegrees()));
 
+        configureSmartDashboardButtons();
+
         // set default commands
         drivetrain.setDefaultCommand(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)));
+
+        drivetrain.resetPose(new Pose2d());
     }
 
     private void configureRosNetworkTablesBridge() {
