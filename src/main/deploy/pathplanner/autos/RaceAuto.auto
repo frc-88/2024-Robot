@@ -32,7 +32,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center3ToShoot"
+            "pathName": "Center1ToShoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ShootToCenter2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center2ToShoot"
           }
         },
         {
