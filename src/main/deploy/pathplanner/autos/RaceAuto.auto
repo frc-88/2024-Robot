@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3089291736778261,
-      "y": 3.0614240800928165
+      "x": 1.2796798990272578,
+      "y": 2.87617867397255
     },
     "rotation": -69.51964268819077
   },
@@ -21,6 +21,12 @@
           "type": "path",
           "data": {
             "pathName": "RaceToCenter1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Reset Target Heading"
           }
         }
       ]

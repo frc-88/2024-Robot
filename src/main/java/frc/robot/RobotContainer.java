@@ -49,9 +49,10 @@ public class RobotContainer {
         // PathPlanner Named Commands
         NamedCommands.registerCommand("Prep Shooter", new WaitCommand(1));
         NamedCommands.registerCommand("Shoot", new WaitCommand(1));
-        NamedCommands.registerCommand("Localize", new WaitCommand(1));
         NamedCommands.registerCommand("Intake", new WaitCommand(1));
-
+        NamedCommands.registerCommand("Localize", drivetrain.localizeFactory());
+        NamedCommands.registerCommand("Reset Target Heading",
+                drivetrain.setHeadingFactory(() -> drivetrain.getState().Pose.getRotation().getDegrees()));
         // set default commands
         drivetrain.setDefaultCommand(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)));
     }
@@ -73,7 +74,8 @@ public class RobotContainer {
         isRightStickZero().debounce(0.25, DebounceType.kRising)
                 .onTrue(drivetrain.setHeadingFactory(() -> drivetrain.getState().Pose.getRotation().getDegrees()))
                 .whileFalse(drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick)));
-        joystick.rightBumper().whileTrue(drivetrain.applyRequest(drivetrain.brakeRequest()));
+        joystick.rightBumper().whileTrue(drivetrain.aimAtSpeakerFactory());
+        // joystick.rightBumper().whileTrue(drivetrain.applyRequest(drivetrain.brakeRequest()));
         // reset the field-centric heading on left bumper press
         joystick.leftTrigger().onTrue(drivetrain.runOnce(() -> {
             drivetrain.resetPose(new Pose2d());
@@ -88,6 +90,7 @@ public class RobotContainer {
         SmartDashboard.putData("Localize", drivetrain.localizeFactory());
 
         // Auto Test
+        SmartDashboard.putData("Zero Odometry", drivetrain.zeroOdomFactory());
         SmartDashboard.putData("Red Line Auto", drivetrain.getAutoPath("TwoPieceAuto"));
         SmartDashboard.putData("Race Auto", drivetrain.getAutoPath("RaceAuto"));
 
