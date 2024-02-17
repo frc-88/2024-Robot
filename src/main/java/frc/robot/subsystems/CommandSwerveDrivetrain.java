@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.Aiming;
@@ -47,7 +48,7 @@ import frc.robot.util.DriveUtils;
  * that's why we did it
  */
 public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsystem {
-    private double MaxSpeed = 6; // 6 meters per second desired top speed
+    private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps;
     private double MaxAngularRate = 2 * Math.PI; // 3/4 of a rotation per second max angular velocity
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier m_simNotifier = null;
@@ -140,7 +141,16 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public Command getAutoPath(String pathName) {
-        return new PathPlannerAuto(pathName);
+        try {
+            Command autoPath = new PathPlannerAuto(pathName);
+            return autoPath;
+        } catch (Exception e) {
+            Command autoPath = new WaitCommand(1.0);
+            System.err.println("Exception loading auto path");
+            e.printStackTrace();
+            return autoPath;
+        }
+
     }
 
     public Pose2d getPose() {
@@ -169,16 +179,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                         TunerConstants.kSpeedAt12VoltsMps, // in m/s
                         driveBaseRadius, // in meters
                         new ReplanningConfig()),
-                this::redAlliance,
+                DriveUtils::redAlliance,
                 this);
-    }
-
-    private boolean redAlliance() {
-        var alliance = DriverStation.getAlliance();
-        if (alliance.isPresent()) {
-            return alliance.get() == DriverStation.Alliance.Red;
-        }
-        return false;
     }
 
     private void startSimThread() {
@@ -227,7 +229,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public void localize() {
-        seedFieldRelative(m_aiming.getROSPose());
+        resetPose(m_aiming.getROSPose());
     }
 
     public double getCurrentRobotAngle() {
@@ -263,6 +265,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private void sendROSPose() {
         /* Telemeterize the pose */
         Pose2d pose = m_aiming.getROSPose();
+        if (DriveUtils.redAlliance()) {
+            pose = DriveUtils.redBlueTransform(pose);
+        }
         fieldTypePub.set("Field2d");
         fieldPub.set(new double[] {
                 pose.getX(),

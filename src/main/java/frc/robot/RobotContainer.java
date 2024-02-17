@@ -4,10 +4,11 @@
 
 package frc.robot;
 
-import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
 import frc.team88.ros.conversions.TFListenerCompact;
 
@@ -27,24 +28,23 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.util.Aiming;
 
 public class RobotContainer {
-    private double MaxSpeed = 6; // 6 meters per second desired top speed
-    private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
-
     private final Aiming m_aiming = new Aiming();
     private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(m_aiming); // My drivetrain
 
     private Command runAuto = new WaitCommand(1.0);
 
-    private final Telemetry logger = new Telemetry(MaxSpeed, drivetrain);
+    private final Telemetry logger = new Telemetry(TunerConstants.kSpeedAt12VoltsMps, drivetrain);
     private TFListenerCompact tfListenerCompact;
     @SuppressWarnings("unused")
     private CoprocessorBridge coprocessorBridge;
 
     public RobotContainer() {
+        DataLogManager.start();
         configureRosNetworkTablesBridge();
         configureDriverController();
         configureBindings();
+        configureSmartDashboardButtons();
 
         // set default commands
         drivetrain.setDefaultCommand(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)));
@@ -57,7 +57,6 @@ public class RobotContainer {
         tfListenerCompact = new TFListenerCompact(bridge, "/tf_compact");
         coprocessorBridge = new CoprocessorBridge(drivetrain, bridge, tfListenerCompact);
         m_aiming.setTFListener(tfListenerCompact);
-        SmartDashboard.putData("Localize", drivetrain.localizeFactory());
     }
 
     private void configureDriverController() {
@@ -77,16 +76,22 @@ public class RobotContainer {
         joystick.leftBumper().whileTrue(drivetrain.aimAtSpeakerFactory());
     }
 
+    private void configureSmartDashboardButtons() {
+        // Drive
+        SmartDashboard.putData("SetLowPowerMode", drivetrain.lowPowerModeFactory());
+        SmartDashboard.putData("SetHighPowerMode", drivetrain.highPowerModeFactory());
+        SmartDashboard.putData("Localize", drivetrain.localizeFactory());
+
+        // Auto Test
+        SmartDashboard.putData("Red Line Auto", drivetrain.getAutoPath("TwoPieceAuto"));
+
+    }
+
     private void configureBindings() {
         if (Utils.isSimulation()) {
             drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
         }
         drivetrain.registerTelemetry(logger::telemeterize);
-        SmartDashboard.putData("SetLowPowerMode", drivetrain.lowPowerModeFactory());
-        SmartDashboard.putData("SetHighPowerMode", drivetrain.highPowerModeFactory());
-
-        // auto test
-        SmartDashboard.putData("Red Line Auto", drivetrain.getAutoPath("TwoPieceAuto"));
     }
 
     private Trigger isRightStickZero() {

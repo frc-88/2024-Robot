@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.util.DriveUtils;
 import frc.team88.ros.bridge.BridgePublisher;
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
 import frc.team88.ros.conversions.ROSConversions;
@@ -51,6 +52,9 @@ public class OdomPublisher implements Publisher {
 
     public void publish() {
         Pose2d pose = commandDriveTrain.getState().Pose;
+        if (DriveUtils.redAlliance()) {
+            pose = DriveUtils.redBlueTransform(pose);
+        }
         ChassisSpeeds velocity = commandDriveTrain.getChassisSpeeds();
 
         odomMsg.setHeader(odomPub.getHeader(Frames.ODOM_FRAME));

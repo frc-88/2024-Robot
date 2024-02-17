@@ -6,6 +6,7 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 
 public class DriveUtils {
 
@@ -50,6 +51,14 @@ public class DriveUtils {
 
     public static Pose2d redBlueTransform(Pose2d pose) {
         return pose.relativeTo(new Pose2d(16.54, 8.02, Rotation2d.fromDegrees(180)));
+    }
+
+    public static boolean redAlliance() {
+        var alliance = DriverStation.getAlliance();
+        if (alliance.isPresent()) {
+            return alliance.get() == DriverStation.Alliance.Red;
+        }
+        return false;
     }
 
     public static Pose2d relativeToReverse(Pose2d thisPose, Pose2d otherPose) {
