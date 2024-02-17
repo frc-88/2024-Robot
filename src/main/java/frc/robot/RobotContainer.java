@@ -53,6 +53,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("Localize", drivetrain.localizeFactory());
         NamedCommands.registerCommand("Reset Target Heading",
                 drivetrain.setHeadingFactory(() -> drivetrain.getState().Pose.getRotation().getDegrees()));
+
         // set default commands
         drivetrain.setDefaultCommand(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)));
     }
