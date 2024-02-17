@@ -109,6 +109,7 @@ public class RobotContainer {
         SmartDashboard.putData("SetLowPowerMode", drivetrain.lowPowerModeFactory());
         SmartDashboard.putData("SetHighPowerMode", drivetrain.highPowerModeFactory());
         SmartDashboard.putData("Localize", drivetrain.localizeFactory());
+        SmartDashboard.putData("Reset Pigeon", drivetrain.resetPigeonFactory());
 
         // Shooter
         // SmartDashboard.putData("Run Shooter", m_shooter.runShooterCommand());

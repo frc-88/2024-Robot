@@ -228,6 +228,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 Rotation2d.fromDegrees(getModule(0).getCANcoder().getAbsolutePosition().getValueAsDouble() * 360));
     }
 
+    public void resetPigeon() {
+        getPigeon2().setYaw(0);
+    }
+
     public void localize() {
         resetPose(m_aiming.getROSPose());
     }
@@ -248,6 +252,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return new InstantCommand(() -> {
             localize();
         }, this);
+    }
+
+    public Command resetPigeonFactory() {
+        return new InstantCommand(() -> resetPigeon(), this);
     }
 
     public Command setHeadingFactory(double target) {
