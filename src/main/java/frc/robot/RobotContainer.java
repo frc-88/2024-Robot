@@ -44,6 +44,7 @@ public class RobotContainer {
         configureDriverController();
         configureBindings();
         configureSmartDashboardButtons();
+        drivetrain.resetPose(new Pose2d());
 
         // PathPlanner Named Commands
         NamedCommands.registerCommand("Prep Shooter", new WaitCommand(1));
@@ -72,11 +73,10 @@ public class RobotContainer {
         isRightStickZero().debounce(0.25, DebounceType.kRising)
                 .onTrue(drivetrain.setHeadingFactory(() -> drivetrain.getState().Pose.getRotation().getDegrees()))
                 .whileFalse(drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick)));
-        // joystick.rightTrigger().whileTrue(drivetrain.applyRequest(drivetrain.robotCentricRequest(joystick)));
         joystick.rightBumper().whileTrue(drivetrain.applyRequest(drivetrain.brakeRequest()));
         // reset the field-centric heading on left bumper press
         joystick.leftTrigger().onTrue(drivetrain.runOnce(() -> {
-            drivetrain.getPigeon2().setYaw(0);
+            drivetrain.resetPose(new Pose2d());
         }));
         joystick.leftBumper().whileTrue(drivetrain.aimAtSpeakerFactory());
     }
@@ -89,6 +89,7 @@ public class RobotContainer {
 
         // Auto Test
         SmartDashboard.putData("Red Line Auto", drivetrain.getAutoPath("TwoPieceAuto"));
+        SmartDashboard.putData("Race Auto", drivetrain.getAutoPath("RaceAuto"));
 
     }
 
@@ -108,16 +109,16 @@ public class RobotContainer {
     }
 
     public void disabledPeriodic() {
-        if (joystick.button(0).getAsBoolean() && !m_autoCommandName.equals("TwoPieceAuto")) {
+        if (joystick.button(1).getAsBoolean() && !m_autoCommandName.equals("TwoPieceAuto")) {
             m_autoCommand = drivetrain.getAutoPath("TwoPieceAuto");
             m_autoCommandName = "TwoPieceAuto";
         }
-        if (joystick.button(1).getAsBoolean() && !m_autoCommandName.equals("ThreePieceAuto")) {
+        if (joystick.button(2).getAsBoolean() && !m_autoCommandName.equals("ThreePieceAuto")) {
             m_autoCommand = drivetrain.getAutoPath("ThreePieceAuto");
             m_autoCommandName = "ThreePieceAuto";
         }
 
-        if (joystick.button(2).getAsBoolean()) {
+        if (joystick.button(3).getAsBoolean()) {
             m_autoCommand = new WaitCommand(15);
             m_autoCommandName = "Waiting";
         }

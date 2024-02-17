@@ -157,7 +157,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return getState().Pose;
     }
 
-    private void resetPose(Pose2d pose) {
+    public void resetPose(Pose2d pose) {
         seedFieldRelative(pose);
         setTargetHeading(pose.getRotation().getDegrees());
     }
