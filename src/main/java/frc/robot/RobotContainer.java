@@ -166,7 +166,7 @@ public class RobotContainer {
 
     public void autonomousInit() {
         m_elevator.calibrateShooterAngle();
-        drivetrain.localize();
+        // drivetrain.localize();
     }
 
     public Command getAutonomousCommand() {

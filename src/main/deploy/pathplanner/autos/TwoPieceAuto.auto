@@ -16,6 +16,12 @@
           "data": {
             "pathName": "SpeakerToPiece2"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Localize"
+          }
         }
       ]
     }
