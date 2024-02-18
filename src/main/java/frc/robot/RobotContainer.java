@@ -7,6 +7,8 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -21,6 +23,7 @@ import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -37,10 +40,16 @@ public class RobotContainer {
     private final CommandGenericHID buttonBox = new CommandGenericHID(1); // The buttons???
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(m_aiming); // My drivetrain
     private String m_autoCommandName = "Wait";
-    private Command m_autoCommand = new WaitCommand(15);
     private final Shooter m_shooter = new Shooter();
     private final Intake m_intake = new Intake();
     private final Elevator m_elevator = new Elevator();
+
+    private Command m_autoCommand = new SequentialCommandGroup(
+            new WaitCommand(4),
+            m_intake.shootIndexerFactory().withTimeout(2),
+            new RunCommand(() -> drivetrain.setChassisSpeeds(new ChassisSpeeds(1, 0, 0)), drivetrain).withTimeout(2),
+            drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)))
+            .alongWith(m_shooter.runShooterFactory().withTimeout(6).andThen(m_shooter.stopShooterFactory()));
 
     private final Telemetry logger = new Telemetry(TunerConstants.kSpeedAt12VoltsMps, drivetrain);
     private TFListenerCompact tfListenerCompact;
@@ -166,7 +175,7 @@ public class RobotContainer {
 
     public void autonomousInit() {
         m_elevator.calibrateShooterAngle();
-        // drivetrain.localize();
+        drivetrain.localize();
     }
 
     public Command getAutonomousCommand() {

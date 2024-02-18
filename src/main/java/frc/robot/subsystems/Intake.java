@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 
+import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -35,14 +36,17 @@ public class Intake extends SubsystemBase {
         // There are many configs we can set
         TalonFXConfiguration intakeConfiguration = new TalonFXConfiguration();
         intakeConfiguration.CurrentLimits.SupplyCurrentLimit = Constants.INTAKE_CURRENT_LIMIT;
+        intakeConfiguration.OpenLoopRamps = new OpenLoopRampsConfigs().withDutyCycleOpenLoopRampPeriod(.5);
         m_intakeMotor.getConfigurator().apply(intakeConfiguration);
         m_intakeMotor.setInverted(true);
 
         TalonFXConfiguration guideConfiguration = new TalonFXConfiguration();
         guideConfiguration.CurrentLimits.SupplyCurrentLimit = Constants.INTAKE_CURRENT_LIMIT;
+        guideConfiguration.OpenLoopRamps = new OpenLoopRampsConfigs().withDutyCycleOpenLoopRampPeriod(.5);
         m_guideMotor.getConfigurator().apply(guideConfiguration);
 
         indexConfiguration.CurrentLimits.SupplyCurrentLimit = Constants.INTAKE_CURRENT_LIMIT;
+        indexConfiguration.OpenLoopRamps = new OpenLoopRampsConfigs().withDutyCycleOpenLoopRampPeriod(.5);
         m_indexMotor.getConfigurator().apply(indexConfiguration);
         m_indexMotor.setInverted(true);
     }
