@@ -305,6 +305,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         sendROSPose();
         SmartDashboard.putNumber("Target Heading", targetHeading);
         SmartDashboard.putNumber("Speaker Angle", m_aiming.getSpeakerAngleForDrivetrian());
+        SmartDashboard.putNumber("Shooter Aiming", m_aiming.speakerAngleForShooter());
         SmartDashboard.putNumber("ROS X Translation", m_aiming.getROSPose().getX());
         SmartDashboard.putNumber("ROS Y Translation", m_aiming.getROSPose().getY());
         SmartDashboard.putNumber("ROS Rotation", m_aiming.getROSPose().getRotation().getDegrees());
