@@ -57,20 +57,20 @@ public class Elevator extends SubsystemBase {
 
     public Elevator() {
 
-        configureTalons();
-        p_PivotMaxVelocity.addChangeHandler((Double unused) -> configureTalons());
-        p_PivotMaxAcceleration.addChangeHandler((Double unused) -> configureTalons());
-        p_PivotMaxJerk.addChangeHandler((Double unused) -> configureTalons());
-        p_PivotPIDPreferenceConstants.addChangeHandler((Double unused) -> configureTalons());
-        p_ElevatorMaxVelocity.addChangeHandler((Double unused) -> configureTalons());
-        p_ElevatorMaxAcceleration.addChangeHandler((Double unused) -> configureTalons());
-        p_ElevatorMaxJerk.addChangeHandler((Double unused) -> configureTalons());
-        p_ElevatorPIDPreferenceConstants.addChangeHandler((Double unused) -> configureTalons());
+        configureTalons(0);
+        p_PivotMaxVelocity.addChangeHandler(this::configureTalons);
+        p_PivotMaxAcceleration.addChangeHandler(this::configureTalons);
+        p_PivotMaxJerk.addChangeHandler(this::configureTalons);
+        p_PivotPIDPreferenceConstants.addChangeHandler(this::configureTalons);
+        p_ElevatorMaxVelocity.addChangeHandler(this::configureTalons);
+        p_ElevatorMaxAcceleration.addChangeHandler(this::configureTalons);
+        p_ElevatorMaxJerk.addChangeHandler(this::configureTalons);
+        p_ElevatorPIDPreferenceConstants.addChangeHandler(this::configureTalons);
 
         m_elevatorMotor.setNeutralMode(NeutralModeValue.Brake);
     }
 
-    private void configureTalons() {
+    private void configureTalons(double unused) {
         TalonFXConfiguration pivotConfig = new TalonFXConfiguration();
         pivotConfig.CurrentLimits.StatorCurrentLimit = 60;
 
