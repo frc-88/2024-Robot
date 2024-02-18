@@ -107,6 +107,18 @@ public class Elevator extends SubsystemBase {
         elevatorSlot0.kV = p_ElevatorPIDPreferenceConstants.getKF().getValue();
 
         m_elevatorMotor.getConfigurator().apply(elevatorConfig);
+
+        m_elevatorMotor.setInverted(true);
+    }
+
+    public void enableCoastMode() {
+        m_elevatorMotor.setNeutralMode(NeutralModeValue.Coast);
+        m_pivotMotor.setNeutralMode(NeutralModeValue.Coast);
+    }
+
+    public void enableBrakeMode() {
+        m_elevatorMotor.setNeutralMode(NeutralModeValue.Brake);
+        m_pivotMotor.setNeutralMode(NeutralModeValue.Brake);
     }
 
     public void pivotStow() {
@@ -173,6 +185,18 @@ public class Elevator extends SubsystemBase {
             pivotStow();
             elevatorStow();
         }, this).beforeStarting(() -> pivotDebouncer.calculate(false));
+    }
+
+    public Command enableCoastModeFactory() {
+        return new InstantCommand(() -> {
+            enableCoastMode();
+        }, this);
+    }
+
+    public Command enableBrakeModeFactory() {
+        return new InstantCommand(() -> {
+            enableBrakeMode();
+        }, this);
     }
 
     @Override

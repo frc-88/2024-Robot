@@ -140,6 +140,8 @@ public class RobotContainer {
         SmartDashboard.putData("ClimberCalibrate", m_climber.calibrateFactory());
         SmartDashboard.putData("ClimberCoastMode", m_climber.enableCoastModeFactory().ignoringDisable(true));
         SmartDashboard.putData("ClimberBrakeMode", m_climber.enableBrakeModeFactory().ignoringDisable(true));
+        SmartDashboard.putData("ElevatorCoastMode", m_elevator.enableCoastModeFactory().ignoringDisable(true));
+        SmartDashboard.putData("ElevatorBrakeMode", m_elevator.enableBrakeModeFactory().ignoringDisable(true));
         SmartDashboard.putData("ClimberUpDown", m_climber.upDownFactory());
 
         // Auto Test
