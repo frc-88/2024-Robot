@@ -7,20 +7,23 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
 import frc.team88.ros.conversions.TFListenerCompact;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import com.ctre.phoenix6.Utils;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -36,9 +39,17 @@ public class RobotContainer {
     private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
     private final CommandGenericHID buttonBox = new CommandGenericHID(1); // The buttons???
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(m_aiming); // My drivetrain
+    private String m_autoCommandName = "Wait";
     private final Shooter m_shooter = new Shooter();
     private final Intake m_intake = new Intake();
     private final Elevator m_elevator = new Elevator();
+
+    private Command m_autoCommand = new SequentialCommandGroup(
+            new WaitCommand(4),
+            m_intake.shootIndexerFactory().withTimeout(2),
+            new RunCommand(() -> drivetrain.setChassisSpeeds(new ChassisSpeeds(1, 0, 0)), drivetrain).withTimeout(2),
+            drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)))
+            .alongWith(m_shooter.runShooterFactory().withTimeout(6).andThen(m_shooter.stopShooterFactory()));
 
     private final Telemetry logger = new Telemetry(TunerConstants.kSpeedAt12VoltsMps, drivetrain);
     private TFListenerCompact tfListenerCompact;
@@ -53,11 +64,18 @@ public class RobotContainer {
         configureBindings();
         configureSmartDashboardButtons();
 
+        // PathPlanner Named Commands
+        NamedCommands.registerCommand("Prep Shooter", m_shooter.runShooterFactory());
+        NamedCommands.registerCommand("Shoot", m_intake.shootIndexerFactory());
+        NamedCommands.registerCommand("Localize", drivetrain.localizeFactory());
+        NamedCommands.registerCommand("Intake", m_intake.intakeFactory());
+
         // set default commands
         drivetrain.setDefaultCommand(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)));
         m_shooter.setDefaultCommand(m_shooter.runIdleSpeedFactory());
         m_intake.setDefaultCommand(m_intake.stopMovingFactory());
         m_elevator.setDefaultCommand(m_elevator.stowFactory());
+        drivetrain.resetPose(new Pose2d());
     }
 
     private void configureRosNetworkTablesBridge() {
@@ -138,14 +156,29 @@ public class RobotContainer {
         }
     }
 
+    public void disabledPeriodic() {
+        if (buttonBox.button(12).getAsBoolean() && !m_autoCommandName.equals("TwoPieceAuto")) {
+            m_autoCommand = drivetrain.getAutoPath("TwoPieceAuto");
+            m_autoCommandName = "TwoPieceAuto";
+        }
+        if ((buttonBox.button(14)).getAsBoolean() && !m_autoCommandName.equals("ThreePieceAuto")) {
+            m_autoCommand = drivetrain.getAutoPath("ThreePieceAuto");
+            m_autoCommandName = "ThreePieceAuto";
+        }
+
+        if (buttonBox.button(13).getAsBoolean()) {
+            m_autoCommand = new WaitCommand(15);
+            m_autoCommandName = "Waiting";
+        }
+        SmartDashboard.putString("Auto", m_autoCommandName);
+    }
+
     public void autonomousInit() {
         m_elevator.calibrateShooterAngle();
         drivetrain.localize();
     }
 
     public Command getAutonomousCommand() {
-        // PathPlannerPath path = PathPlannerPath.fromPathFile("TwoPieceAuto");
-        // return AutoBuilder.followPath(path);
-        return new WaitCommand(1);
+        return m_autoCommand;
     }
 }
