@@ -128,7 +128,7 @@ public class RobotContainer {
         // SmartDashboard.putData("Stop Shooter", m_shooter.stopShooterCommand());
 
         // Elevator
-        SmartDashboard.putData("Calibrate Pivot", m_elevator.calibrateShooterAngleFactory());
+        SmartDashboard.putData("Calibrate Pivot", m_elevator.calibratePivotFactory());
         SmartDashboard.putData("Calibrate Elevator", m_elevator.calibrateElevatorFactory());
         SmartDashboard.putData("Go to Stow", m_elevator.stowFactory());
         SmartDashboard.putData("Go To Flat", m_elevator.setFlatFactory());
@@ -184,7 +184,7 @@ public class RobotContainer {
     }
 
     public void autonomousInit() {
-        m_elevator.calibrateShooterAngle();
+        m_elevator.calibratePivot();
         drivetrain.localize();
     }
 
