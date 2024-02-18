@@ -96,7 +96,7 @@ public class RobotContainer {
         SmartDashboard.putData("Zero Odometry", drivetrain.zeroOdomFactory());
         SmartDashboard.putData("Red Line Auto", drivetrain.getAutoPath("TwoPieceAuto"));
         SmartDashboard.putData("Race Auto", drivetrain.getAutoPath("RaceAuto"));
-
+        SmartDashboard.putData("FourPiece", drivetrain.getAutoPath("FourPiece"));
     }
 
     private void configureBindings() {

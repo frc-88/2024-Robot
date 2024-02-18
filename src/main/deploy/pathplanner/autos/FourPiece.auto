@@ -12,45 +12,21 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Shoot"
+            "pathName": "SpeakerToOne"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "RaceToCenter1"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
+            "pathName": "OneToTwo"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Center1ToShoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "ShootToCenter2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Center2ToShoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ResetHeading"
+            "pathName": "TwoToThree"
           }
         }
       ]
