@@ -75,6 +75,7 @@ public class RobotContainer {
         m_shooter.setDefaultCommand(m_shooter.runIdleSpeedFactory());
         m_intake.setDefaultCommand(m_intake.stopMovingFactory());
         m_elevator.setDefaultCommand(m_elevator.stowFactory());
+        drivetrain.resetPose(new Pose2d());
     }
 
     private void configureRosNetworkTablesBridge() {
@@ -118,7 +119,6 @@ public class RobotContainer {
         SmartDashboard.putData("SetLowPowerMode", drivetrain.lowPowerModeFactory());
         SmartDashboard.putData("SetHighPowerMode", drivetrain.highPowerModeFactory());
         SmartDashboard.putData("Localize", drivetrain.localizeFactory());
-        SmartDashboard.putData("Reset Pigeon", drivetrain.resetPigeonFactory());
 
         // Shooter
         // SmartDashboard.putData("Run Shooter", m_shooter.runShooterCommand());

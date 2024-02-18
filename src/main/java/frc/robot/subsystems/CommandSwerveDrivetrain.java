@@ -20,10 +20,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -38,7 +35,6 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Robot;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.Aiming;
 import frc.robot.util.DriveUtils;
@@ -64,8 +60,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private double targetHeading = 0;
     private Aiming m_aiming;
     private boolean lowPowerMode = false;
-    private SwerveModulePosition[] m_previousModulePositions = new SwerveModulePosition[4];
-    private long m_previousTwistTime = RobotController.getFPGATime();
     /* What to publish over networktables for telemetry */
     private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
@@ -93,9 +87,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             double OdometryUpdateFrequency,
             SwerveModuleConstants... modules) {
         super(driveTrainConstants, OdometryUpdateFrequency, modules);
-        for (int i = 0; i < m_modulePositions.length; i++) {
-            m_previousModulePositions[i] = m_modulePositions[i].copy();
-        }
         configureAutoBuilder();
         m_aiming = aiming;
         if (Utils.isSimulation()) {
@@ -103,15 +94,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         }
         headingController.enableContinuousInput(-Math.PI, Math.PI);
         snapToAngle.HeadingController = headingController;
-        getPigeon2().getGravityVectorZ();
     }
 
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, Aiming aiming,
             SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
-        for (int i = 0; i < m_modulePositions.length; i++) {
-            m_previousModulePositions[i] = m_modulePositions[i].copy();
-        }
         configureAutoBuilder();
         m_aiming = aiming;
         if (Utils.isSimulation()) {
@@ -131,20 +118,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public ChassisSpeeds getChassisSpeeds() {
         return m_kinematics.toChassisSpeeds(getState().ModuleStates);
-    }
-
-    public Twist2d getTwist2d() {
-        Twist2d twist = m_kinematics.toTwist2d(new SwerveDriveWheelPositions(m_previousModulePositions),
-                new SwerveDriveWheelPositions(m_modulePositions));
-        twist.dx = twist.dx / ((RobotController.getFPGATime() - m_previousTwistTime) / 1e6);
-        twist.dy = twist.dy / ((RobotController.getFPGATime() - m_previousTwistTime) / 1e6);
-        twist.dtheta = twist.dtheta / ((RobotController.getFPGATime() - m_previousTwistTime) / 1e6);
-        m_previousTwistTime = RobotController.getFPGATime();
-        for (int i = 0; i < m_modulePositions.length; i++) {
-            m_previousModulePositions[i] = m_modulePositions[i].copy();
-        }
-        return twist;
-
     }
 
     public void setHighPowerMode() {
@@ -184,7 +157,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return getState().Pose;
     }
 
-    private void resetPose(Pose2d pose) {
+    public void resetPose(Pose2d pose) {
         seedFieldRelative(pose);
         setTargetHeading(pose.getRotation().getDegrees());
     }
@@ -255,10 +228,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 Rotation2d.fromDegrees(getModule(0).getCANcoder().getAbsolutePosition().getValueAsDouble() * 360));
     }
 
-    public void resetPigeon() {
-        getPigeon2().setYaw(0);
-    }
-
     public void localize() {
         resetPose(m_aiming.getROSPose());
     }
@@ -279,10 +248,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return new InstantCommand(() -> {
             localize();
         }, this);
-    }
-
-    public Command resetPigeonFactory() {
-        return new InstantCommand(() -> resetPigeon(), this);
     }
 
     public Command setHeadingFactory(double target) {

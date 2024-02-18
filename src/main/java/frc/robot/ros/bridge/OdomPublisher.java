@@ -4,9 +4,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.util.DriveUtils;
@@ -57,18 +55,15 @@ public class OdomPublisher implements Publisher {
         if (DriveUtils.redAlliance()) {
             pose = DriveUtils.redBlueTransform(pose);
         }
-        Twist2d velocity = commandDriveTrain.getTwist2d();
+        ChassisSpeeds velocity = commandDriveTrain.getChassisSpeeds();
 
         odomMsg.setHeader(odomPub.getHeader(Frames.ODOM_FRAME));
         odomMsg.getPose().setPose(ROSConversions.wpiToRosPose(new Pose3d(pose)));
         odomMsg.getTwist().getTwist()
-                .setLinear(new Vector3(velocity.dx, velocity.dy, 0.0));
-        odomMsg.getTwist().getTwist().setAngular(new Vector3(0.0, 0.0, velocity.dtheta));
+                .setLinear(new Vector3(velocity.vxMetersPerSecond, velocity.vyMetersPerSecond, 0.0));
+        odomMsg.getTwist().getTwist().setAngular(new Vector3(0.0, 0.0, velocity.omegaRadiansPerSecond));
 
         odomPub.send(odomMsg);
-
-        SmartDashboard.putNumber("vx velocity", velocity.dx);
-        SmartDashboard.putNumber("vy velocity", velocity.dy);
     }
 
 }
