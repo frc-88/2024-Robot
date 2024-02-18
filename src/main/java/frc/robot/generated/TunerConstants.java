@@ -101,25 +101,25 @@ public class TunerConstants {
     private static final SwerveModuleConstants FrontLeft = ConstantCreator.createModuleConstants(
             Constants.FRONT_LEFT_MODULE_STEER_MOTOR, Constants.FRONT_LEFT_MODULE_DRIVE_MOTOR,
             Constants.FRONT_LEFT_MODULE_STEER_ENCODER, p_frontLeftEncoderOffset.getValue(),
-            Units.inchesToMeters(Constants.DRIVETRAIN_WHEELBASE_INCHES / 2.0),
+            Units.inchesToMeters((Constants.DRIVETRAIN_WHEELBASE_INCHES / 2.0) - Constants.DRIVETRAIN_CENTER_OFFSET),
             Units.inchesToMeters(Constants.DRIVETRAIN_TRACKWIDTH_INCHES / 2.0),
             kInvertLeftSide);
     private static final SwerveModuleConstants FrontRight = ConstantCreator.createModuleConstants(
             Constants.FRONT_RIGHT_MODULE_STEER_MOTOR, Constants.FRONT_RIGHT_MODULE_DRIVE_MOTOR,
             Constants.FRONT_RIGHT_MODULE_STEER_ENCODER, p_frontRightEncoderOffset.getValue(),
-            Units.inchesToMeters(Constants.DRIVETRAIN_WHEELBASE_INCHES / 2.0),
+            Units.inchesToMeters((Constants.DRIVETRAIN_WHEELBASE_INCHES / 2.0) - Constants.DRIVETRAIN_CENTER_OFFSET),
             Units.inchesToMeters(-Constants.DRIVETRAIN_TRACKWIDTH_INCHES / 2.0),
             kInvertRightSide);
     private static final SwerveModuleConstants BackLeft = ConstantCreator.createModuleConstants(
             Constants.BACK_LEFT_MODULE_STEER_MOTOR, Constants.BACK_LEFT_MODULE_DRIVE_MOTOR,
             Constants.BACK_LEFT_MODULE_STEER_ENCODER, p_backLeftEncoderOffset.getValue(),
-            Units.inchesToMeters(-Constants.DRIVETRAIN_WHEELBASE_INCHES / 2.0),
+            Units.inchesToMeters((-Constants.DRIVETRAIN_WHEELBASE_INCHES / 2.0) - Constants.DRIVETRAIN_CENTER_OFFSET),
             Units.inchesToMeters(Constants.DRIVETRAIN_TRACKWIDTH_INCHES / 2.0),
             kInvertLeftSide);
     private static final SwerveModuleConstants BackRight = ConstantCreator.createModuleConstants(
             Constants.BACK_RIGHT_MODULE_STEER_MOTOR, Constants.BACK_RIGHT_MODULE_DRIVE_MOTOR,
             Constants.BACK_RIGHT_MODULE_STEER_ENCODER, p_backRightEncoderOffset.getValue(),
-            Units.inchesToMeters(-Constants.DRIVETRAIN_WHEELBASE_INCHES / 2.0),
+            Units.inchesToMeters((-Constants.DRIVETRAIN_WHEELBASE_INCHES / 2.0) - Constants.DRIVETRAIN_CENTER_OFFSET),
             Units.inchesToMeters(-Constants.DRIVETRAIN_TRACKWIDTH_INCHES / 2.0),
             kInvertRightSide);
 

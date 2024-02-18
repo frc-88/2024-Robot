@@ -36,6 +36,7 @@ public final class Constants {
      */
     public static final double DRIVETRAIN_WHEELBASE_INCHES = 23.0; // TODO get from CAD
 
+    public static final double DRIVETRAIN_CENTER_OFFSET = 0.0;
     public static final String DRIVETRAIN_CANBUS = "";
     public static final int DRIVETRAIN_PIGEON_ID = 0;
 
