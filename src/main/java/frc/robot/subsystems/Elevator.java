@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -143,6 +145,16 @@ public class Elevator extends SubsystemBase {
         m_elevatorMotor.setControl(m_elevatorRequest.withPosition(height / kElevatorMotorToElevatorDistance));
     }
 
+    public void setPivotPosition(DoubleSupplier position) {
+        m_pivotMotor
+                .setControl(m_pivotRequest.withPosition(position.getAsDouble() / kPivotMotorRotationToShooterAngle));
+    }
+
+    public void setElevatorPosition(DoubleSupplier height) {
+        m_elevatorMotor
+                .setControl(m_elevatorRequest.withPosition(height.getAsDouble() / kElevatorMotorToElevatorDistance));
+    }
+
     public void calibratePivot() {
         m_pivotMotor.setPosition(42.0 / kPivotMotorRotationToShooterAngle);
     }
@@ -153,21 +165,21 @@ public class Elevator extends SubsystemBase {
 
     public Command setAmpFactory() {
         return new RunCommand(() -> {
-            setPivotPosition(p_pivotAmp.getValue());
-            setElevatorPosition(p_elevatorAmp.getValue());
+            setPivotPosition(() -> p_pivotAmp.getValue());
+            setElevatorPosition(() -> p_elevatorAmp.getValue());
         }, this);
     }
 
     public Command setPodiumFactory() {
         return new RunCommand(() -> {
-            setPivotPosition(p_pivotPodium.getValue());
+            setPivotPosition(() -> p_pivotPodium.getValue());
             elevatorStow();
         }, this);
     }
 
     public Command setFlatFactory() {
         return new RunCommand(() -> {
-            setPivotPosition(p_pivotFlat.getValue());
+            setPivotPosition(() -> p_pivotFlat.getValue());
             elevatorStow();
         }, this);
     }
