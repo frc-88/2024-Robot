@@ -28,13 +28,13 @@ public final class Constants {
      *
      * Should be measured from module center to module center.
      */
-    public static final double DRIVETRAIN_TRACKWIDTH_INCHES = 22.5; // TODO get from CAD
+    public static final double DRIVETRAIN_TRACKWIDTH_INCHES = 22.5;
     /**
      * The front-to-back distance between the drivetrain wheels.
      *
      * Should be measured from module center to module center.
      */
-    public static final double DRIVETRAIN_WHEELBASE_INCHES = 23.0; // TODO get from CAD
+    public static final double DRIVETRAIN_WHEELBASE_INCHES = 23.0;
 
     public static final double DRIVETRAIN_CENTER_OFFSET = 0.0;
     public static final String DRIVETRAIN_CANBUS = "";
@@ -55,16 +55,6 @@ public final class Constants {
     public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 0;
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 1;
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 1;
-
-    // Intake
-
-    // Elevator
-
-    // Shooter
-
-    // Climber
-
-    // Lights
 
     // Controllers
     public static final int DRIVER_CONTROLLER_ID = 0;
