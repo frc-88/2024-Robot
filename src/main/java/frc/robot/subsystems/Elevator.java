@@ -8,6 +8,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.filter.Debouncer;
@@ -39,6 +40,7 @@ public class Elevator extends SubsystemBase {
             "Elevator/ElevatorMotionMagicAcceleration", 0);
     private DoublePreferenceConstant p_ElevatorMaxJerk = new DoublePreferenceConstant(
             "Elevator/ElevatorMotionMagicJerk", 0);
+    private DoublePreferenceConstant p_elevatorGravityFeedForward = new DoublePreferenceConstant("Elevator/Gravity", 0);
 
     private DoublePreferenceConstant p_pivotStowSpeed = new DoublePreferenceConstant("Elevator/PivotStowSpeed", 0.05);
     private DoublePreferenceConstant p_elevatorStowSpeed = new DoublePreferenceConstant("Elevator/ElevatorStowSpeed",
@@ -69,6 +71,7 @@ public class Elevator extends SubsystemBase {
         p_ElevatorMaxAcceleration.addChangeHandler(this::configureTalons);
         p_ElevatorMaxJerk.addChangeHandler(this::configureTalons);
         p_ElevatorPIDPreferenceConstants.addChangeHandler(this::configureTalons);
+        p_elevatorGravityFeedForward.addChangeHandler(this::configureTalons);
 
         m_elevatorMotor.setNeutralMode(NeutralModeValue.Brake);
     }
@@ -107,6 +110,8 @@ public class Elevator extends SubsystemBase {
         elevatorSlot0.kD = p_ElevatorPIDPreferenceConstants.getKD().getValue();
         elevatorSlot0.kS = 0;
         elevatorSlot0.kV = p_ElevatorPIDPreferenceConstants.getKF().getValue();
+        elevatorSlot0.kG = p_elevatorGravityFeedForward.getValue();
+        elevatorSlot0.GravityType = GravityTypeValue.Elevator_Static;
 
         m_elevatorMotor.getConfigurator().apply(elevatorConfig);
 
@@ -196,7 +201,10 @@ public class Elevator extends SubsystemBase {
         return new RunCommand(() -> {
             pivotStow();
             elevatorStow();
-        }, this).beforeStarting(() -> pivotDebouncer.calculate(false));
+        }, this).beforeStarting(() -> {
+            pivotDebouncer.calculate(false);
+            elevatorDebouncer.calculate(false);
+        });
     }
 
     public Command enableCoastModeFactory() {

@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -12,6 +14,8 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -19,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import frc.robot.util.preferenceconstants.PIDPreferenceConstants;
 
@@ -28,11 +33,13 @@ public class Climber extends SubsystemBase {
     private DoublePreferenceConstant p_maxAcceleration = new DoublePreferenceConstant("Arm/MotionMagicAcceleration",
             250);
     private DoublePreferenceConstant p_maxJerk = new DoublePreferenceConstant("Arm/MotionMagicJerk", 500);
-    private DoublePreferenceConstant p_targetRightPosition = new DoublePreferenceConstant("Arm/RightTarget", 0);
-    private DoublePreferenceConstant p_targetLeftPosition = new DoublePreferenceConstant("Arm/LeftTarget", 0);
+    private DoublePreferenceConstant p_armTarget = new DoublePreferenceConstant("Arm/ArmTarget", 0);
+    private DoublePreferenceConstant p_armStowSpeed = new DoublePreferenceConstant("Arm/ArmStowSpeed", 0);
     private PIDPreferenceConstants p_PidPreferenceConstants = new PIDPreferenceConstants("Arm/PID");
-    private final TalonFX m_armRight = new TalonFX(11);
-    private final TalonFX m_armLeft = new TalonFX(9);
+    private final TalonFX m_armRight = new TalonFX(Constants.CLIMBER_RIGHT_MOTOR, Constants.RIO_CANBUS);
+    private final TalonFX m_armLeft = new TalonFX(Constants.CLIMBER_LEFT_MOTOR, Constants.RIO_CANBUS);
+
+    private final Debouncer climberDebouncer = new Debouncer(1);
 
     private final DutyCycleOut m_armRequest = new DutyCycleOut(0.0);
     private final DutyCycleOut m_armFollowerRequest = new DutyCycleOut(0.0);
@@ -44,15 +51,19 @@ public class Climber extends SubsystemBase {
 
     /** Creates a new Climber. */
     public Climber() {
-        configureTalons(m_armRight);
-        configureTalons(m_armLeft);
+        configureTalons(0);
         m_armRight.setNeutralMode(NeutralModeValue.Brake);
         m_armLeft.setNeutralMode(NeutralModeValue.Brake);
         rightStartPosition = m_armRight.getPosition().getValueAsDouble() * kMotorRotationsToClimberPosition;
         leftStartPosition = m_armLeft.getPosition().getValueAsDouble() * kMotorRotationsToClimberPosition;
+
+        p_maxVelocity.addChangeHandler(this::configureTalons);
+        p_maxAcceleration.addChangeHandler(this::configureTalons);
+        p_maxJerk.addChangeHandler(this::configureTalons);
+        p_PidPreferenceConstants.addChangeHandler(this::configureTalons);
     }
 
-    private void configureTalons(TalonFX talon) {
+    private void configureTalons(double unused) {
         TalonFXConfiguration cfg = new TalonFXConfiguration();
         /* Configure current limits */
         MotionMagicConfigs mm = cfg.MotionMagic;
@@ -67,12 +78,29 @@ public class Climber extends SubsystemBase {
         slot0.kV = p_PidPreferenceConstants.getKF().getValue();
         slot0.kS = p_PidPreferenceConstants.getKS().getValue(); // Approximately 0.25V to get the mechanism moving
 
-        talon.getConfigurator().apply(cfg);
+        m_armLeft.getConfigurator().apply(cfg);
+        m_armRight.getConfigurator().apply(cfg);
+
+        m_armLeft.setInverted(true);
     }
 
-    public void setPostion(double rightPosition, double leftPosition) {
-        m_armRight.setControl(m_motionMagic.withPosition(rightPosition / kMotorRotationsToClimberPosition));
-        m_armLeft.setControl(m_motionMagic.withPosition(leftPosition / kMotorRotationsToClimberPosition));
+    public void stowArms() {
+        m_armRight.setControl(new DutyCycleOut(-p_armStowSpeed.getValue()));
+        m_armLeft.setControl(new DutyCycleOut(-p_armStowSpeed.getValue()));
+        if (climberDebouncer.calculate(m_armRight.getVelocity().getValueAsDouble() > -1)
+                && climberDebouncer.calculate(m_armLeft.getVelocity().getValueAsDouble() > -1)) {
+            calibrate();
+        }
+    }
+
+    public void setPostion(double position) {
+        m_armRight.setControl(m_motionMagic.withPosition(position / kMotorRotationsToClimberPosition));
+        m_armLeft.setControl(m_motionMagic.withPosition(position / kMotorRotationsToClimberPosition));
+    }
+
+    public void setPostion(DoubleSupplier position) {
+        m_armRight.setControl(m_motionMagic.withPosition(position.getAsDouble() / kMotorRotationsToClimberPosition));
+        m_armLeft.setControl(m_motionMagic.withPosition(position.getAsDouble() / kMotorRotationsToClimberPosition));
     }
 
     public void set(double speed) {
@@ -81,8 +109,12 @@ public class Climber extends SubsystemBase {
     }
 
     public void calibrate() {
-        rightStartPosition = m_armRight.getPosition().getValueAsDouble() * kMotorRotationsToClimberPosition;
-        leftStartPosition = m_armLeft.getPosition().getValueAsDouble() * kMotorRotationsToClimberPosition;
+        // rightStartPosition = m_armRight.getPosition().getValueAsDouble() *
+        // kMotorRotationsToClimberPosition;
+        // leftStartPosition = m_armLeft.getPosition().getValueAsDouble() *
+        // kMotorRotationsToClimberPosition;
+        m_armRight.setPosition(-79.0 / kMotorRotationsToClimberPosition);
+        m_armLeft.setPosition(-79.0 / kMotorRotationsToClimberPosition);
     }
 
     public void enableCoastMode() {
@@ -101,6 +133,10 @@ public class Climber extends SubsystemBase {
 
     public void stop() {
         set(0);
+    }
+
+    public Command stowArmFactory() {
+        return new RunCommand(() -> stowArms(), this).beforeStarting(() -> climberDebouncer.calculate(false));
     }
 
     public Command calibrateFactory() {
@@ -135,19 +171,20 @@ public class Climber extends SubsystemBase {
 
     public Command setPositionFactory() {
         return new RunCommand(() -> {
-            setPostion(p_targetRightPosition.getValue(), p_targetLeftPosition.getValue());
+            setPostion(() -> p_armTarget.getValue());
         }, this);
     }
 
-    public Command goToStartFactory() {
-        return new RunCommand(() -> {
-            setPostion(rightStartPosition, leftStartPosition);
-        });
-    }
+    // public Command goToStartFactory() {
+    // return new RunCommand(() -> {
+    // setPostion(rightStartPosition, leftStartPosition);
+    // });
+    // }
 
-    public Command upDownFactory() {
-        return new SequentialCommandGroup(setPositionFactory().withTimeout(3), new WaitCommand(1), goToStartFactory());
-    }
+    // public Command upDownFactory() {
+    // return new SequentialCommandGroup(setPositionFactory().withTimeout(3), new
+    // WaitCommand(1), goToStartFactory());
+    // }
 
     @Override
     public void periodic() {
@@ -156,8 +193,6 @@ public class Climber extends SubsystemBase {
                 m_armRight.getPosition().getValueAsDouble() * kMotorRotationsToClimberPosition);
         SmartDashboard.putNumber("Climber:ArmLeft",
                 m_armLeft.getPosition().getValueAsDouble() * kMotorRotationsToClimberPosition);
-        SmartDashboard.putNumber("Climber:TargetLeft", p_targetLeftPosition.getValue());
-        SmartDashboard.putNumber("Climber:TargetRigt", p_targetRightPosition.getValue());
         SmartDashboard.putNumber("Climber:StartLeft", leftStartPosition);
         SmartDashboard.putNumber("Climber:StartRight", rightStartPosition);
     }

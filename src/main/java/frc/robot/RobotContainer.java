@@ -79,6 +79,7 @@ public class RobotContainer {
         m_intake.setDefaultCommand(m_intake.stopMovingFactory());
         m_elevator.setDefaultCommand(m_elevator.stowFactory());
         drivetrain.resetPose(new Pose2d());
+        m_climber.setDefaultCommand(m_climber.stowArmFactory());
     }
 
     private void configureRosNetworkTablesBridge() {
@@ -116,6 +117,8 @@ public class RobotContainer {
         buttonBox.button(17).whileFalse(m_shooter.stopShooterFactory());
         buttonBox.button(5).whileTrue(m_elevator.setPodiumFactory());
         buttonBox.button(6).whileTrue(m_elevator.setAmpFactory());
+        buttonBox.button(8).whileTrue(m_climber.setPositionFactory());
+
     }
 
     private void configureSmartDashboardButtons() {
@@ -136,13 +139,11 @@ public class RobotContainer {
 
         // Climber
         SmartDashboard.putData("ClimberGoToPostition", m_climber.setPositionFactory());
-        SmartDashboard.putData("ClimberGoToStart", m_climber.goToStartFactory());
         SmartDashboard.putData("ClimberCalibrate", m_climber.calibrateFactory());
         SmartDashboard.putData("ClimberCoastMode", m_climber.enableCoastModeFactory().ignoringDisable(true));
         SmartDashboard.putData("ClimberBrakeMode", m_climber.enableBrakeModeFactory().ignoringDisable(true));
         SmartDashboard.putData("ElevatorCoastMode", m_elevator.enableCoastModeFactory().ignoringDisable(true));
         SmartDashboard.putData("ElevatorBrakeMode", m_elevator.enableBrakeModeFactory().ignoringDisable(true));
-        SmartDashboard.putData("ClimberUpDown", m_climber.upDownFactory());
 
         // Auto Test
         SmartDashboard.putData("Red Line Auto", drivetrain.getAutoPath("TwoPieceAuto"));
