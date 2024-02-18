@@ -24,6 +24,8 @@ import frc.robot.util.preferenceconstants.PreferenceConstants;
 public class Elevator extends SubsystemBase {
     private DoublePreferenceConstant p_pivotPodium = new DoublePreferenceConstant("Elevator/Podium", 60);
     private DoublePreferenceConstant p_pivotFlat = new DoublePreferenceConstant("Elevator/Flat", 90);
+    private DoublePreferenceConstant p_pivotAmp = new DoublePreferenceConstant("Elevator/PivotAmp", 0);
+    private DoublePreferenceConstant p_elevatorAmp = new DoublePreferenceConstant("Elevator/ElevatorAmp", 0);
     private DoublePreferenceConstant p_PivotMaxVelocity = new DoublePreferenceConstant(
             "Elevator/PivotMotionMagicVelocity", 0);
     private DoublePreferenceConstant p_PivotMaxAcceleration = new DoublePreferenceConstant(
@@ -45,8 +47,7 @@ public class Elevator extends SubsystemBase {
             "Elevator/ElevatorPID");
 
     private final double kPivotMotorRotationToShooterAngle = 360.0 / 25.0;
-    // TODO get this -> private final double kElevatorMotorToElevatorDistance =
-    // 360.0 / 25.0;
+    private final double kElevatorMotorToElevatorDistance = (7.086614173228346 / 14);
 
     private final TalonFX m_pivotMotor = new TalonFX(Constants.ELEVATOR_ANGLER_MOTOR, Constants.CANIVORE_CANBUS);
     private final TalonFX m_elevatorMotor = new TalonFX(Constants.ELEVATOR_MOTOR, Constants.RIO_CANBUS);
@@ -102,18 +103,21 @@ public class Elevator extends SubsystemBase {
         elevatorSlot0.kP = p_ElevatorPIDPreferenceConstants.getKP().getValue();
         elevatorSlot0.kI = p_ElevatorPIDPreferenceConstants.getKI().getValue();
         elevatorSlot0.kD = p_ElevatorPIDPreferenceConstants.getKD().getValue();
-        elevatorSlot0.kS = 0.4;
+        elevatorSlot0.kS = 0;
         elevatorSlot0.kV = p_ElevatorPIDPreferenceConstants.getKF().getValue();
 
         m_elevatorMotor.getConfigurator().apply(elevatorConfig);
     }
 
-    public void stow() {
+    public void pivotStow() {
         m_pivotMotor.setControl(new DutyCycleOut(-p_pivotStowSpeed.getValue()));
         if (pivotDebouncer.calculate(m_pivotMotor.getVelocity().getValueAsDouble() > -1)) {
             calibratePivot();
         }
-        m_pivotMotor.setControl(new DutyCycleOut(-p_elevatorStowSpeed.getValue()));
+    }
+
+    public void elevatorStow() {
+        m_elevatorMotor.setControl(new DutyCycleOut(-p_elevatorStowSpeed.getValue()));
         if (elevatorDebouncer.calculate(m_elevatorMotor.getVelocity().getValueAsDouble() > -1)) {
             calibrateElevator();
         }
@@ -123,24 +127,37 @@ public class Elevator extends SubsystemBase {
         m_pivotMotor.setControl(m_pivotRequest.withPosition(position / kPivotMotorRotationToShooterAngle));
     }
 
-    public void setElevatorPosition(double position) {
-        m_elevatorMotor.setControl(m_elevatorRequest.withPosition(position / kElevatorMotorRotationToElevatorDistance));
+    public void setElevatorPosition(double height) {
+        m_elevatorMotor.setControl(m_elevatorRequest.withPosition(height / kElevatorMotorToElevatorDistance));
     }
 
     public void calibratePivot() {
-        m_pivotMotor.setPosition(42 / kPivotMotorRotationToShooterAngle);
+        m_pivotMotor.setPosition(42.0 / kPivotMotorRotationToShooterAngle);
     }
 
     public void calibrateElevator() {
-        m_elevatorMotor.setPosition(0);
+        m_elevatorMotor.setPosition(27.7 / kElevatorMotorToElevatorDistance);
+    }
+
+    public Command setAmpFactory() {
+        return new RunCommand(() -> {
+            setPivotPosition(p_pivotAmp.getValue());
+            setElevatorPosition(p_elevatorAmp.getValue());
+        }, this);
     }
 
     public Command setPodiumFactory() {
-        return new RunCommand(() -> setPivotPosition(p_pivotPodium.getValue()), this);
+        return new RunCommand(() -> {
+            setPivotPosition(p_pivotPodium.getValue());
+            elevatorStow();
+        }, this);
     }
 
     public Command setFlatFactory() {
-        return new RunCommand(() -> setPivotPosition(p_pivotFlat.getValue()), this);
+        return new RunCommand(() -> {
+            setPivotPosition(p_pivotFlat.getValue());
+            elevatorStow();
+        }, this);
     }
 
     public Command calibratePivotFactory() {
@@ -152,12 +169,17 @@ public class Elevator extends SubsystemBase {
     }
 
     public Command stowFactory() {
-        return new RunCommand(this::stow, this).beforeStarting(() -> pivotDebouncer.calculate(false));
+        return new RunCommand(() -> {
+            pivotStow();
+            elevatorStow();
+        }, this).beforeStarting(() -> pivotDebouncer.calculate(false));
     }
 
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Shooter Angle",
                 m_pivotMotor.getPosition().getValueAsDouble() * kPivotMotorRotationToShooterAngle);
+        SmartDashboard.putNumber("Elevator Height",
+                m_elevatorMotor.getPosition().getValueAsDouble() * kElevatorMotorToElevatorDistance);
     }
 }

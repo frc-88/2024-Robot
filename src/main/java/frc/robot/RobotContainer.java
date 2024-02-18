@@ -115,6 +115,7 @@ public class RobotContainer {
         buttonBox.button(18).whileTrue(m_intake.rejectFactory());
         buttonBox.button(17).whileFalse(m_shooter.stopShooterFactory());
         buttonBox.button(5).whileTrue(m_elevator.setPodiumFactory());
+        buttonBox.button(6).whileTrue(m_elevator.setAmpFactory());
     }
 
     private void configureSmartDashboardButtons() {
