@@ -6,7 +6,9 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,7 +35,7 @@ public class Shooter extends SubsystemBase {
     private final TalonFX m_RightShooter = new TalonFX(Constants.SHOOTER_RIGHT_MOTOR, Constants.CANIVORE_CANBUS);
     private double talonFree = 6380;
 
-    private final VelocityTorqueCurrentFOC velocityRequest = new VelocityTorqueCurrentFOC(0);
+    private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
 
     public Shooter() {
         applyAllConfigs(0);
@@ -82,8 +84,8 @@ public class Shooter extends SubsystemBase {
     }
 
     public void startShooter() {
-        m_LeftShooter.setControl(velocityRequest.withVelocity(leftShooterSpeed.getValue()));
-        m_RightShooter.setControl(velocityRequest.withVelocity(rightShooterSpeed.getValue()));
+        m_LeftShooter.setControl(velocityRequest.withVelocity(leftShooterSpeed.getValue() / 60));
+        m_RightShooter.setControl(velocityRequest.withVelocity(rightShooterSpeed.getValue() / 60));
     }
 
     public void stopShooter() {
@@ -92,8 +94,8 @@ public class Shooter extends SubsystemBase {
     }
 
     public void runIdleSpeed() {
-        m_LeftShooter.setControl(velocityRequest.withVelocity(idleShooterControl.getValue()));
-        m_RightShooter.setControl(velocityRequest.withVelocity(idleShooterControl.getValue()));
+        m_LeftShooter.setControl(velocityRequest.withVelocity(idleShooterControl.getValue() / 60));
+        m_RightShooter.setControl(velocityRequest.withVelocity(idleShooterControl.getValue() / 60));
     }
 
     public Command runShooterFactory() {

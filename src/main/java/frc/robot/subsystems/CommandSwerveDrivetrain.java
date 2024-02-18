@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import java.io.FileNotFoundException;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -22,7 +21,10 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.networktables.DoubleArrayPublisher;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -32,7 +34,6 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Telemetry;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.Aiming;
 import frc.robot.util.DriveUtils;
@@ -46,7 +47,7 @@ import frc.robot.util.DriveUtils;
  * that's why we did it
  */
 public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsystem {
-    private double MaxSpeed = 6; // 6 meters per second desired top speed
+    private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps;
     private double MaxAngularRate = 2 * Math.PI; // 3/4 of a rotation per second max angular velocity
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier m_simNotifier = null;
@@ -58,6 +59,13 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private double targetHeading = 0;
     private Aiming m_aiming;
     private boolean lowPowerMode = false;
+    /* What to publish over networktables for telemetry */
+    private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
+
+    /* Robot pose for field positioning */
+    private final NetworkTable table = inst.getTable("ROSPose");
+    private final DoubleArrayPublisher fieldPub = table.getDoubleArrayTopic("robotPose").publish();
+    private final StringPublisher fieldTypePub = table.getStringTopic(".type").publish();
 
     public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
@@ -148,12 +156,28 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return getState().Pose;
     }
 
-    private void resetPose(Pose2d pose) {
+    public void resetPose(Pose2d pose) {
         seedFieldRelative(pose);
         setTargetHeading(pose.getRotation().getDegrees());
     }
 
-    private void setChassisSpeeds(ChassisSpeeds speeds) {
+    // returns the current pose in blue coordinates
+    public Pose2d getPoseBlue() {
+        if (DriveUtils.redAlliance())
+            return DriveUtils.redBlueTransform(getState().Pose);
+        else
+            return getState().Pose;
+    }
+
+    // pass in a pose in blue coordinates
+    public void resetPoseBlue(Pose2d pose) {
+        if (DriveUtils.redAlliance())
+            pose = DriveUtils.redBlueTransform(pose);
+        seedFieldRelative(pose);
+        setTargetHeading(pose.getRotation().getDegrees());
+    }
+
+    public void setChassisSpeeds(ChassisSpeeds speeds) {
         this.setControl(autoRequest.withSpeeds(speeds));
     }
 
@@ -163,23 +187,15 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             driveBaseRadius = Math.max(driveBaseRadius, moduleLocation.getNorm());
         }
 
-        AutoBuilder.configureHolonomic(this::getPose, this::resetPose,
+        AutoBuilder.configureHolonomic(this::getPoseBlue, this::resetPoseBlue,
                 this::getChassisSpeeds, this::setChassisSpeeds,
                 new HolonomicPathFollowerConfig(new PIDConstants(10.0, 0.0, 0.0), // Translational constant
                         new PIDConstants(10.0, 0.0, 0.0), // Rotational constant
                         TunerConstants.kSpeedAt12VoltsMps, // in m/s
                         driveBaseRadius, // in meters
                         new ReplanningConfig()),
-                this::redAlliance,
+                DriveUtils::redAlliance,
                 this);
-    }
-
-    private boolean redAlliance() {
-        var alliance = DriverStation.getAlliance();
-        if (alliance.isPresent()) {
-            return alliance.get() == DriverStation.Alliance.Red;
-        }
-        return false;
     }
 
     private void startSimThread() {
@@ -228,7 +244,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public void localize() {
-        seedFieldRelative(m_aiming.getROSPose());
+        resetPose(m_aiming.getROSPose());
     }
 
     public double getCurrentRobotAngle() {
@@ -261,8 +277,24 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return new RunCommand(() -> setTargetHeading(m_aiming.getSpeakerAngleForDrivetrian()));
     }
 
+    private void sendROSPose() {
+        /* Telemeterize the pose */
+        Pose2d pose = m_aiming.getROSPose();
+        if (DriveUtils.redAlliance()) {
+            pose = DriveUtils.redBlueTransform(pose);
+        }
+        fieldTypePub.set("Field2d");
+        fieldPub.set(new double[] {
+                pose.getX(),
+                pose.getY(),
+                pose.getRotation().getDegrees()
+        });
+    }
+
     @Override
     public void periodic() {
+        sendROSPose();
+        SmartDashboard.putNumber("Target Heading", targetHeading);
         SmartDashboard.putNumber("Speaker Angle", m_aiming.getSpeakerAngleForDrivetrian());
         SmartDashboard.putNumber("ROS X Translation", m_aiming.getROSPose().getX());
         SmartDashboard.putNumber("ROS Y Translation", m_aiming.getROSPose().getY());
