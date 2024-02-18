@@ -3,6 +3,7 @@ package frc.robot.util;
 import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.ros.bridge.Frames;
@@ -41,7 +42,14 @@ public class Aiming {
     }
 
     public double speakerAngleForShooter() {
-        return 0;
+        Pose2d robotPose = getROSPose();
+        robotPose = (getAlliance() == DriverStation.Alliance.Red) ? robotPose.relativeTo(Constants.RED_SPEAKER_POSE)
+                : robotPose.relativeTo(Constants.BLUE_SPEAKER_POSE);
+        // height of shooter 22.237
+        // speaker height 79.828919
+        // height 57.591919
+        double distanceToSpeaker = robotPose.getTranslation().getNorm();
+        return Math.atan2(Units.inchesToMeters(57.591919), distanceToSpeaker) * (180 / Math.PI);
     }
 
     // originPoint should be relative to the origin of whatever alliance we are on
