@@ -163,6 +163,22 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         setTargetHeading(pose.getRotation().getDegrees());
     }
 
+    // returns the current pose in blue coordinates
+    public Pose2d getPoseBlue() {
+        if (DriveUtils.redAlliance())
+            return DriveUtils.redBlueTransform(getState().Pose);
+        else
+            return getState().Pose;
+    }
+
+    // pass in a pose in blue coordinates
+    public void resetPoseBlue(Pose2d pose) {
+        if (DriveUtils.redAlliance())
+            pose = DriveUtils.redBlueTransform(pose);
+        seedFieldRelative(pose);
+        setTargetHeading(pose.getRotation().getDegrees());
+    }
+
     private void setChassisSpeeds(ChassisSpeeds speeds) {
         this.setControl(autoRequest.withSpeeds(speeds));
     }
@@ -173,7 +189,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             driveBaseRadius = Math.max(driveBaseRadius, moduleLocation.getNorm());
         }
 
-        AutoBuilder.configureHolonomic(this::getPose, this::resetPose,
+        AutoBuilder.configureHolonomic(this::getPoseBlue, this::resetPoseBlue,
                 this::getChassisSpeeds, this::setChassisSpeeds,
                 new HolonomicPathFollowerConfig(new PIDConstants(10.0, 0.0, 0.0), // Translational constant
                         new PIDConstants(10.0, 0.0, 0.0), // Rotational constant

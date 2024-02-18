@@ -1,16 +1,16 @@
 {
   "version": 1.0,
-  "startingPose": {
-    "position": {
-      "x": 1.2073033155075317,
-      "y": 4.400478710867333
-    },
-    "rotation": -43.47923033885623
-  },
+  "startingPose": null,
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Localize"
+          }
+        },
         {
           "type": "path",
           "data": {
@@ -27,6 +27,12 @@
           "type": "path",
           "data": {
             "pathName": "TwoToThree"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Localize"
           }
         }
       ]
