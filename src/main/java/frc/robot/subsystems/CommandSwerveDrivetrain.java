@@ -25,7 +25,6 @@ import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -157,12 +156,28 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return getState().Pose;
     }
 
-    private void resetPose(Pose2d pose) {
+    public void resetPose(Pose2d pose) {
         seedFieldRelative(pose);
         setTargetHeading(pose.getRotation().getDegrees());
     }
 
-    private void setChassisSpeeds(ChassisSpeeds speeds) {
+    // returns the current pose in blue coordinates
+    public Pose2d getPoseBlue() {
+        if (DriveUtils.redAlliance())
+            return DriveUtils.redBlueTransform(getState().Pose);
+        else
+            return getState().Pose;
+    }
+
+    // pass in a pose in blue coordinates
+    public void resetPoseBlue(Pose2d pose) {
+        if (DriveUtils.redAlliance())
+            pose = DriveUtils.redBlueTransform(pose);
+        seedFieldRelative(pose);
+        setTargetHeading(pose.getRotation().getDegrees());
+    }
+
+    public void setChassisSpeeds(ChassisSpeeds speeds) {
         this.setControl(autoRequest.withSpeeds(speeds));
     }
 
@@ -172,7 +187,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             driveBaseRadius = Math.max(driveBaseRadius, moduleLocation.getNorm());
         }
 
-        AutoBuilder.configureHolonomic(this::getPose, this::resetPose,
+        AutoBuilder.configureHolonomic(this::getPoseBlue, this::resetPoseBlue,
                 this::getChassisSpeeds, this::setChassisSpeeds,
                 new HolonomicPathFollowerConfig(new PIDConstants(10.0, 0.0, 0.0), // Translational constant
                         new PIDConstants(10.0, 0.0, 0.0), // Rotational constant
@@ -228,10 +243,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 Rotation2d.fromDegrees(getModule(0).getCANcoder().getAbsolutePosition().getValueAsDouble() * 360));
     }
 
-    public void resetPigeon() {
-        getPigeon2().setYaw(0);
-    }
-
     public void localize() {
         resetPose(m_aiming.getROSPose());
     }
@@ -252,10 +263,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return new InstantCommand(() -> {
             localize();
         }, this);
-    }
-
-    public Command resetPigeonFactory() {
-        return new InstantCommand(() -> resetPigeon(), this);
     }
 
     public Command setHeadingFactory(double target) {
@@ -287,6 +294,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     @Override
     public void periodic() {
         sendROSPose();
+        SmartDashboard.putNumber("Target Heading", targetHeading);
         SmartDashboard.putNumber("Speaker Angle", m_aiming.getSpeakerAngleForDrivetrian());
         SmartDashboard.putNumber("ROS X Translation", m_aiming.getROSPose().getX());
         SmartDashboard.putNumber("ROS Y Translation", m_aiming.getROSPose().getY());
