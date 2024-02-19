@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.835755491330802,
-        "y": 7.441986055143282
-      },
-      "prevControl": null,
-      "nextControl": {
-        "x": 7.355030926278068,
-        "y": 7.1831343662687335
-      },
-      "isLocked": false,
-      "linkedName": "Center1"
-    },
-    {
-      "anchor": {
         "x": 6.190198326342598,
         "y": 6.480536925037814
       },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.633944078698969,
+        "y": 5.851897109199625
+      },
+      "isLocked": false,
+      "linkedName": "ShotZone"
+    },
+    {
+      "anchor": {
+        "x": 7.965181335768077,
+        "y": 4.326521085474604
+      },
       "prevControl": {
-        "x": 6.467539421565329,
-        "y": 6.628452175823271
+        "x": 7.539924989759889,
+        "y": 4.705553915612336
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "ShotZone"
+      "linkedName": "Center3"
     }
   ],
   "rotationTargets": [],
@@ -39,13 +39,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 15.592810939266377,
+    "rotation": -33.40782458970899,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "CenterFivePiece",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 15.17291534552517,
     "velocity": 0
   },
   "useDefaultConstraints": true

@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.079261888253505,
-        "y": 7.127666147224186
+        "x": 6.190198326342598,
+        "y": 6.480536925037814
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.726391110439878,
-        "y": 6.702409801216
+        "x": 6.837327548528971,
+        "y": 6.055280579029628
       },
       "isLocked": false,
       "linkedName": "ShotZone"
     },
     {
       "anchor": {
-        "x": 7.872734304027166,
-        "y": 5.759450077458713
+        "x": 7.854244897678984,
+        "y": 5.787184186980988
       },
       "prevControl": {
-        "x": 7.318052113581703,
-        "y": 6.092259391725991
+        "x": 7.299562707233521,
+        "y": 6.119993501248265
       },
       "nextControl": null,
       "isLocked": false,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "CenterFivePiece",
   "previewStartingState": {
     "rotation": 15.17291534552517,
     "velocity": 0

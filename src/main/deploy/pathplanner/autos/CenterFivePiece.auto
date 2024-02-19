@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.28126094090026,
-      "y": 4.030690583903691
+      "x": 1.2442821282038958,
+      "y": 6.776367426608728
     },
     "rotation": 41.98721249581664
   },
@@ -24,15 +24,15 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Center1ToShoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         },
         {
@@ -50,7 +50,25 @@
         {
           "type": "named",
           "data": {
-            "name": "ResetHeading"
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ShootToCenter3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center3ToShoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         }
       ]
