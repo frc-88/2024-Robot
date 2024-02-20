@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.2442821282038958,
-      "y": 6.776367426608728
+      "x": 0.7265787504547981,
+      "y": 6.730143910738272
     },
-    "rotation": 41.98721249581664
+    "rotation": 60.83238662042218
   },
   "command": {
     "type": "sequential",
@@ -20,7 +20,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RaceToCenter1"
+            "pathName": "SpeakerToCenter1"
           }
         },
         {

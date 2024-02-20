@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.459400643266846,
-        "y": 5.567111941824834
+        "x": 7.863489600853075,
+        "y": 3.9197541458145984
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2611994773539092,
-        "y": 5.888875921895988
+        "x": 7.410499145322615,
+        "y": 3.2356461109318624
       },
       "isLocked": false,
-      "linkedName": "FourPieceTwo"
+      "linkedName": "Center3Back"
     },
     {
       "anchor": {
-        "x": 2.4983996761342704,
-        "y": 6.756582444281278
+        "x": 6.236421842213053,
+        "y": 1.42368428881002
       },
       "prevControl": {
-        "x": 2.122528929742544,
-        "y": 6.489781628211905
+        "x": 6.892795767573517,
+        "y": 2.4406016379600333
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "FourPieceThree"
+      "linkedName": "Snipe"
     }
   ],
   "rotationTargets": [],
@@ -39,13 +39,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 29.35775354279116,
+    "rotation": -28.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "FourPiece",
+  "folder": "CleansideCenterFour",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 23.19859051364822,
     "velocity": 0
   },
   "useDefaultConstraints": true

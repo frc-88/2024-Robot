@@ -1,0 +1,55 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.6803552345843429,
+      "y": 4.317276382300513
+    },
+    "rotation": -59.0362434679265
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SpeakerToCenter5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center5ToSnipe"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SnipeToCenter4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center4ToSnipe"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SnipeToCenter3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center3ToSnipe"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
