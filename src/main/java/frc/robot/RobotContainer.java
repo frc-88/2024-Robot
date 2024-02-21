@@ -123,7 +123,7 @@ public class RobotContainer {
                 .whileTrue(new SequentialCommandGroup(
                         m_elevator.climbFactory().alongWith(m_climber.prepArmsFactory()).until(m_elevator::onTarget),
                         m_climber.climbFactory().alongWith(m_elevator.climbFactory())))
-                .onFalse(m_climber.softLanding().alongWith(m_elevator.climbFactory()));
+                .onFalse(m_climber.softLandingFactory().alongWith(m_elevator.climbFactory()));
 
     }
 

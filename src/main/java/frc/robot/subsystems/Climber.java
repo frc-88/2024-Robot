@@ -93,10 +93,12 @@ public class Climber extends SubsystemBase {
         m_armLeft.setInverted(true);
     }
 
-    public boolean onTarget() {
-        return Math.abs(m_armLeft.getPosition().getValueAsDouble() * kMotorRotationsToClimberPosition - m_angle) < 2
+    public boolean climberOnTarget(double position, double tolerance) {
+        return Math.abs(
+                m_armLeft.getPosition().getValueAsDouble() * kMotorRotationsToClimberPosition - position) < tolerance
                 && Math.abs(
-                        m_armRight.getPosition().getValueAsDouble() * kMotorRotationsToClimberPosition - m_angle) < 2;
+                        m_armRight.getPosition().getValueAsDouble() * kMotorRotationsToClimberPosition
+                                - position) < tolerance;
     }
 
     public void stowArms() {
@@ -156,9 +158,9 @@ public class Climber extends SubsystemBase {
     // .until(this::onTarget).finallyDo(() -> configureTalons(0));
     // }
 
-    public Command softLandingfactory() {
+    public Command softLandingFactory() {
         return new RunCommand(() -> softLanding(), this)
-                .until(() -> m_armLeft.getPosition().getValueAsDouble() * kMotorRotationsToClimberPosition);
+                .until(() -> climberOnTarget(p_armPrepPosition.getValue(), 2.0));
     }
 
     public Command climbFactory() {
