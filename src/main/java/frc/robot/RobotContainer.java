@@ -14,7 +14,6 @@ import frc.robot.subsystems.Shooter;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
 import frc.team88.ros.conversions.TFListenerCompact;
-import com.pathplanner.lib.path.PathPlannerPath;
 
 import com.ctre.phoenix6.Utils;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -118,6 +117,13 @@ public class RobotContainer {
         buttonBox.button(5).whileTrue(m_elevator.setPodiumFactory());
         buttonBox.button(6).whileTrue(m_elevator.setAmpFactory());
         buttonBox.button(8).whileTrue(m_climber.setPositionFactory());
+        buttonBox.button(11).onTrue(m_climber.stowArmFactory().alongWith(m_elevator.stowFactory()));
+        buttonBox.button(2).onTrue(m_climber.prepArmsFactory().alongWith(m_elevator.elevatorPrepFactory()));
+        buttonBox.button(15)
+                .whileTrue(new SequentialCommandGroup(
+                        m_elevator.climbFactory().alongWith(m_climber.prepArmsFactory()).until(m_elevator::onTarget),
+                        m_climber.climbFactory().alongWith(m_elevator.climbFactory())))
+                .onFalse(m_climber.softLanding().alongWith(m_elevator.climbFactory()));
 
     }
 

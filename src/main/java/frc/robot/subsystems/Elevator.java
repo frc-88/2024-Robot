@@ -45,6 +45,10 @@ public class Elevator extends SubsystemBase {
     private DoublePreferenceConstant p_pivotStowSpeed = new DoublePreferenceConstant("Elevator/PivotStowSpeed", 0.05);
     private DoublePreferenceConstant p_elevatorStowSpeed = new DoublePreferenceConstant("Elevator/ElevatorStowSpeed",
             0.05);
+    private DoublePreferenceConstant p_elevatorClimbPosition = new DoublePreferenceConstant(
+            "Elevator/ElevatorClimbPosition", 0);
+    private DoublePreferenceConstant p_elevatorPrepPosition = new DoublePreferenceConstant(
+            "Elevator/ElevatorPrepPosition", 0);
 
     private PIDPreferenceConstants p_PivotPIDPreferenceConstants = new PIDPreferenceConstants("Elevator/PivotPID");
     private PIDPreferenceConstants p_ElevatorPIDPreferenceConstants = new PIDPreferenceConstants(
@@ -59,6 +63,8 @@ public class Elevator extends SubsystemBase {
     private MotionMagicVoltage m_elevatorRequest = new MotionMagicVoltage(0);
     private final Debouncer pivotDebouncer = new Debouncer(1, DebounceType.kRising);
     private final Debouncer elevatorDebouncer = new Debouncer(1, DebounceType.kRising);
+
+    private double m_elevatorTarget;
 
     public Elevator() {
 
@@ -118,6 +124,11 @@ public class Elevator extends SubsystemBase {
         m_elevatorMotor.setInverted(true);
     }
 
+    public boolean onTarget() {
+        return Math.abs(m_elevatorMotor.getPosition().getValueAsDouble() * kElevatorMotorToElevatorDistance
+                - m_elevatorTarget) < 2;
+    }
+
     public void enableCoastMode() {
         m_elevatorMotor.setNeutralMode(NeutralModeValue.Coast);
         m_pivotMotor.setNeutralMode(NeutralModeValue.Coast);
@@ -146,13 +157,14 @@ public class Elevator extends SubsystemBase {
         m_pivotMotor.setControl(m_pivotRequest.withPosition(position / kPivotMotorRotationToShooterAngle));
     }
 
-    public void setElevatorPosition(double height) {
-        m_elevatorMotor.setControl(m_elevatorRequest.withPosition(height / kElevatorMotorToElevatorDistance));
-    }
-
     public void setPivotPosition(DoubleSupplier position) {
         m_pivotMotor
                 .setControl(m_pivotRequest.withPosition(position.getAsDouble() / kPivotMotorRotationToShooterAngle));
+    }
+
+    public void setElevatorPosition(double height) {
+        m_elevatorTarget = height;
+        m_elevatorMotor.setControl(m_elevatorRequest.withPosition(height / kElevatorMotorToElevatorDistance));
     }
 
     public void setElevatorPosition(DoubleSupplier height) {
@@ -166,6 +178,17 @@ public class Elevator extends SubsystemBase {
 
     public void calibrateElevator() {
         m_elevatorMotor.setPosition(27.7 / kElevatorMotorToElevatorDistance);
+    }
+
+    public Command elevatorPrepFactory() {
+        return new RunCommand(() -> setElevatorPosition(p_elevatorPrepPosition.getValue()), this);
+    }
+
+    public Command climbFactory() {
+        return new RunCommand(() -> {
+            setElevatorPosition(p_elevatorClimbPosition.getValue());
+            pivotStow();
+        }, this);
     }
 
     public Command setAmpFactory() {

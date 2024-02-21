@@ -10,17 +10,16 @@ import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.DynamicMotionMagicVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
@@ -28,13 +27,14 @@ import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import frc.robot.util.preferenceconstants.PIDPreferenceConstants;
 
 public class Climber extends SubsystemBase {
-    private DoublePreferenceConstant p_armSpeed = new DoublePreferenceConstant("Arm/Speed", -0.5);
     private DoublePreferenceConstant p_maxVelocity = new DoublePreferenceConstant("Arm/MotionMagicVelocity", 62.5);
     private DoublePreferenceConstant p_maxAcceleration = new DoublePreferenceConstant("Arm/MotionMagicAcceleration",
             250);
     private DoublePreferenceConstant p_maxJerk = new DoublePreferenceConstant("Arm/MotionMagicJerk", 500);
     private DoublePreferenceConstant p_armTarget = new DoublePreferenceConstant("Arm/ArmTarget", 0);
     private DoublePreferenceConstant p_armStowSpeed = new DoublePreferenceConstant("Arm/ArmStowSpeed", 0);
+    private DoublePreferenceConstant p_armPrepPosition = new DoublePreferenceConstant("Arm/ArmPrepPosition", -20);
+    private DoublePreferenceConstant p_armClimbPosition = new DoublePreferenceConstant("Arm/ArmClimbPosition", 0);
     private PIDPreferenceConstants p_PidPreferenceConstants = new PIDPreferenceConstants("Arm/PID");
     private final TalonFX m_armRight = new TalonFX(Constants.CLIMBER_RIGHT_MOTOR, Constants.RIO_CANBUS);
     private final TalonFX m_armLeft = new TalonFX(Constants.CLIMBER_LEFT_MOTOR, Constants.RIO_CANBUS);
@@ -48,6 +48,7 @@ public class Climber extends SubsystemBase {
     private double rightStartPosition;
     private double leftStartPosition;
     private final double kMotorRotationsToClimberPosition = 360.0 / 250.0;
+    private double m_angle;
 
     /** Creates a new Climber. */
     public Climber() {
@@ -63,11 +64,19 @@ public class Climber extends SubsystemBase {
         p_PidPreferenceConstants.addChangeHandler(this::configureTalons);
     }
 
+    private void configureTalonsSlow(double unused) {
+        configureTalons(unused, p_maxVelocity.getValue() / 4.0);
+    }
+
     private void configureTalons(double unused) {
+        configureTalons(unused, p_maxVelocity.getValue());
+    }
+
+    private void configureTalons(double unused, double velocity) {
         TalonFXConfiguration cfg = new TalonFXConfiguration();
         /* Configure current limits */
         MotionMagicConfigs mm = cfg.MotionMagic;
-        mm.MotionMagicCruiseVelocity = p_maxVelocity.getValue();
+        mm.MotionMagicCruiseVelocity = velocity;
         mm.MotionMagicAcceleration = p_maxAcceleration.getValue();
         mm.MotionMagicJerk = p_maxJerk.getValue();
 
@@ -84,6 +93,12 @@ public class Climber extends SubsystemBase {
         m_armLeft.setInverted(true);
     }
 
+    public boolean onTarget() {
+        return Math.abs(m_armLeft.getPosition().getValueAsDouble() * kMotorRotationsToClimberPosition - m_angle) < 2
+                && Math.abs(
+                        m_armRight.getPosition().getValueAsDouble() * kMotorRotationsToClimberPosition - m_angle) < 2;
+    }
+
     public void stowArms() {
         m_armRight.setControl(new DutyCycleOut(-p_armStowSpeed.getValue()));
         m_armLeft.setControl(new DutyCycleOut(-p_armStowSpeed.getValue()));
@@ -93,12 +108,18 @@ public class Climber extends SubsystemBase {
         }
     }
 
-    public void setPostion(double position) {
+    public void softLanding() {
+        m_armRight.setControl(new DutyCycleOut(-p_armStowSpeed.getValue()));
+        m_armLeft.setControl(new DutyCycleOut(-p_armStowSpeed.getValue()));
+    }
+
+    public void setClimberPostion(double position) {
+        m_angle = position;
         m_armRight.setControl(m_motionMagic.withPosition(position / kMotorRotationsToClimberPosition));
         m_armLeft.setControl(m_motionMagic.withPosition(position / kMotorRotationsToClimberPosition));
     }
 
-    public void setPostion(DoubleSupplier position) {
+    public void setClimberPostion(DoubleSupplier position) {
         m_armRight.setControl(m_motionMagic.withPosition(position.getAsDouble() / kMotorRotationsToClimberPosition));
         m_armLeft.setControl(m_motionMagic.withPosition(position.getAsDouble() / kMotorRotationsToClimberPosition));
     }
@@ -127,12 +148,25 @@ public class Climber extends SubsystemBase {
         m_armRight.setNeutralMode(NeutralModeValue.Brake);
     }
 
-    public void run() {
-        set(p_armSpeed.getValue());
+    // public Command softLanding() {
+    // return new InstantCommand(() -> configureTalonsSlow(0)).andThen(new
+    // WaitCommand(0.25))
+    // .andThen(new RunCommand(() ->
+    // setClimberPostion(p_armPrepPosition.getValue()), this))
+    // .until(this::onTarget).finallyDo(() -> configureTalons(0));
+    // }
+
+    public Command softLandingfactory() {
+        return new RunCommand(() -> softLanding(), this)
+                .until(() -> m_armLeft.getPosition().getValueAsDouble() * kMotorRotationsToClimberPosition);
     }
 
-    public void stop() {
-        set(0);
+    public Command climbFactory() {
+        return new RunCommand(() -> setClimberPostion(p_armClimbPosition.getValue()), this);
+    }
+
+    public Command prepArmsFactory() {
+        return new RunCommand(() -> setClimberPostion(p_armPrepPosition.getValue()), this);
     }
 
     public Command stowArmFactory() {
@@ -157,34 +191,11 @@ public class Climber extends SubsystemBase {
         }, this);
     }
 
-    public Command runFactory() {
-        return new RunCommand(() -> {
-            run();
-        }, this);
-    }
-
-    public Command stopFactory() {
-        return new InstantCommand(() -> {
-            stop();
-        }, this);
-    }
-
     public Command setPositionFactory() {
         return new RunCommand(() -> {
-            setPostion(() -> p_armTarget.getValue());
+            setClimberPostion(() -> p_armTarget.getValue());
         }, this);
     }
-
-    // public Command goToStartFactory() {
-    // return new RunCommand(() -> {
-    // setPostion(rightStartPosition, leftStartPosition);
-    // });
-    // }
-
-    // public Command upDownFactory() {
-    // return new SequentialCommandGroup(setPositionFactory().withTimeout(3), new
-    // WaitCommand(1), goToStartFactory());
-    // }
 
     @Override
     public void periodic() {
