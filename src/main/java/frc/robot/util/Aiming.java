@@ -3,6 +3,7 @@ package frc.robot.util;
 import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.ros.bridge.Frames;
@@ -15,12 +16,21 @@ public class Aiming {
     private Alliance alliance;
     private TFListenerCompact tf_compact;
 
+    //TODO get these bounds
+    private final double[] shootingAngleBounds = {44.0, 26.0};
+                                                              
+    private final double[] pivotAngleBounds = {42.0, 80.0}; 
+
     public Aiming() {
 
     }
 
     public void setTFListener(TFListenerCompact tfListener) {
         tf_compact = tfListener;
+    }
+
+    public double mapValue(double x, double min, double max, double newMin, double newMax) {
+        return (max - min) / (newMax - newMin) * (x - newMin) + min;
     }
 
     public Pose2d getROSPose() {
@@ -41,7 +51,16 @@ public class Aiming {
     }
 
     public double speakerAngleForShooter() {
-        return 0;
+        Pose2d robotPose = getROSPose();
+        double distance = (getAlliance() == DriverStation.Alliance.Red) ? robotPose.relativeTo(Constants.RED_SPEAKER_POSE).getTranslation().getNorm()
+                : robotPose.relativeTo(Constants.BLUE_SPEAKER_POSE).getTranslation().getNorm();
+        //TODO also get this from CAD
+        final double speakerHeight = Units.inchesToMeters(56.265913);
+        //Speaker height 79.829
+        //23.563087
+        double shootingAngle = Math.atan2(speakerHeight, distance);
+        //return mapValue(shootingAngle, shootingAngleBounds[0], shootingAngleBounds[1], pivotAngleBounds[0], pivotAngleBounds[1]);
+        return shootingAngle;
     }
 
     // originPoint should be relative to the origin of whatever alliance we are on
