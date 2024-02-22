@@ -58,7 +58,7 @@ public class Aiming {
         final double speakerHeight = Units.inchesToMeters(56.265913);
         //Speaker height 79.829
         //23.563087
-        double shootingAngle = Math.atan2(speakerHeight, distance);
+        double shootingAngle = Math.atan2(distance, speakerHeight);
         //return mapValue(shootingAngle, shootingAngleBounds[0], shootingAngleBounds[1], pivotAngleBounds[0], pivotAngleBounds[1]);
         return shootingAngle;
     }
