@@ -124,6 +124,7 @@ public class RobotContainer {
                         m_elevator.climbFactory().alongWith(m_climber.prepArmsFactory()).until(m_elevator::onTarget),
                         m_climber.climbFactory().alongWith(m_elevator.climbFactory())))
                 .onFalse(m_climber.softLandingFactory().alongWith(m_elevator.climbFactory()));
+        buttonBox.button(3).whileTrue(m_elevator.goToAimingPosition());
 
     }
 
