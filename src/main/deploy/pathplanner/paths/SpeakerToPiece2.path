@@ -12,7 +12,7 @@
         "y": 5.557362183607978
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "SpeakerFront"
     },
     {
       "anchor": {
@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Close2"
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.21,
-    "maxAcceleration": 8.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "SixPiece",
   "previewStartingState": {
     "rotation": 0.0,
     "velocity": 0

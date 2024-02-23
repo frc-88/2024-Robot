@@ -68,7 +68,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center2ToWingThruStage"
+            "pathName": "Center2ToWing"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "WingToCenter3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center3ToWing"
           }
         }
       ]
