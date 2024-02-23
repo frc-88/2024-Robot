@@ -114,17 +114,17 @@ public class RobotContainer {
         buttonBox.button(20).whileTrue(m_intake.shootIndexerFactory());
         buttonBox.button(18).whileTrue(m_intake.rejectFactory());
         buttonBox.button(17).whileFalse(m_shooter.stopShooterFactory());
-        buttonBox.button(5).whileTrue(m_elevator.setPodiumFactory());
-        buttonBox.button(6).whileTrue(m_elevator.setAmpFactory());
-        buttonBox.button(8).whileTrue(m_climber.setPositionFactory());
-        buttonBox.button(11).onTrue(m_climber.stowArmFactory().alongWith(m_elevator.stowFactory()));
-        buttonBox.button(2).onTrue(m_climber.prepArmsFactory().alongWith(m_elevator.elevatorPrepFactory()));
-        buttonBox.button(15)
-                .whileTrue(new SequentialCommandGroup(
-                        m_elevator.climbFactory().alongWith(m_climber.prepArmsFactory()).until(m_elevator::onTarget),
-                        m_climber.climbFactory().alongWith(m_elevator.climbFactory())))
-                .onFalse(m_climber.softLandingFactory().alongWith(m_elevator.climbFactory()));
-        buttonBox.button(3).whileTrue(m_elevator.goToAimingPosition());
+        // buttonBox.button(5).whileTrue(m_elevator.setPodiumFactory());
+        // buttonBox.button(6).whileTrue(m_elevator.setAmpFactory());
+        // buttonBox.button(8).whileTrue(m_climber.setPositionFactory());
+        // buttonBox.button(11).onTrue(m_climber.stowArmFactory().alongWith(m_elevator.stowFactory()));
+        // buttonBox.button(2).onTrue(m_climber.prepArmsFactory().alongWith(m_elevator.elevatorPrepFactory()));
+        // buttonBox.button(15)
+        // .whileTrue(new SequentialCommandGroup(
+        // m_elevator.climbFactory().alongWith(m_climber.prepArmsFactory()).until(m_elevator::onTarget),
+        // m_climber.climbFactory().alongWith(m_elevator.climbFactory())))
+        // .onFalse(m_climber.softLandingFactory().alongWith(m_elevator.climbFactory()));
+        buttonBox.button(16).whileTrue(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter()));
 
     }
 
@@ -154,6 +154,7 @@ public class RobotContainer {
 
         // Auto Test
         SmartDashboard.putData("Red Line Auto", drivetrain.getAutoPath("TwoPieceAuto"));
+        SmartDashboard.putData("Four Piece", drivetrain.getAutoPath("FourPiece"));
     }
 
     private void configureBindings() {

@@ -19,10 +19,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.util.Aiming;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import frc.robot.util.preferenceconstants.PIDPreferenceConstants;
-import frc.robot.util.preferenceconstants.PreferenceConstant;
-import frc.robot.util.preferenceconstants.PreferenceConstants;
 
 public class Elevator extends SubsystemBase {
     private DoublePreferenceConstant p_pivotPodium = new DoublePreferenceConstant("Elevator/Podium", 60);
@@ -64,6 +63,8 @@ public class Elevator extends SubsystemBase {
     private MotionMagicVoltage m_elevatorRequest = new MotionMagicVoltage(0);
     private final Debouncer pivotDebouncer = new Debouncer(1, DebounceType.kRising);
     private final Debouncer elevatorDebouncer = new Debouncer(1, DebounceType.kRising);
+
+    private Aiming m_aiming = new Aiming();
 
     private double m_elevatorTarget;
 
@@ -243,8 +244,12 @@ public class Elevator extends SubsystemBase {
         }, this);
     }
 
-    public Command goToAimingPosition() {
-        return new RunCommand(() -> setPivotPosition(p_pivotTarget.getValue()), this);
+    public Command goToAimingPosition(double position) {
+        return new RunCommand(() -> setPivotPosition(position), this);
+    }
+
+    public Command goToAimingPosition(DoubleSupplier position) {
+        return new RunCommand(() -> setPivotPosition(position), this);
     }
 
     @Override

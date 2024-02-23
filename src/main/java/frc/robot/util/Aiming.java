@@ -16,10 +16,10 @@ public class Aiming {
     private Alliance alliance;
     private TFListenerCompact tf_compact;
 
-    //TODO get these bounds
-    private final double[] shootingAngleBounds = {44.0, 26.0};
-                                                              
-    private final double[] pivotAngleBounds = {42.0, 80.0}; 
+    // TODO get these bounds
+    // private final double[] shootingAngleBounds = { 44.0, 26.0 };
+
+    // private final double[] pivotAngleBounds = { 42.0, 80.0 };
 
     public Aiming() {
 
@@ -52,14 +52,20 @@ public class Aiming {
 
     public double speakerAngleForShooter() {
         Pose2d robotPose = getROSPose();
-        double distance = (getAlliance() == DriverStation.Alliance.Red) ? robotPose.relativeTo(Constants.RED_SPEAKER_POSE).getTranslation().getNorm()
+        double distance = (getAlliance() == DriverStation.Alliance.Red)
+                ? robotPose.relativeTo(Constants.RED_SPEAKER_POSE).getTranslation().getNorm()
                 : robotPose.relativeTo(Constants.BLUE_SPEAKER_POSE).getTranslation().getNorm();
-        //TODO also get this from CAD
+        // TODO also get this from CAD
         final double speakerHeight = Units.inchesToMeters(56.265913);
-        //Speaker height 79.829
-        //23.563087
-        double shootingAngle = Math.atan2(distance, speakerHeight);
-        //return mapValue(shootingAngle, shootingAngleBounds[0], shootingAngleBounds[1], pivotAngleBounds[0], pivotAngleBounds[1]);
+        // Speaker height 79.829
+        // 23.563087
+        double shootingAngle = Math.atan2(distance, speakerHeight) * (180 / Math.PI);
+        // return mapValue(shootingAngle, shootingAngleBounds[0],
+        // shootingAngleBounds[1], pivotAngleBounds[0], pivotAngleBounds[1]);
+        if (shootingAngle < 42) {
+            shootingAngle = 42;
+        }
+
         return shootingAngle;
     }
 
