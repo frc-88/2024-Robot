@@ -28,6 +28,12 @@
           "data": {
             "pathName": "TwoToThree"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Localize"
+          }
         }
       ]
     }
