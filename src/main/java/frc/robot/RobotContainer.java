@@ -5,6 +5,8 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -64,13 +66,14 @@ public class RobotContainer {
         configureDriverController();
         configureButtonBox();
         configureBindings();
-        configureSmartDashboardButtons();
 
         // PathPlanner Named Commands
         NamedCommands.registerCommand("Prep Shooter", m_shooter.runShooterFactory());
-        NamedCommands.registerCommand("Shoot", m_intake.shootIndexerFactory());
+        NamedCommands.registerCommand("Shoot", m_intake.shootIndexerFactory().withTimeout(0.5));
         NamedCommands.registerCommand("Localize", drivetrain.localizeFactory());
         NamedCommands.registerCommand("Intake", m_intake.intakeFactory());
+
+        configureSmartDashboardButtons();
 
         // set default commands
         drivetrain.setDefaultCommand(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)));
@@ -163,7 +166,8 @@ public class RobotContainer {
     }
 
     private Trigger isRightStickZero() {
-        return new Trigger(() -> Math.abs(joystick.getRightX()) < 0.01 && Math.abs(joystick.getRightY()) < 0.01);
+        return new Trigger(() -> RobotState.isTeleop() && Math.abs(joystick.getRightX()) < 0.01
+                && Math.abs(joystick.getRightY()) < 0.01);
     }
 
     public void teleopInit() {
@@ -195,7 +199,7 @@ public class RobotContainer {
 
     public void autonomousInit() {
         m_elevator.calibratePivot();
-        drivetrain.localize();
+        // drivetrain.localize();
     }
 
     public Command getAutonomousCommand() {

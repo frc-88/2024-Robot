@@ -21,6 +21,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -34,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.Aiming;
 import frc.robot.util.DriveUtils;
@@ -265,6 +267,13 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         }, this);
     }
 
+    public Command zeroOdomFactory() {
+        return new InstantCommand(
+                () -> resetPose(new Pose2d(Units.inchesToMeters(Constants.DRIVETRAIN_WHEELBASE_INCHES / 2.0),
+                        Units.inchesToMeters(Constants.DRIVETRAIN_TRACKWIDTH_INCHES / 2.0),
+                        new Rotation2d())));
+    }
+
     public Command setHeadingFactory(double target) {
         return new InstantCommand(() -> setTargetHeading(target));
     }
@@ -296,7 +305,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         sendROSPose();
         SmartDashboard.putNumber("Target Heading", targetHeading);
         SmartDashboard.putNumber("Speaker Angle", m_aiming.getSpeakerAngleForDrivetrian());
-        SmartDashboard.putNumber("Shooting Angle", m_aiming.speakerAngleForShooter());
+        SmartDashboard.putNumber("Shooter Aiming", m_aiming.speakerAngleForShooter());
         SmartDashboard.putNumber("ROS X Translation", m_aiming.getROSPose().getX());
         SmartDashboard.putNumber("ROS Y Translation", m_aiming.getROSPose().getY());
         SmartDashboard.putNumber("ROS Rotation", m_aiming.getROSPose().getRotation().getDegrees());
