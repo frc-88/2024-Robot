@@ -98,14 +98,13 @@ public class RobotContainer {
         isRightStickZero().debounce(0.25, DebounceType.kRising)
                 .onTrue(drivetrain.setHeadingFactory(() -> drivetrain.getState().Pose.getRotation().getDegrees()))
                 .whileFalse(drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick)));
-        // joystick.rightTrigger().whileTrue(drivetrain.applyRequest(drivetrain.robotCentricRequest(joystick)));
         joystick.rightTrigger().whileTrue(m_intake.shootIndexerFactory());
-        joystick.rightBumper().whileTrue(m_shooter.runShooterFactory()).whileTrue(drivetrain.aimAtSpeakerFactory());
+        joystick.rightBumper().whileTrue(m_shooter.runShooterFactory()).whileTrue(drivetrain.aimAtSpeakerFactory())
+                .whileTrue(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter()));
         joystick.leftBumper().and(joystick.rightBumper()).whileFalse(
                 buttonBox.button(17).getAsBoolean() ? m_shooter.runIdleSpeedFactory()
                         : m_shooter.stopShooterFactory());
         // joystick.rightBumper().whileTrue(drivetrain.applyRequest(drivetrain.brakeRequest()));
-        // reset the field-centric heading on left bumper press
         joystick.leftBumper().whileTrue(m_shooter.runShooterFactory());
     }
 
@@ -114,17 +113,17 @@ public class RobotContainer {
         buttonBox.button(20).whileTrue(m_intake.shootIndexerFactory());
         buttonBox.button(18).whileTrue(m_intake.rejectFactory());
         buttonBox.button(17).whileFalse(m_shooter.stopShooterFactory());
-        // buttonBox.button(5).whileTrue(m_elevator.setPodiumFactory());
-        // buttonBox.button(6).whileTrue(m_elevator.setAmpFactory());
-        // buttonBox.button(8).whileTrue(m_climber.setPositionFactory());
-        // buttonBox.button(11).onTrue(m_climber.stowArmFactory().alongWith(m_elevator.stowFactory()));
-        // buttonBox.button(2).onTrue(m_climber.prepArmsFactory().alongWith(m_elevator.elevatorPrepFactory()));
-        // buttonBox.button(15)
-        // .whileTrue(new SequentialCommandGroup(
-        // m_elevator.climbFactory().alongWith(m_climber.prepArmsFactory()).until(m_elevator::onTarget),
-        // m_climber.climbFactory().alongWith(m_elevator.climbFactory())))
-        // .onFalse(m_climber.softLandingFactory().alongWith(m_elevator.climbFactory()));
-        buttonBox.button(16).whileTrue(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter()));
+        buttonBox.button(5).whileTrue(m_elevator.setPodiumFactory());
+        buttonBox.button(6).whileTrue(m_elevator.setAmpFactory());
+        buttonBox.button(11).onTrue(m_climber.stowArmFactory().alongWith(m_elevator.stowFactory()));
+        buttonBox.button(2).onTrue(m_climber.prepArmsFactory().alongWith(m_elevator.elevatorPrepFactory()));
+        buttonBox.button(15)
+                .whileTrue(new SequentialCommandGroup(
+                        m_elevator.climbFactory().alongWith(m_climber.prepArmsFactory()).until(m_elevator::onTarget),
+                        m_climber.climbFactory().alongWith(m_elevator.climbFactory())))
+                .onFalse(m_climber.softLandingFactory().alongWith(m_elevator.climbFactory()));
+        // buttonBox.button(16).whileTrue(m_elevator.goToAimingPosition(() ->
+        // m_aiming.speakerAngleForShooter()));
 
     }
 
@@ -145,7 +144,6 @@ public class RobotContainer {
         SmartDashboard.putData("Go To Flat", m_elevator.setFlatFactory());
 
         // Climber
-        SmartDashboard.putData("ClimberGoToPostition", m_climber.setPositionFactory());
         SmartDashboard.putData("ClimberCalibrate", m_climber.calibrateFactory());
         SmartDashboard.putData("ClimberCoastMode", m_climber.enableCoastModeFactory().ignoringDisable(true));
         SmartDashboard.putData("ClimberBrakeMode", m_climber.enableBrakeModeFactory().ignoringDisable(true));
