@@ -25,6 +25,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.PubSubOption;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
@@ -66,8 +67,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     /* Robot pose for field positioning */
     private final NetworkTable table = inst.getTable("ROSPose");
-    private final DoubleArrayPublisher fieldPub = table.getDoubleArrayTopic("robotPose").publish();
-    private final StringPublisher fieldTypePub = table.getStringTopic(".type").publish();
+    private final DoubleArrayPublisher fieldPub = table.getDoubleArrayTopic("robotPose")
+            .publish(PubSubOption.periodic(0.02));
+    private final StringPublisher fieldTypePub = table.getStringTopic(".type").publish(PubSubOption.periodic(0.02));
 
     public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
