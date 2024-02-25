@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.83,
-        "y": 6.07
+        "x": 5.838899605727138,
+        "y": 6.702409801216
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.709316310190556,
-        "y": 5.593761796332061
+        "x": 6.217932435864871,
+        "y": 6.4990263313859975
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "WingShot"
     },
     {
       "anchor": {
@@ -20,20 +20,20 @@
         "y": 5.80110613902938
       },
       "prevControl": {
-        "x": 4.731094307794318,
-        "y": 7.770557298834313
+        "x": 7.244094488188975,
+        "y": 6.083014688551899
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Center2"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 5.21,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "SixPiece",
   "previewStartingState": {
     "rotation": 12.290156460137434,
     "velocity": 0

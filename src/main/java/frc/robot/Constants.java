@@ -96,8 +96,8 @@ public final class Constants {
 
     // Aiming
     public static final Pose2d RED_SPEAKER_POSE = DriveUtils
-            .redBlueTransform(new Pose2d(new Translation2d(16.579342, 5.547868),
+            .redBlueTransform(new Pose2d(new Translation2d(16.54, 5.547868),
                     Rotation2d.fromDegrees(180)));
-    public static final Pose2d BLUE_SPEAKER_POSE = new Pose2d(new Translation2d(-0.0381, 5.547868),
+    public static final Pose2d BLUE_SPEAKER_POSE = new Pose2d(new Translation2d(0, 5.547868),
             Rotation2d.fromDegrees(0));
 }

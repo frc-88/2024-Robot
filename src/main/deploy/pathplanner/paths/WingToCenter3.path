@@ -3,49 +3,49 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.6251465329533996,
-        "y": 6.844330268232984
+        "x": 5.838899605727138,
+        "y": 6.702409801216
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.264405478929724,
-        "y": 6.5810867963778685
+        "x": 6.264155951735327,
+        "y": 6.277153455207811
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "WingShot"
     },
     {
       "anchor": {
-        "x": 2.556898225435407,
-        "y": 5.547612425391122
+        "x": 7.863489600853075,
+        "y": 4.29878697595233
       },
       "prevControl": {
-        "x": 1.47467506336438,
-        "y": 5.771856864378812
+        "x": 7.447477958018979,
+        "y": 4.65008569656779
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Center3Ampside"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 5.21,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -1.218875235131254,
+    "rotation": -23.355564859286037,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "SixPiece",
   "previewStartingState": {
-    "rotation": 37.3493490446405,
+    "rotation": 29.475889003245612,
     "velocity": 0
   },
   "useDefaultConstraints": true
