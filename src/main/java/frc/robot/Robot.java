@@ -5,14 +5,21 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import frc.robot.util.preferenceconstants.PreferenceConstants;
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
 
     private RobotContainer m_robotContainer;
+
+    private DoublePreferenceConstant p_teleopTime = new DoublePreferenceConstant("Runtime/Teleop", 0.0);
+    private DoublePreferenceConstant p_autoTime = new DoublePreferenceConstant("Runtime/Auto", 0.0);
+    private Timer teleopTimer = new Timer();
+    private Timer autoTimer = new Timer();
 
     @Override
     public void robotInit() {
@@ -40,6 +47,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
+        autoTimer.reset();
+        autoTimer.start();
+
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
         if (m_autonomousCommand != null) {
@@ -54,10 +64,15 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousExit() {
+        autoTimer.stop();
+        p_autoTime.setValue(p_autoTime.getValue() + autoTimer.get());
     }
 
     @Override
     public void teleopInit() {
+        teleopTimer.reset();
+        teleopTimer.start();
+
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
@@ -70,6 +85,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopExit() {
+        teleopTimer.stop();
+        p_teleopTime.setValue(p_teleopTime.getValue() + teleopTimer.get());
     }
 
     @Override
