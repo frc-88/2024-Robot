@@ -126,8 +126,8 @@ public class RobotContainer {
     }
 
     private void configureButtonBox() {
-        buttonBox.button(10).whileTrue(m_intake.intakeFactory()
-                .andThen(setRumble()));
+        m_intake.hasNote().onTrue(setRumble());
+        buttonBox.button(10).whileTrue(m_intake.intakeFactory());
         buttonBox.button(20).whileTrue(m_intake.shootIndexerFactory());
         buttonBox.button(18).whileTrue(m_intake.rejectFactory());
         buttonBox.button(17).whileFalse(m_shooter.stopShooterFactory());
