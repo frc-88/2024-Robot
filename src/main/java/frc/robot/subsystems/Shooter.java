@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 
@@ -102,6 +103,10 @@ public class Shooter extends SubsystemBase {
     public void runIdleSpeed() {
         m_LeftShooter.setControl(velocityRequest.withVelocity(idleShooterControl.getValue() / 60));
         m_RightShooter.setControl(velocityRequest.withVelocity(idleShooterControl.getValue() / 60));
+    }
+
+    public Trigger shooterAtSpeed() {
+        return new Trigger(() -> isShooterAtSpeed());
     }
 
     public Command runShooterFactory() {
