@@ -79,8 +79,9 @@ public class RobotContainer {
                 .andThen(m_intake.shootIndexerFactory().withTimeout(0.5)));
         NamedCommands.registerCommand("Localize", drivetrain.localizeFactory());
         NamedCommands.registerCommand("Intake", m_intake.intakeFactory());
-        NamedCommands.registerCommand("Pivot Aim", m_elevator.goToAnlgeFactory(p_autoCloseAim.getValue()));
         NamedCommands.registerCommand("Pivot Stow", m_elevator.stowFactory());
+        NamedCommands.registerCommand("Pivot Aim", m_elevator.goToAnlgeFactory(p_autoCloseAim.getValue())
+                .until(() -> m_elevator.pivotOnTarget(p_autoCloseAim.getValue(), 2)));
 
         configureSmartDashboardButtons();
 
@@ -135,7 +136,8 @@ public class RobotContainer {
         buttonBox.button(2).onTrue(m_climber.prepArmsFactory().alongWith(m_elevator.elevatorPrepFactory()));
         buttonBox.button(15)
                 .whileTrue(new SequentialCommandGroup(
-                        m_elevator.climbFactory().alongWith(m_climber.prepArmsFactory()).until(m_elevator::onTarget),
+                        m_elevator.climbFactory().alongWith(m_climber.prepArmsFactory())
+                                .until(m_elevator::elevatorOnTarget),
                         m_climber.climbFactory().alongWith(m_elevator.climbFactory())))
                 .onFalse(m_climber.softLandingFactory().alongWith(m_elevator.climbFactory()));
         // buttonBox.button(16).whileTrue(m_elevator.goToAimingPosition(() ->
