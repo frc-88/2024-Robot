@@ -131,7 +131,7 @@ public class Elevator extends SubsystemBase {
     }
 
     public boolean pivotOnTarget(double position, double tolerance) {
-        return Math.abs(m_pivotMotor.getPosition().getValueAsDouble() * kElevatorMotorToElevatorDistance
+        return Math.abs(m_pivotMotor.getPosition().getValueAsDouble() * kPivotMotorRotationToShooterAngle
                 - position) < tolerance;
     }
 
