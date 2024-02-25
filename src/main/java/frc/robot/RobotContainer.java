@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
@@ -69,7 +70,8 @@ public class RobotContainer {
 
         // PathPlanner Named Commands
         NamedCommands.registerCommand("Prep Shooter", m_shooter.runShooterFactory());
-        NamedCommands.registerCommand("Shoot", m_intake.shootIndexerFactory().withTimeout(0.5));
+        NamedCommands.registerCommand("Shoot", new WaitUntilCommand(m_shooter::isShooterAtSpeed)
+                .andThen(m_intake.shootIndexerFactory().withTimeout(0.5)));
         NamedCommands.registerCommand("Localize", drivetrain.localizeFactory());
         NamedCommands.registerCommand("Intake", m_intake.intakeFactory());
 
