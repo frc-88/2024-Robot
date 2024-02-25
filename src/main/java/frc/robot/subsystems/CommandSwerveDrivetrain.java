@@ -68,8 +68,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     /* Robot pose for field positioning */
     private final NetworkTable table = inst.getTable("ROSPose");
     private final DoubleArrayPublisher fieldPub = table.getDoubleArrayTopic("robotPose")
-            .publish(PubSubOption.periodic(0.02));
-    private final StringPublisher fieldTypePub = table.getStringTopic(".type").publish(PubSubOption.periodic(0.02));
+            .publish();
+    private final StringPublisher fieldTypePub = table.getStringTopic(".type").publish();
 
     public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);

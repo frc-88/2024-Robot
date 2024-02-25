@@ -40,19 +40,15 @@ public class Telemetry {
 
     /* Robot pose for field positioning */
     private final NetworkTable table = inst.getTable("Pose");
-    private final DoubleArrayPublisher fieldPub = table.getDoubleArrayTopic("robotPose")
-            .publish(PubSubOption.periodic(0.02));
-    private final StringPublisher fieldTypePub = table.getStringTopic(".type").publish(PubSubOption.periodic(0.02));
+    private final DoubleArrayPublisher fieldPub = table.getDoubleArrayTopic("robotPose").publish();
+    private final StringPublisher fieldTypePub = table.getStringTopic(".type").publish();
 
     /* Robot speeds for general checking */
     private final NetworkTable driveStats = inst.getTable("Drive");
-    private final DoublePublisher velocityX = driveStats.getDoubleTopic("Velocity X")
-            .publish(PubSubOption.periodic(0.02));
-    private final DoublePublisher velocityY = driveStats.getDoubleTopic("Velocity Y")
-            .publish(PubSubOption.periodic(0.02));
-    private final DoublePublisher speed = driveStats.getDoubleTopic("Speed").publish(PubSubOption.periodic(0.02));
-    private final DoublePublisher odomPeriod = driveStats.getDoubleTopic("Odometry Period")
-            .publish(PubSubOption.periodic(0.02));
+    private final DoublePublisher velocityX = driveStats.getDoubleTopic("Velocity X").publish();
+    private final DoublePublisher velocityY = driveStats.getDoubleTopic("Velocity Y").publish();
+    private final DoublePublisher speed = driveStats.getDoubleTopic("Speed").publish();
+    private final DoublePublisher odomPeriod = driveStats.getDoubleTopic("Odometry Period").publish();
 
     /* Keep a reference of the last pose to calculate the speeds */
     private Pose2d m_lastPose = new Pose2d();
