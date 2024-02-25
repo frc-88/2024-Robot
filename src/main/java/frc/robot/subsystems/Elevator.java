@@ -27,7 +27,6 @@ public class Elevator extends SubsystemBase {
     private DoublePreferenceConstant p_pivotPodium = new DoublePreferenceConstant("Elevator/Podium", 60);
     private DoublePreferenceConstant p_pivotFlat = new DoublePreferenceConstant("Elevator/Flat", 90);
     private DoublePreferenceConstant p_pivotAmp = new DoublePreferenceConstant("Elevator/PivotAmp", 0);
-    private DoublePreferenceConstant p_pivotTarget = new DoublePreferenceConstant("Elevator/PivotTarget", 0);
     private DoublePreferenceConstant p_elevatorAmp = new DoublePreferenceConstant("Elevator/ElevatorAmp", 0);
     private DoublePreferenceConstant p_PivotMaxVelocity = new DoublePreferenceConstant(
             "Elevator/PivotMotionMagicVelocity", 0);
@@ -184,6 +183,10 @@ public class Elevator extends SubsystemBase {
 
     public Command elevatorPrepFactory() {
         return new RunCommand(() -> setElevatorPosition(p_elevatorPrepPosition.getValue()), this);
+    }
+
+    public Command goToAnlgeFactory(double position) {
+        return new RunCommand(() -> setPivotPosition(position), this);
     }
 
     public Command climbFactory() {

@@ -6,11 +6,13 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.Shooter;
@@ -35,14 +37,20 @@ import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.util.Aiming;
+import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import frc.robot.subsystems.Intake;
 
 public class RobotContainer {
+
+    private DoublePreferenceConstant p_autoCloseAim = new DoublePreferenceConstant("Auto/AutoCloseAim", 63.0);
+
     private final Aiming m_aiming = new Aiming();
     private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
     private final CommandGenericHID buttonBox = new CommandGenericHID(1); // The buttons???
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(m_aiming); // My drivetrain
     private String m_autoCommandName = "Wait";
+    private final Command setRumble = new RunCommand(
+            () -> joystick.getHID().setRumble(GenericHID.RumbleType.kBothRumble, 1), (Subsystem) null).withTimeout(1);
 
     private final Shooter m_shooter = new Shooter();
     private final Intake m_intake = new Intake();
@@ -74,6 +82,7 @@ public class RobotContainer {
                 .andThen(m_intake.shootIndexerFactory().withTimeout(0.5)));
         NamedCommands.registerCommand("Localize", drivetrain.localizeFactory());
         NamedCommands.registerCommand("Intake", m_intake.intakeFactory());
+        NamedCommands.registerCommand("Pivot Aim", m_elevator.goToAnlgeFactory(p_autoCloseAim.getValue()));
 
         configureSmartDashboardButtons();
 
@@ -104,7 +113,10 @@ public class RobotContainer {
                 .onTrue(drivetrain.setHeadingFactory(() -> drivetrain.getState().Pose.getRotation().getDegrees()))
                 .whileFalse(drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick)));
         joystick.rightTrigger().whileTrue(m_intake.shootIndexerFactory());
-        joystick.rightBumper().whileTrue(m_shooter.runShooterFactory()).whileTrue(drivetrain.aimAtSpeakerFactory())
+        joystick.rightBumper()
+                .whileTrue(m_shooter.runShooterFactory().alongWith(new WaitUntilCommand(m_shooter::isShooterAtSpeed))
+                        .andThen(setRumble))
+                .whileTrue(drivetrain.aimAtSpeakerFactory())
                 .whileTrue(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter()));
         joystick.leftBumper().and(joystick.rightBumper()).whileFalse(
                 buttonBox.button(17).getAsBoolean() ? m_shooter.runIdleSpeedFactory()
@@ -114,7 +126,8 @@ public class RobotContainer {
     }
 
     private void configureButtonBox() {
-        buttonBox.button(10).whileTrue(m_intake.intakeFactory());
+        buttonBox.button(10).whileTrue(m_intake.intakeFactory()
+                .andThen(setRumble));
         buttonBox.button(20).whileTrue(m_intake.shootIndexerFactory());
         buttonBox.button(18).whileTrue(m_intake.rejectFactory());
         buttonBox.button(17).whileFalse(m_shooter.stopShooterFactory());
