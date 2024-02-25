@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.util.DriveUtils;
 import frc.team88.ros.bridge.BridgePublisher;
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
 import frc.team88.ros.conversions.ROSConversions;
@@ -33,24 +34,27 @@ public class OdomPublisher implements Publisher {
     private final Odometry odomMsg = new Odometry(new RosHeader(0, new TimePrimitive(), Frames.ODOM_FRAME),
             Frames.BASE_FRAME,
             new PoseWithCovariance(new Pose(new Point(0, 0, 0), new Quaternion(0, 0, 0, 1)), new Double[] {
-                    5e-4, 0.0, 0.0, 0.0, 0.0, 0.0,
-                    0.0, 5e-4, 0.0, 0.0, 0.0, 0.0,
-                    0.0, 0.0, 5e-4, 0.0, 0.0, 0.0,
-                    0.0, 0.0, 0.0, 5e-4, 0.0, 0.0,
-                    0.0, 0.0, 0.0, 0.0, 5e-4, 0.0,
-                    0.0, 0.0, 0.0, 0.0, 0.0, 5e-4
+                    5e-2, 0.0, 0.0, 0.0, 0.0, 0.0,
+                    0.0, 5e-2, 0.0, 0.0, 0.0, 0.0,
+                    0.0, 0.0, 5e-2, 0.0, 0.0, 0.0,
+                    0.0, 0.0, 0.0, 5e-2, 0.0, 0.0,
+                    0.0, 0.0, 0.0, 0.0, 5e-2, 0.0,
+                    0.0, 0.0, 0.0, 0.0, 0.0, 5e-2
             }),
             new TwistWithCovariance(new Twist(new Vector3(0, 0, 0), new Vector3(0, 0, 0)), new Double[] {
-                    1e-4, 0.0, 0.0, 0.0, 0.0, 0.0,
-                    0.0, 1e-4, 0.0, 0.0, 0.0, 0.0,
-                    0.0, 0.0, 1e-4, 0.0, 0.0, 0.0,
-                    0.0, 0.0, 0.0, 1e-4, 0.0, 0.0,
-                    0.0, 0.0, 0.0, 0.0, 1e-4, 0.0,
-                    0.0, 0.0, 0.0, 0.0, 0.0, 1e-4
+                    1e-2, 0.0, 0.0, 0.0, 0.0, 0.0,
+                    0.0, 1e-2, 0.0, 0.0, 0.0, 0.0,
+                    0.0, 0.0, 1e-2, 0.0, 0.0, 0.0,
+                    0.0, 0.0, 0.0, 1e-2, 0.0, 0.0,
+                    0.0, 0.0, 0.0, 0.0, 1e-2, 0.0,
+                    0.0, 0.0, 0.0, 0.0, 0.0, 1e-2
             }));
 
     public void publish() {
         Pose2d pose = commandDriveTrain.getState().Pose;
+        if (DriveUtils.redAlliance()) {
+            pose = DriveUtils.redBlueTransform(pose);
+        }
         ChassisSpeeds velocity = commandDriveTrain.getChassisSpeeds();
 
         odomMsg.setHeader(odomPub.getHeader(Frames.ODOM_FRAME));
