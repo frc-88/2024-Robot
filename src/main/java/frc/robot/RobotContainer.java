@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -214,9 +215,10 @@ public class RobotContainer {
     }
 
     private Command setRumble() {
-        return new SequentialCommandGroup(new RunCommand(
-                () -> joystick.getHID().setRumble(GenericHID.RumbleType.kBothRumble, 1)).withTimeout(2),
-                new RunCommand(() -> joystick.getHID().setRumble(GenericHID.RumbleType.kBothRumble, 0)));
+        return new SequentialCommandGroup(new InstantCommand(
+                () -> joystick.getHID().setRumble(GenericHID.RumbleType.kBothRumble, 1)),
+                new WaitCommand(1),
+                new InstantCommand(() -> joystick.getHID().setRumble(GenericHID.RumbleType.kBothRumble, 0)));
     }
 
     public void autonomousInit() {
