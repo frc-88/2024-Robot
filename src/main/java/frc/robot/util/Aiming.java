@@ -69,6 +69,13 @@ public class Aiming {
         return shootingAngle;
     }
 
+    public double speakerDistance() {
+        Pose2d robotPose = getROSPose();
+        return (getAlliance() == DriverStation.Alliance.Red)
+                ? robotPose.relativeTo(Constants.RED_SPEAKER_POSE).getTranslation().getNorm()
+                : robotPose.relativeTo(Constants.BLUE_SPEAKER_POSE).getTranslation().getNorm();
+    }
+
     // originPoint should be relative to the origin of whatever alliance we are on
     public double getAngletoAnyPoint(Pose2d originPoint) {
         Pose2d robotPose = getROSPose();
