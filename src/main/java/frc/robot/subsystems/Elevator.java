@@ -125,9 +125,14 @@ public class Elevator extends SubsystemBase {
         m_elevatorMotor.setInverted(true);
     }
 
-    public boolean onTarget() {
+    public boolean elevatorOnTarget() {
         return Math.abs(m_elevatorMotor.getPosition().getValueAsDouble() * kElevatorMotorToElevatorDistance
                 - m_elevatorTarget) < 2;
+    }
+
+    public boolean pivotOnTarget(double position, double tolerance) {
+        return Math.abs(m_pivotMotor.getPosition().getValueAsDouble() * kElevatorMotorToElevatorDistance
+                - position) < tolerance;
     }
 
     public void enableCoastMode() {
