@@ -56,7 +56,7 @@ public class Aiming {
                 ? robotPose.relativeTo(Constants.RED_SPEAKER_POSE).getTranslation().getNorm()
                 : robotPose.relativeTo(Constants.BLUE_SPEAKER_POSE).getTranslation().getNorm();
         // TODO also get this from CAD
-        final double speakerHeight = Units.inchesToMeters(58.265913);
+        final double speakerHeight = Units.inchesToMeters(60.265913);
         // Speaker height 79.829
         // 23.563087
         double shootingAngle = Math.atan2(distance, speakerHeight) * (180 / Math.PI);
