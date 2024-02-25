@@ -210,9 +210,9 @@ public class RobotContainer {
     }
 
     private Command setRumble() {
-        return new RunCommand(
-                () -> joystick.getHID().setRumble(GenericHID.RumbleType.kBothRumble, 1)).withTimeout(1);
-
+        return new SequentialCommandGroup(new RunCommand(
+                () -> joystick.getHID().setRumble(GenericHID.RumbleType.kBothRumble, 1)).withTimeout(2),
+                new RunCommand(() -> joystick.getHID().setRumble(GenericHID.RumbleType.kBothRumble, 0)));
     }
 
     public void autonomousInit() {
