@@ -81,8 +81,11 @@ public class RobotContainer {
         NamedCommands.registerCommand("Localize", drivetrain.localizeFactory());
         NamedCommands.registerCommand("Intake", m_intake.intakeFactory());
         NamedCommands.registerCommand("Pivot Stow", m_elevator.stowFactory());
-        NamedCommands.registerCommand("Pivot Aim", m_elevator.goToAnlgeFactory(p_autoCloseAim.getValue())
-                .until(() -> m_elevator.pivotOnTarget(p_autoCloseAim.getValue(), 2)));
+        // NamedCommands.registerCommand("Pivot Aim",
+        // m_elevator.goToAnlgeFactory(p_autoCloseAim.getValue())
+        // .until(() -> m_elevator.pivotOnTarget(p_autoCloseAim.getValue(), 2)));
+        NamedCommands.registerCommand("Pivot Aim",
+                m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter()));
 
         configureSmartDashboardButtons();
 
