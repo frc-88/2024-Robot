@@ -168,6 +168,7 @@ public class RobotContainer {
         // Auto Test
         SmartDashboard.putData("Red Line Auto", drivetrain.getAutoPath("TwoPieceAuto"));
         SmartDashboard.putData("Four Piece", drivetrain.getAutoPath("FourPiece"));
+        SmartDashboard.putData("Rumble", setRumble().ignoringDisable(true));
     }
 
     private void configureBindings() {
