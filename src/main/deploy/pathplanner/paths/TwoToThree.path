@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5951416705212984,
-        "y": 5.702312980881552
+        "x": 1.8544325376939041,
+        "y": 6.064525282203719
       },
       "isLocked": false,
       "linkedName": "FourPieceTwo"
     },
     {
       "anchor": {
-        "x": 2.5662746820989137,
-        "y": 6.804101536131
+        "x": 2.7511687455807343,
+        "y": 6.952016786916457
       },
       "prevControl": {
-        "x": 1.8935413651358428,
-        "y": 6.423860965673612
+        "x": 2.0115924916534516,
+        "y": 6.563739253604634
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,7 @@
   "reversed": false,
   "folder": "FourPiece",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 0.7957235527392122,
     "velocity": 0
   },
   "useDefaultConstraints": true
