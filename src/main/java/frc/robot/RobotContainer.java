@@ -49,9 +49,6 @@ public class RobotContainer {
     private final CommandGenericHID buttonBox = new CommandGenericHID(1); // The buttons???
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(m_aiming); // My drivetrain
     private String m_autoCommandName = "Wait";
-    private final Command setRumble = new RunCommand(
-            () -> joystick.getHID().setRumble(GenericHID.RumbleType.kBothRumble, 1), (Subsystem) null).withTimeout(1);
-
     private final Shooter m_shooter = new Shooter();
     private final Intake m_intake = new Intake();
     private final Elevator m_elevator = new Elevator();
@@ -115,7 +112,7 @@ public class RobotContainer {
         joystick.rightTrigger().whileTrue(m_intake.shootIndexerFactory());
         joystick.rightBumper()
                 .whileTrue(m_shooter.runShooterFactory().alongWith(new WaitUntilCommand(m_shooter::isShooterAtSpeed))
-                        .andThen(setRumble))
+                        .andThen(setRumble()))
                 .whileTrue(drivetrain.aimAtSpeakerFactory())
                 .whileTrue(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter()));
         joystick.leftBumper().and(joystick.rightBumper()).whileFalse(
@@ -127,7 +124,7 @@ public class RobotContainer {
 
     private void configureButtonBox() {
         buttonBox.button(10).whileTrue(m_intake.intakeFactory()
-                .andThen(setRumble));
+                .andThen(setRumble()));
         buttonBox.button(20).whileTrue(m_intake.shootIndexerFactory());
         buttonBox.button(18).whileTrue(m_intake.rejectFactory());
         buttonBox.button(17).whileFalse(m_shooter.stopShooterFactory());
@@ -210,6 +207,12 @@ public class RobotContainer {
             m_autoCommandName = "Waiting";
         }
         SmartDashboard.putString("Auto", m_autoCommandName);
+    }
+
+    private Command setRumble() {
+        return new RunCommand(
+                () -> joystick.getHID().setRumble(GenericHID.RumbleType.kBothRumble, 1)).withTimeout(1);
+
     }
 
     public void autonomousInit() {
