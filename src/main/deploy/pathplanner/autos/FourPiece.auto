@@ -30,21 +30,28 @@
                       "data": {
                         "commands": [
                           {
-                            "type": "named",
+                            "type": "parallel",
                             "data": {
-                              "name": "Intake"
+                              "commands": [
+                                {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "Intake"
+                                  }
+                                },
+                                {
+                                  "type": "path",
+                                  "data": {
+                                    "pathName": "SpeakerToOne"
+                                  }
+                                }
+                              ]
                             }
                           },
                           {
                             "type": "named",
                             "data": {
                               "name": "Pivot Stow"
-                            }
-                          },
-                          {
-                            "type": "path",
-                            "data": {
-                              "pathName": "SpeakerToOne"
                             }
                           }
                         ]
@@ -67,21 +74,28 @@
                       "data": {
                         "commands": [
                           {
-                            "type": "named",
+                            "type": "parallel",
                             "data": {
-                              "name": "Intake"
+                              "commands": [
+                                {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "Intake"
+                                  }
+                                },
+                                {
+                                  "type": "path",
+                                  "data": {
+                                    "pathName": "OneToTwo"
+                                  }
+                                }
+                              ]
                             }
                           },
                           {
                             "type": "named",
                             "data": {
                               "name": "Pivot Stow"
-                            }
-                          },
-                          {
-                            "type": "path",
-                            "data": {
-                              "pathName": "OneToTwo"
                             }
                           }
                         ]
@@ -104,21 +118,28 @@
                       "data": {
                         "commands": [
                           {
-                            "type": "named",
+                            "type": "parallel",
                             "data": {
-                              "name": "Intake"
+                              "commands": [
+                                {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "Intake"
+                                  }
+                                },
+                                {
+                                  "type": "path",
+                                  "data": {
+                                    "pathName": "TwoToThree"
+                                  }
+                                }
+                              ]
                             }
                           },
                           {
                             "type": "named",
                             "data": {
                               "name": "Pivot Stow"
-                            }
-                          },
-                          {
-                            "type": "path",
-                            "data": {
-                              "pathName": "TwoToThree"
                             }
                           }
                         ]
@@ -146,6 +167,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Localize"
           }
         }
       ]
