@@ -46,6 +46,12 @@
                             "data": {
                               "pathName": "SpeakerToOne"
                             }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Pivot Aim"
+                            }
                           }
                         ]
                       }
