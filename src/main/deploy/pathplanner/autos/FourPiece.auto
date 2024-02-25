@@ -36,18 +36,24 @@
                             }
                           },
                           {
+                            "type": "named",
+                            "data": {
+                              "name": "Pivot Stow"
+                            }
+                          },
+                          {
                             "type": "path",
                             "data": {
                               "pathName": "SpeakerToOne"
                             }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "Pivot Aim"
-                            }
                           }
                         ]
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Pivot Aim"
                       }
                     },
                     {
@@ -64,6 +70,12 @@
                             "type": "named",
                             "data": {
                               "name": "Intake"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Pivot Stow"
                             }
                           },
                           {
@@ -71,14 +83,14 @@
                             "data": {
                               "pathName": "OneToTwo"
                             }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "Pivot Aim"
-                            }
                           }
                         ]
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Pivot Aim"
                       }
                     },
                     {
@@ -98,18 +110,24 @@
                             }
                           },
                           {
+                            "type": "named",
+                            "data": {
+                              "name": "Pivot Stow"
+                            }
+                          },
+                          {
                             "type": "path",
                             "data": {
                               "pathName": "TwoToThree"
                             }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "Pivot Aim"
-                            }
                           }
                         ]
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Pivot Aim"
                       }
                     },
                     {

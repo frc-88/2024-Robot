@@ -80,6 +80,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("Localize", drivetrain.localizeFactory());
         NamedCommands.registerCommand("Intake", m_intake.intakeFactory());
         NamedCommands.registerCommand("Pivot Aim", m_elevator.goToAnlgeFactory(p_autoCloseAim.getValue()));
+        NamedCommands.registerCommand("Pivot Stow", m_elevator.stowFactory());
 
         configureSmartDashboardButtons();
 
@@ -168,7 +169,6 @@ public class RobotContainer {
         // Auto Test
         SmartDashboard.putData("Red Line Auto", drivetrain.getAutoPath("TwoPieceAuto"));
         SmartDashboard.putData("Four Piece", drivetrain.getAutoPath("FourPiece"));
-        SmartDashboard.putData("Rumble", setRumble().ignoringDisable(true));
     }
 
     private void configureBindings() {
