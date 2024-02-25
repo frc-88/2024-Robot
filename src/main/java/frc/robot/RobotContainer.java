@@ -206,7 +206,7 @@ public class RobotContainer {
             m_autoCommand = drivetrain.getAutoPath("FourPiece");
             m_autoCommandName = "FourPiece";
         }
-        if ((buttonBox.button(14)).getAsBoolean() && !m_autoCommandName.equals("SixPiece")) {
+        if ((buttonBox.button(8)).getAsBoolean() && !m_autoCommandName.equals("SixPiece")) {
             m_autoCommand = drivetrain.getAutoPath("SixPiece");
             m_autoCommandName = "SixPiece";
         }
