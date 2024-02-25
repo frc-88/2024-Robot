@@ -84,8 +84,9 @@ public class Shooter extends SubsystemBase {
     }
 
     public boolean isShooterAtSpeed() {
-        return (Math.abs(m_LeftShooter.getVelocity().getValueAsDouble() - leftShooterSpeed.getValue()) <= 500
-                && Math.abs(m_RightShooter.getVelocity().getValueAsDouble() - rightShooterSpeed.getValue()) <= 500);
+        return (Math.abs(m_LeftShooter.getVelocity().getValueAsDouble() * 60 - leftShooterSpeed.getValue()) <= 500
+                && Math.abs(
+                        m_RightShooter.getVelocity().getValueAsDouble() * 60 - rightShooterSpeed.getValue()) <= 500);
     }
 
     public void startShooter() {
