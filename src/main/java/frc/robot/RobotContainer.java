@@ -85,7 +85,8 @@ public class RobotContainer {
         // m_elevator.goToAnlgeFactory(p_autoCloseAim.getValue())
         // .until(() -> m_elevator.pivotOnTarget(p_autoCloseAim.getValue(), 2)));
         NamedCommands.registerCommand("Pivot Aim",
-                m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter()));
+                m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
+                        .until(() -> m_elevator.pivotOnTarget(m_aiming.speakerAngleForShooter(), 2.0)));
 
         configureSmartDashboardButtons();
 
