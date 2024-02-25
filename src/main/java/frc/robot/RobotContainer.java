@@ -50,7 +50,7 @@ public class RobotContainer {
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(m_aiming); // My drivetrain
     private String m_autoCommandName = "Wait";
     private final Command setRumble = new RunCommand(
-            () -> joystick.getHID().setRumble(GenericHID.RumbleType.kBothRumble, 1), (Subsystem) null).withTimeout(1);
+            () -> joystick.getHID().setRumble(GenericHID.RumbleType.kBothRumble, 1)).withTimeout(1);
 
     private final Shooter m_shooter = new Shooter();
     private final Intake m_intake = new Intake();
