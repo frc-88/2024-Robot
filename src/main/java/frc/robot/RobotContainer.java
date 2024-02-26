@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -26,7 +25,6 @@ import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -40,21 +38,17 @@ import frc.robot.subsystems.Intake;
 
 public class RobotContainer {
     private final Aiming m_aiming = new Aiming();
-    private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
-    private final CommandGenericHID buttonBox = new CommandGenericHID(1); // The buttons???
-    private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(m_aiming); // My drivetrain
-    private String m_autoCommandName = "Wait";
+    private final CommandXboxController joystick = new CommandXboxController(0);
+    private final CommandGenericHID buttonBox = new CommandGenericHID(1);
+
+    private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(m_aiming);
     private final Shooter m_shooter = new Shooter();
     private final Intake m_intake = new Intake();
     private final Elevator m_elevator = new Elevator();
-    private Climber m_climber = new Climber();
+    private final Climber m_climber = new Climber();
 
-    private Command m_autoCommand = new SequentialCommandGroup(
-            new WaitCommand(4),
-            m_intake.shootIndexerFactory().withTimeout(2),
-            new RunCommand(() -> drivetrain.setChassisSpeeds(new ChassisSpeeds(1, 0, 0)), drivetrain).withTimeout(2),
-            drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)))
-            .alongWith(m_shooter.runShooterFactory().withTimeout(6).andThen(m_shooter.stopShooterFactory()));
+    private String m_autoCommandName = "Wait";
+    private Command m_autoCommand = new WaitCommand(4);
 
     private final Telemetry logger = new Telemetry(TunerConstants.kSpeedAt12VoltsMps, drivetrain);
     private TFListenerCompact tfListenerCompact;
@@ -89,13 +83,13 @@ public class RobotContainer {
         m_shooter.setDefaultCommand(m_shooter.runIdleSpeedFactory());
         m_intake.setDefaultCommand(m_intake.stopMovingFactory());
         m_elevator.setDefaultCommand(m_elevator.stowFactory());
-        drivetrain.resetPose(new Pose2d());
         m_climber.setDefaultCommand(m_climber.stowArmFactory());
+
+        drivetrain.resetPose(new Pose2d());
     }
 
     private void configureRosNetworkTablesBridge() {
         NetworkTableInstance instance = NetworkTableInstance.getDefault();
-
         ROSNetworkTablesBridge bridge = new ROSNetworkTablesBridge(instance.getTable(""), 20);
         tfListenerCompact = new TFListenerCompact(bridge, "/tf_compact");
         coprocessorBridge = new CoprocessorBridge(drivetrain, bridge, tfListenerCompact);
@@ -142,7 +136,6 @@ public class RobotContainer {
                 .onFalse(m_climber.softLandingFactory().alongWith(m_elevator.climbFactory()));
         // buttonBox.button(16).whileTrue(m_elevator.goToAimingPosition(() ->
         // m_aiming.speakerAngleForShooter()));
-
     }
 
     private void configureSmartDashboardButtons() {
@@ -152,8 +145,8 @@ public class RobotContainer {
         SmartDashboard.putData("Localize", drivetrain.localizeFactory());
 
         // Shooter
-        // SmartDashboard.putData("Run Shooter", m_shooter.runShooterCommand());
-        // SmartDashboard.putData("Stop Shooter", m_shooter.stopShooterCommand());
+        SmartDashboard.putData("Run Shooter", m_shooter.runShooterFactory());
+        SmartDashboard.putData("Stop Shooter", m_shooter.stopShooterFactory());
 
         // Elevator
         SmartDashboard.putData("Calibrate Pivot", m_elevator.calibratePivotFactory());
@@ -169,7 +162,6 @@ public class RobotContainer {
         SmartDashboard.putData("ElevatorBrakeMode", m_elevator.enableBrakeModeFactory().ignoringDisable(true));
 
         // Auto Test
-        SmartDashboard.putData("Red Line Auto", drivetrain.getAutoPath("TwoPieceAuto"));
         SmartDashboard.putData("Four Piece", drivetrain.getAutoPath("FourPiece"));
         SmartDashboard.putData("Rumble", setRumble().ignoringDisable(true));
     }
@@ -205,11 +197,11 @@ public class RobotContainer {
             m_autoCommand = drivetrain.getAutoPath("SixPiece");
             m_autoCommandName = "SixPiece";
         }
-
         if (buttonBox.button(13).getAsBoolean()) {
             m_autoCommand = new WaitCommand(15);
-            m_autoCommandName = "Waiting";
+            m_autoCommandName = "Wait";
         }
+
         SmartDashboard.putString("Auto", m_autoCommandName);
     }
 
@@ -222,7 +214,6 @@ public class RobotContainer {
 
     public void autonomousInit() {
         m_elevator.calibratePivot();
-        // drivetrain.localize();
     }
 
     public Command getAutonomousCommand() {
