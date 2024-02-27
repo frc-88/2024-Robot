@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -148,6 +149,11 @@ public class Climber extends SubsystemBase {
     public void enableBrakeMode() {
         m_armLeft.setNeutralMode(NeutralModeValue.Brake);
         m_armRight.setNeutralMode(NeutralModeValue.Brake);
+    }
+
+    public void addToOrchestra(Orchestra m_orchestra) {
+        m_orchestra.addInstrument(m_armLeft);
+        m_orchestra.addInstrument(m_armRight);
     }
 
     // public Command softLanding() {

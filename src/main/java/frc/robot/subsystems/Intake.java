@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
@@ -80,6 +81,12 @@ public class Intake extends SubsystemBase {
         m_intakeMotor.setControl(m_intakeRequest.withOutput(-1));
         m_guideMotor.setControl(m_intakeRequest.withOutput(-1));
         m_indexMotor.setControl(m_intakeRequest.withOutput(-1));
+    }
+
+    public void addToOrchestra(Orchestra m_orchestra) {
+        m_orchestra.addInstrument(m_intakeMotor);
+        m_orchestra.addInstrument(m_guideMotor);
+        m_orchestra.addInstrument(m_indexMotor);
     }
 
     public Command intakeFactory() {

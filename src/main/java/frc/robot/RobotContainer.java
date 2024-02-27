@@ -32,6 +32,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.PlaySong;
 import frc.robot.generated.TunerConstants;
 import frc.robot.ros.bridge.CoprocessorBridge;
 import frc.robot.subsystems.Climber;
@@ -178,6 +179,10 @@ public class RobotContainer {
         SmartDashboard.putData("Red Line Auto", drivetrain.getAutoPath("TwoPieceAuto"));
         SmartDashboard.putData("Four Piece", drivetrain.getAutoPath("FourPiece"));
         SmartDashboard.putData("Rumble", setRumble().ignoringDisable(true));
+
+        // Misc stuff
+        SmartDashboard.putData("Play Song",
+                new PlaySong("somethingcomfortingrobot.chrp", m_intake, m_shooter, m_climber, m_elevator, drivetrain));
     }
 
     private void configureBindings() {

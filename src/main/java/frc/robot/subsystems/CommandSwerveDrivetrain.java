@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
@@ -249,6 +250,17 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public void localize() {
         resetPose(m_aiming.getROSPose());
+    }
+
+    public void addToOrchestra(Orchestra m_orchestra) {
+        m_orchestra.addInstrument(this.getModule(0).getDriveMotor());
+        m_orchestra.addInstrument(this.getModule(1).getDriveMotor());
+        m_orchestra.addInstrument(this.getModule(2).getDriveMotor());
+        m_orchestra.addInstrument(this.getModule(3).getDriveMotor());
+        m_orchestra.addInstrument(this.getModule(0).getSteerMotor());
+        m_orchestra.addInstrument(this.getModule(1).getSteerMotor());
+        m_orchestra.addInstrument(this.getModule(2).getSteerMotor());
+        m_orchestra.addInstrument(this.getModule(3).getSteerMotor());
     }
 
     public double getCurrentRobotAngle() {

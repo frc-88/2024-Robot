@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -184,6 +185,11 @@ public class Elevator extends SubsystemBase {
 
     public void calibrateElevator() {
         m_elevatorMotor.setPosition(27.7 / kElevatorMotorToElevatorDistance);
+    }
+
+    public void addToOrchestra(Orchestra m_orchestra) {
+        m_orchestra.addInstrument(m_elevatorMotor);
+        m_orchestra.addInstrument(m_pivotMotor);
     }
 
     public Command elevatorPrepFactory() {

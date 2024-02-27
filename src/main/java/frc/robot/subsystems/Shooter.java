@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
@@ -103,6 +104,11 @@ public class Shooter extends SubsystemBase {
     public void runIdleSpeed() {
         m_LeftShooter.setControl(velocityRequest.withVelocity(idleShooterControl.getValue() / 60));
         m_RightShooter.setControl(velocityRequest.withVelocity(idleShooterControl.getValue() / 60));
+    }
+
+    public void addToOrchestra(Orchestra m_orchestra) {
+        m_orchestra.addInstrument(m_LeftShooter);
+        m_orchestra.addInstrument(m_RightShooter);
     }
 
     public Trigger shooterAtSpeed() {
