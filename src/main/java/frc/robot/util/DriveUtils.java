@@ -50,7 +50,7 @@ public class DriveUtils {
     }
 
     public static Pose2d redBlueTransform(Pose2d pose) {
-        return pose.relativeTo(new Pose2d(16.54, 8.02, Rotation2d.fromDegrees(180)));
+        return pose.relativeTo(new Pose2d(16.54, 8.21, Rotation2d.fromDegrees(180)));
     }
 
     public static boolean redAlliance() {
