@@ -125,6 +125,7 @@ public class RobotContainer {
                 .whileTrue(m_shooter.runShooterFactory().alongWith(new WaitUntilCommand(m_shooter::isShooterAtSpeed))
                         .andThen(setRumble()))
                 .whileTrue(drivetrain.aimAtSpeakerFactory())
+                // .whileTrue(m_elevator.setPodiumFactory());
                 .whileTrue(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter()));
         joystick.leftBumper().and(joystick.rightBumper()).whileFalse(
                 buttonBox.button(17).getAsBoolean() ? m_shooter.runIdleSpeedFactory()
@@ -158,7 +159,7 @@ public class RobotContainer {
         // Drive
         SmartDashboard.putData("SetLowPowerMode", drivetrain.lowPowerModeFactory());
         SmartDashboard.putData("SetHighPowerMode", drivetrain.highPowerModeFactory());
-        SmartDashboard.putData("Localize", drivetrain.localizeFactory());
+        SmartDashboard.putData("Localize", drivetrain.localizeFactory().ignoringDisable(true));
 
         // Shooter
         // SmartDashboard.putData("Run Shooter", m_shooter.runShooterCommand());
