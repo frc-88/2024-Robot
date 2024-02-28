@@ -1,6 +1,7 @@
 package frc.robot.util;
 
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import edu.wpi.first.apriltag.AprilTagDetection;
@@ -80,13 +81,18 @@ public class Aiming {
     }
 
     public boolean getDetections() {
-        var detections = tagSubscriber.receive().get().getDetections();
-        for (var detection : detections) {
-            ArrayList<Integer> ids = detection.getId();
-            if (ids.contains(speakerTagsRed[0]) && ids.contains(speakerTagsRed[1])) {
-                return true;
+        try {
+            var detections = tagSubscriber.receive().get().getDetections();
+            for (var detection : detections) {
+                ArrayList<Integer> ids = detection.getId();
+                if (ids.contains(speakerTagsRed[0]) && ids.contains(speakerTagsRed[1])) {
+                    return true;
+                }
             }
+        } catch (NoSuchElementException e) {
+            return false;
         }
+
         return false;
     }
 
