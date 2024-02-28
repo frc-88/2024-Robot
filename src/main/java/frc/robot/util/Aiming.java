@@ -1,12 +1,15 @@
 package frc.robot.util;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
+import edu.wpi.first.apriltag.AprilTagDetection;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.ros.bridge.Frames;
+import frc.robot.ros.bridge.TagSubscriber;
 import frc.team88.ros.conversions.TFListenerCompact;
 import frc.team88.ros.conversions.Transform3dStamped;
 import frc.robot.Constants;
@@ -15,6 +18,9 @@ public class Aiming {
     private Pose2d robotPose;
     private Alliance alliance;
     private TFListenerCompact tf_compact;
+    private TagSubscriber tagSubscriber;
+    private final int[] speakerTagsRed = { 3, 4 };
+    private final int[] speakerTagsBlue = { 7, 8 };
 
     // TODO get these bounds
     // private final double[] shootingAngleBounds = { 44.0, 26.0 };
@@ -27,6 +33,10 @@ public class Aiming {
 
     public void setTFListener(TFListenerCompact tfListener) {
         tf_compact = tfListener;
+    }
+
+    public void setTagListener(TagSubscriber tagsub) {
+        tagSubscriber = tagsub;
     }
 
     public double mapValue(double x, double min, double max, double newMin, double newMax) {
@@ -72,6 +82,17 @@ public class Aiming {
         }
 
         return shootingAngle;
+    }
+
+    public boolean getDetections() {
+        var detections = tagSubscriber.receive().get().getDetections();
+        for (var detection : detections) {
+            ArrayList<Integer> ids = detection.getId();
+            if (ids.contains(speakerTagsRed[0]) && ids.contains(speakerTagsRed[1])) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public double speakerDistance() {
