@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
 import frc.robot.ros.bridge.CoprocessorBridge;
+import frc.robot.ros.bridge.TagSubscriber;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
@@ -104,8 +105,10 @@ public class RobotContainer {
 
         ROSNetworkTablesBridge bridge = new ROSNetworkTablesBridge(instance.getTable(""), 20);
         tfListenerCompact = new TFListenerCompact(bridge, "/tf_compact");
+        TagSubscriber tagsub = new TagSubscriber(bridge);
         coprocessorBridge = new CoprocessorBridge(drivetrain, bridge, tfListenerCompact);
         m_aiming.setTFListener(tfListenerCompact);
+        m_aiming.setTagListener(tagsub);
     }
 
     private void configureDriverController() {
