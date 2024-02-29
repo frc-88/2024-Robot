@@ -74,7 +74,7 @@ public class Aiming {
         double shootingAngle = Math.atan2(distance, speakerHeight) * (180 / Math.PI);
         distance = Units.metersToFeet(distance);
 
-        shootingAngle += distance * 0.13; // aim higher based on distance
+        shootingAngle -= distance * 0.13; // aim higher based on distance
         // double shootingAngle = 19.2 + (6.03 * distance) - (0.171 * distance *
         // distance);
 
