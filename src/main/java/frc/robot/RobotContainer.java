@@ -127,7 +127,7 @@ public class RobotContainer {
                 .onTrue(drivetrain.setHeadingFactory(() -> drivetrain.getState().Pose.getRotation().getDegrees()))
                 .whileFalse(drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick)));
         joystick.rightTrigger()
-                .whileTrue(m_intake.shootIndexerFactory().andThen(new InstantCommand(() -> m_aiming.aimPose())));
+                .whileTrue(m_intake.shootIndexerFactory());
         joystick.rightBumper()
                 .whileTrue(m_shooter.runShooterFactory().alongWith(new WaitUntilCommand(m_shooter::isShooterAtSpeed))
                         .andThen(setRumble()))

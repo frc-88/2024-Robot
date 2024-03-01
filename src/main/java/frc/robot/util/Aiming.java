@@ -93,10 +93,6 @@ public class Aiming {
         double distance = (getAlliance() == DriverStation.Alliance.Red)
                 ? robotPose.relativeTo(Constants.RED_SPEAKER_POSE).getTranslation().getNorm()
                 : robotPose.relativeTo(Constants.BLUE_SPEAKER_POSE).getTranslation().getNorm();
-        // TODO also get this from CAD
-
-        // Speaker height 79.829
-        // 23.563087
 
         double shootingAngle = Math.atan2(distance, speakerHeight) * (180 / Math.PI);
         distance = Units.metersToFeet(distance);
@@ -133,8 +129,8 @@ public class Aiming {
 
     public Pose3d aimPose() {
         Pose2d robotPose = getROSPose();
-        robotPose = (getAlliance() == DriverStation.Alliance.Red) ? robotPose.relativeTo(Constants.RED_SPEAKER_POSE)
-                : robotPose.relativeTo(Constants.BLUE_SPEAKER_POSE);
+        robotPose = (getAlliance() == DriverStation.Alliance.Red) ? Constants.RED_SPEAKER_POSE.relativeTo(robotPose)
+                : Constants.BLUE_SPEAKER_POSE.relativeTo(robotPose);
         return new Pose3d(robotPose.getX(), robotPose.getY(), speakerHeight, new Rotation3d());
     }
 

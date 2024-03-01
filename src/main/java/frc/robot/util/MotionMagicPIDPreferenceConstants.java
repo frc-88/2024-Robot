@@ -9,7 +9,7 @@ import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
  * PID control
  */
 
-public class MotionMagicPreferenceConstants {
+public class MotionMagicPIDPreferenceConstants {
 
     private DoublePreferenceConstant maxVelocity;
     private DoublePreferenceConstant maxAcceleration;
@@ -49,7 +49,7 @@ public class MotionMagicPreferenceConstants {
      *                        determined depending on the request used
      */
 
-    public MotionMagicPreferenceConstants(String name, double maxVelocity, double maxAcceleration, double maxJerk,
+    public MotionMagicPIDPreferenceConstants(String name, double maxVelocity, double maxAcceleration, double maxJerk,
             double kP, double kI, double kD, double kV, double kS) {
         this.maxVelocity = new DoublePreferenceConstant(String.format("%s MaxVelocity", name), maxVelocity);
         this.maxAcceleration = new DoublePreferenceConstant(String.format("%s MaxAcceleration", name), maxAcceleration);
@@ -61,7 +61,7 @@ public class MotionMagicPreferenceConstants {
         this.kS = new DoublePreferenceConstant(String.format("%s kS", name), kS);
     }
 
-    public MotionMagicPreferenceConstants(String name) {
+    public MotionMagicPIDPreferenceConstants(String name) {
         this(name, 0, 0, 0, 0, 0, 0, 0, 0);
     }
 
