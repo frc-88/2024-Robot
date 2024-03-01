@@ -6,13 +6,21 @@ import java.util.Optional;
 
 import edu.wpi.first.apriltag.AprilTagDetection;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.ros.bridge.Frames;
 import frc.robot.ros.bridge.TagSubscriber;
+import frc.team88.ros.bridge.BridgePublisher;
+import frc.team88.ros.conversions.ROSConversions;
 import frc.team88.ros.conversions.TFListenerCompact;
 import frc.team88.ros.conversions.Transform3dStamped;
+import frc.team88.ros.messages.geometry_msgs.PoseStamped;
+import frc.team88.ros.messages.geometry_msgs.Vector3;
+import frc.team88.ros.messages.visualization_msgs.Marker;
+import frc.team88.ros.messages.visualization_msgs.MarkerArray;
 import frc.robot.Constants;
 
 public class Aiming {
@@ -22,6 +30,8 @@ public class Aiming {
     private TagSubscriber tagSubscriber;
     private final int[] speakerTagsRed = { 3, 4 };
     private final int[] speakerTagsBlue = { 7, 8 };
+    private final double speakerHeight = Units.inchesToMeters(60.265913);
+    private BridgePublisher<MarkerArray> aimPub;
 
     // TODO get these bounds
     // private final double[] shootingAngleBounds = { 44.0, 26.0 };
@@ -38,6 +48,21 @@ public class Aiming {
 
     public void setTagListener(TagSubscriber tagsub) {
         tagSubscriber = tagsub;
+    }
+
+    public void setAimPub(BridgePublisher<MarkerArray> array) {
+        aimPub = array;
+    }
+
+    public void sendTarget() {
+        Marker marker = new Marker();
+        marker.setHeader(aimPub.getHeader(Frames.BASE_FRAME));
+        marker.setAction(Marker.ADD);
+        marker.setFrameLocked(false);
+        marker.setPose(ROSConversions.wpiToRosPose(aimPose()));
+        marker.setType(Marker.ARROW);
+        marker.setScale(new Vector3(0.05, 0.05, 0.5));
+        aimPub.send(new MarkerArray(new Marker[] { marker }));
     }
 
     public double mapValue(double x, double min, double max, double newMin, double newMax) {
@@ -67,7 +92,7 @@ public class Aiming {
                 ? robotPose.relativeTo(Constants.RED_SPEAKER_POSE).getTranslation().getNorm()
                 : robotPose.relativeTo(Constants.BLUE_SPEAKER_POSE).getTranslation().getNorm();
         // TODO also get this from CAD
-        final double speakerHeight = Units.inchesToMeters(60.265913);
+
         // Speaker height 79.829
         // 23.563087
 
@@ -102,6 +127,13 @@ public class Aiming {
             return false;
         }
         return false;
+    }
+
+    public Pose3d aimPose() {
+        Pose2d robotPose = getROSPose();
+        robotPose = (getAlliance() == DriverStation.Alliance.Red) ? robotPose.relativeTo(Constants.RED_SPEAKER_POSE)
+                : robotPose.relativeTo(Constants.BLUE_SPEAKER_POSE);
+        return new Pose3d(robotPose.getX(), robotPose.getY(), speakerHeight, new Rotation3d());
     }
 
     public double speakerDistance() {

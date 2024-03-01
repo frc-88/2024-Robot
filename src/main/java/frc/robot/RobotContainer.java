@@ -101,7 +101,9 @@ public class RobotContainer {
     }
 
     private void configureRosNetworkTablesBridge() {
-        NetworkTableInstance instance = NetworkTableInstance.getDefault();
+        NetworkTableInstance instance = NetworkTableInstance.create();
+        instance.startClient3("coprocessor");
+        instance.setServer("10.0.88.44", 5800);
 
         ROSNetworkTablesBridge bridge = new ROSNetworkTablesBridge(instance.getTable(""), 20);
         tfListenerCompact = new TFListenerCompact(bridge, "/tf_compact");
@@ -120,7 +122,8 @@ public class RobotContainer {
         isRightStickZero().debounce(0.25, DebounceType.kRising)
                 .onTrue(drivetrain.setHeadingFactory(() -> drivetrain.getState().Pose.getRotation().getDegrees()))
                 .whileFalse(drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick)));
-        joystick.rightTrigger().whileTrue(m_intake.shootIndexerFactory());
+        joystick.rightTrigger()
+                .whileTrue(m_intake.shootIndexerFactory().andThen(new InstantCommand(() -> m_aiming.aimPose())));
         joystick.rightBumper()
                 .whileTrue(m_shooter.runShooterFactory().alongWith(new WaitUntilCommand(m_shooter::isShooterAtSpeed))
                         .andThen(setRumble()))
