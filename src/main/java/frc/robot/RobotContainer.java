@@ -141,7 +141,11 @@ public class RobotContainer {
         buttonBox.button(18).whileTrue(m_intake.rejectFactory());
         buttonBox.button(17).whileFalse(m_shooter.stopShooterFactory());
         buttonBox.button(5).whileTrue(m_elevator.setPodiumFactory());
-        buttonBox.button(6).whileTrue(m_elevator.setAmpFactory());
+        buttonBox.button(6)
+                .whileTrue(m_elevator.setAmpFactory().alongWith(m_shooter.slowSpeedFactory())
+                        .until(() -> m_elevator.pivotOnTargetForAmp() && m_elevator.elevatorOnTarget())
+                        .andThen(m_shooter.runShooterFactory()))
+                .onFalse(m_shooter.stopShooterFactory());
         buttonBox.button(11).onTrue(m_climber.stowArmFactory().alongWith(m_elevator.stowFactory()));
         buttonBox.button(2).onTrue(m_climber.prepArmsFactory().alongWith(m_elevator.elevatorPrepFactory()));
         buttonBox.button(15)

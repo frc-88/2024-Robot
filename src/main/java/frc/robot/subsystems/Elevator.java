@@ -135,6 +135,10 @@ public class Elevator extends SubsystemBase {
                 - position) < tolerance;
     }
 
+    public boolean pivotOnTargetForAmp() {
+        return pivotOnTarget(p_pivotAmp.getValue(), 2.0);
+    }
+
     public void enableCoastMode() {
         m_elevatorMotor.setNeutralMode(NeutralModeValue.Coast);
         m_pivotMotor.setNeutralMode(NeutralModeValue.Coast);
@@ -174,6 +178,7 @@ public class Elevator extends SubsystemBase {
     }
 
     public void setElevatorPosition(DoubleSupplier height) {
+        m_elevatorTarget = height.getAsDouble();
         m_elevatorMotor
                 .setControl(m_elevatorRequest.withPosition(height.getAsDouble() / kElevatorMotorToElevatorDistance));
     }

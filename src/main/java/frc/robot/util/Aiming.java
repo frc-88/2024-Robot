@@ -87,17 +87,20 @@ public class Aiming {
 
     public boolean getDetections() {
         try {
-            var detections = tagSubscriber.receive().get().getDetections();
-            for (var detection : detections) {
-                ArrayList<Integer> ids = detection.getId();
-                if (ids.contains(speakerTagsRed[0]) && ids.contains(speakerTagsRed[1])) {
-                    return true;
+            var header = tagSubscriber.receive().get().getHeader();
+            if (header.getFrameId() == "optical_camera_0") {
+                var detections = tagSubscriber.receive().get().getDetections();
+                for (var detection : detections) {
+                    ArrayList<Integer> ids = detection.getId();
+                    if (ids.contains(speakerTagsRed[0]) && ids.contains(speakerTagsRed[1])) {
+                        return true;
+                    }
                 }
             }
-        } catch (NoSuchElementException e) {
+
+        } catch (Exception exception) {
             return false;
         }
-
         return false;
     }
 

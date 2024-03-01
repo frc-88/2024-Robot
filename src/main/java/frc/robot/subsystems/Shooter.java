@@ -26,6 +26,7 @@ public class Shooter extends SubsystemBase {
     private DoublePreferenceConstant rightShooterSpeed = new DoublePreferenceConstant("shooter/shooter/Rightspeed", 0);
     private DoublePreferenceConstant idleShooterControl = new DoublePreferenceConstant("shooter/shooter/idleControl",
             0);
+    private DoublePreferenceConstant p_slowSpeed = new DoublePreferenceConstant("shooter/shooter/slowspeed", 0);
     private DoublePreferenceConstant motor_kP = new DoublePreferenceConstant("shooter/shooter/motor_kP", 0);
     private DoublePreferenceConstant motor_kI = new DoublePreferenceConstant("shooter/shooter/motor_kI", 0);
     private DoublePreferenceConstant motor_kD = new DoublePreferenceConstant("shooter/shooter/motor_kD", 0);
@@ -100,6 +101,11 @@ public class Shooter extends SubsystemBase {
         m_RightShooter.stopMotor();
     }
 
+    public void slowSpeed() {
+        m_LeftShooter.setControl(velocityRequest.withVelocity(p_slowSpeed.getValue() / 60));
+        m_RightShooter.setControl(velocityRequest.withVelocity(p_slowSpeed.getValue() / 60));
+    }
+
     public void runIdleSpeed() {
         m_LeftShooter.setControl(velocityRequest.withVelocity(idleShooterControl.getValue() / 60));
         m_RightShooter.setControl(velocityRequest.withVelocity(idleShooterControl.getValue() / 60));
@@ -119,6 +125,10 @@ public class Shooter extends SubsystemBase {
 
     public Command runIdleSpeedFactory() {
         return new RunCommand(() -> runIdleSpeed(), this);
+    }
+
+    public Command slowSpeedFactory() {
+        return new RunCommand(() -> slowSpeed(), this);
     }
 
     @Override
