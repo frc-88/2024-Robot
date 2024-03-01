@@ -19,6 +19,7 @@ import frc.team88.ros.conversions.TFListenerCompact;
 import frc.team88.ros.conversions.Transform3dStamped;
 import frc.team88.ros.messages.geometry_msgs.PoseStamped;
 import frc.team88.ros.messages.geometry_msgs.Vector3;
+import frc.team88.ros.messages.std_msgs.RosColorRGBA;
 import frc.team88.ros.messages.visualization_msgs.Marker;
 import frc.team88.ros.messages.visualization_msgs.MarkerArray;
 import frc.robot.Constants;
@@ -62,6 +63,7 @@ public class Aiming {
         marker.setPose(ROSConversions.wpiToRosPose(aimPose()));
         marker.setType(Marker.ARROW);
         marker.setScale(new Vector3(0.05, 0.05, 0.5));
+        marker.setColor(new RosColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
         aimPub.send(new MarkerArray(new Marker[] { marker }));
     }
 

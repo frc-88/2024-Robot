@@ -18,8 +18,10 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import frc.team88.ros.bridge.BridgePublisher;
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
 import frc.team88.ros.conversions.TFListenerCompact;
+import frc.team88.ros.messages.visualization_msgs.MarkerArray;
 
 import com.ctre.phoenix6.Utils;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -108,9 +110,11 @@ public class RobotContainer {
         ROSNetworkTablesBridge bridge = new ROSNetworkTablesBridge(instance.getTable(""), 20);
         tfListenerCompact = new TFListenerCompact(bridge, "/tf_compact");
         TagSubscriber tagsub = new TagSubscriber(bridge);
+        BridgePublisher<MarkerArray> aimPub = new BridgePublisher<>(bridge, "target_aiming");
         coprocessorBridge = new CoprocessorBridge(drivetrain, bridge, tfListenerCompact);
         m_aiming.setTFListener(tfListenerCompact);
         m_aiming.setTagListener(tagsub);
+        m_aiming.setAimPub(aimPub);
     }
 
     private void configureDriverController() {
