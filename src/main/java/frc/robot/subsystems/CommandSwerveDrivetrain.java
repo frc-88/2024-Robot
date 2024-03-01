@@ -36,6 +36,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.Aiming;
@@ -302,6 +303,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         });
     }
 
+    public Trigger tipping() {
+        return new Trigger(() -> Math.abs(getPigeon2().getRoll().getValue()) >= Constants.TIPPING_THRESHOLD);
+    }
+
     @Override
     public void periodic() {
         sendROSPose();
@@ -314,6 +319,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         SmartDashboard.putNumber("ROS Y Translation", m_aiming.getROSPose().getY());
         SmartDashboard.putNumber("ROS Rotation", m_aiming.getROSPose().getRotation().getDegrees());
         SmartDashboard.putNumber("Pigeon Yaw", getPigeon2().getYaw().getValueAsDouble());
+        SmartDashboard.putNumber("Pigeon Roll", getPigeon2().getRoll().getValueAsDouble());
+        SmartDashboard.putNumber("Pigeon Pitch", getPigeon2().getPitch().getValueAsDouble());
         SmartDashboard.putString("PowerMode", lowPowerMode ? "LowPowerMode" : "HighPowerMode");
     }
 }
