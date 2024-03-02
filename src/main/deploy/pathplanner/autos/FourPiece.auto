@@ -60,7 +60,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Pivot Aim"
+                        "name": "Aim"
                       }
                     },
                     {
@@ -104,7 +104,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Pivot Aim"
+                        "name": "Aim"
                       }
                     },
                     {
@@ -148,7 +148,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Pivot Aim"
+                        "name": "Aim"
                       }
                     },
                     {
@@ -167,6 +167,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop Shooter"
           }
         },
         {
