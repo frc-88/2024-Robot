@@ -95,6 +95,7 @@ public class RobotContainer {
                 new ParallelCommandGroup(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
                         .until(() -> m_elevator.pivotOnTarget(m_aiming.speakerAngleForShooter(), 2.0)),
                         drivetrain.aimAtSpeakerFactory().until(drivetrain::onTarget)));
+        NamedCommands.registerCommand("Stop Shooter", m_shooter.stopShooterFactory().withTimeout(0.2));
 
         configureSmartDashboardButtons();
 
