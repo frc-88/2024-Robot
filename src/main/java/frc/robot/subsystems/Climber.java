@@ -99,18 +99,18 @@ public class Climber extends SubsystemBase {
     }
 
     public void stowArms() {
-        if (m_calibrated) {
-            m_armRight.setControl(m_motionMagic.withPosition(-79.0));
-            m_armLeft.setControl(m_motionMagic.withPosition(-79.0));
-        } else {
-            m_armRight.setControl(new DutyCycleOut(-p_armStowSpeed.getValue()));
-            m_armLeft.setControl(new DutyCycleOut(-p_armStowSpeed.getValue()));
-            if (climberDebouncer.calculate(m_armRight.getVelocity().getValueAsDouble() > -1)
-                    && climberDebouncer.calculate(m_armLeft.getVelocity().getValueAsDouble() > -1)) {
-                calibrate();
-                m_calibrated = true;
-            }
+        // if (m_calibrated) {
+        // m_armRight.setControl(m_motionMagic.withPosition(-79.0));
+        // m_armLeft.setControl(m_motionMagic.withPosition(-79.0));
+        // } else {
+        m_armRight.setControl(new DutyCycleOut(-p_armStowSpeed.getValue()));
+        m_armLeft.setControl(new DutyCycleOut(-p_armStowSpeed.getValue()));
+        if (climberDebouncer.calculate(m_armRight.getVelocity().getValueAsDouble() > -1)
+                && climberDebouncer.calculate(m_armLeft.getVelocity().getValueAsDouble() > -1)) {
+            calibrate();
+            m_calibrated = true;
         }
+        // }
     }
 
     public void softLanding() {
