@@ -258,6 +258,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return getState().Pose.getRotation().getDegrees();
     }
 
+    public boolean onTarget() {
+        return getCurrentRobotAngle() - targetHeading < 2.0;
+    }
+
     public Command highPowerModeFactory() {
         return new InstantCommand(() -> setHighPowerMode(), this);
     }
@@ -303,6 +307,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 pose.getY(),
                 pose.getRotation().getDegrees()
         });
+    }
+
+    public Trigger drivetrainOnTarget() {
+        return new Trigger(() -> onTarget());
     }
 
     public Trigger tipping() {

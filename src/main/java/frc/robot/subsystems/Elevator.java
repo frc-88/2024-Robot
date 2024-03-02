@@ -196,6 +196,13 @@ public class Elevator extends SubsystemBase {
         m_pivotMotor.setControl(new DutyCycleOut(0.0));
     }
 
+    public Command elevatorDownFactory() {
+        return new RunCommand(() -> {
+            setElevatorPosition(28.5);
+            setPivotPosition(42.0);
+        }, this);
+    }
+
     public Command elevatorPrepFactory() {
         return new RunCommand(() -> setElevatorPosition(p_elevatorPrepPosition.getValue()), this);
     }

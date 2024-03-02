@@ -5,15 +5,14 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.Shooter;
@@ -26,6 +25,7 @@ import frc.team88.ros.messages.visualization_msgs.MarkerArray;
 import com.ctre.phoenix6.Utils;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -41,12 +41,12 @@ import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.util.Aiming;
-import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import frc.robot.subsystems.Intake;
 
 public class RobotContainer {
 
-    private DoublePreferenceConstant p_autoCloseAim = new DoublePreferenceConstant("Auto/AutoCloseAim", 63.0);
+    // private DoublePreferenceConstant p_autoCloseAim = new
+    // DoublePreferenceConstant("Auto/AutoCloseAim", 63.0);
 
     private final Aiming m_aiming = new Aiming();
     private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
@@ -87,15 +87,20 @@ public class RobotContainer {
         // NamedCommands.registerCommand("Pivot Aim",
         // m_elevator.goToAnlgeFactory(p_autoCloseAim.getValue())
         // .until(() -> m_elevator.pivotOnTarget(p_autoCloseAim.getValue(), 2)));
-        NamedCommands.registerCommand("Pivot Aim",
-                m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
-                        .until(() -> m_elevator.pivotOnTarget(m_aiming.speakerAngleForShooter(), 2.0)));
+        // NamedCommands.registerCommand("Pivot Aim",
+        // m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
+        // .until(() -> m_elevator.pivotOnTarget(m_aiming.speakerAngleForShooter(),
+        // 2.0)));
+        NamedCommands.registerCommand("Aim",
+                new ParallelCommandGroup(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
+                        .until(() -> m_elevator.pivotOnTarget(m_aiming.speakerAngleForShooter(), 2.0)),
+                        drivetrain.aimAtSpeakerFactory().until(drivetrain::onTarget)));
 
         configureSmartDashboardButtons();
 
         // set default commands
         drivetrain.setDefaultCommand(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)));
-        m_shooter.setDefaultCommand(m_shooter.runIdleSpeedFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
+        m_shooter.setDefaultCommand(m_shooter.stopShooterFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         m_intake.setDefaultCommand(m_intake.stopMovingFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         m_elevator.setDefaultCommand(m_elevator.stowFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         drivetrain.resetPose(new Pose2d());
@@ -128,24 +133,19 @@ public class RobotContainer {
                 .onTrue(drivetrain.setHeadingFactory(() -> drivetrain.getState().Pose.getRotation().getDegrees()))
                 .whileFalse(drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick)));
         joystick.rightTrigger()
-                .whileTrue(m_intake.shootIndexerFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
+                .onTrue(m_intake.shootIndexerFactory()
+                        .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer()));
         joystick.rightBumper()
                 .whileTrue(m_shooter.runShooterFactory().alongWith(new WaitUntilCommand(m_shooter::isShooterAtSpeed))
                         .andThen(setRumble()).unless(() -> drivetrain.tipping().getAsBoolean()))
                 .whileTrue(drivetrain.aimAtSpeakerFactory().unless(() -> drivetrain.tipping().getAsBoolean()))
                 .whileTrue(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
-                        .unless(() -> drivetrain.tipping().getAsBoolean()));
-        joystick.leftBumper().and(joystick.rightBumper()).whileFalse(
-                buttonBox.button(17).getAsBoolean()
-                        ? m_shooter.runIdleSpeedFactory().unless(() -> drivetrain.tipping().getAsBoolean())
-                        : m_shooter.stopShooterFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
-        // joystick.rightBumper().whileTrue(drivetrain.applyRequest(drivetrain.brakeRequest()));
-        joystick.leftBumper()
-                .whileTrue(m_shooter.runShooterFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
+                        .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer()));
     }
 
     private void configureButtonBox() {
-        m_intake.hasNote().onTrue(setRumble());
+        m_intake.hasNote().whileTrue(m_shooter.runIdleSpeedFactory()).onTrue(setRumble())
+                .onFalse(m_intake.intakeFactory().alongWith(m_shooter.stopShooterFactory())).debounce(0.25);
         buttonBox.button(10).whileTrue(m_intake.intakeFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         buttonBox.button(20)
                 .whileTrue(m_intake.shootIndexerFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
@@ -156,6 +156,9 @@ public class RobotContainer {
                 .whileTrue(m_elevator.setAmpFactory().alongWith(m_shooter.slowSpeedFactory())
                         .until(() -> m_elevator.pivotOnTargetForAmp() && m_elevator.elevatorOnTarget())
                         .andThen(m_shooter.runShooterFactory()).unless(() -> drivetrain.tipping().getAsBoolean()))
+                .onFalse(m_elevator.elevatorDownFactory()
+                        .until(() -> m_elevator.elevatorOnTarget() && m_elevator.pivotOnTarget(42.0, 2.0))
+                        .unless(() -> drivetrain.tipping().getAsBoolean()))
                 .onFalse(m_shooter.stopShooterFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         buttonBox.button(11).onTrue(m_climber.stowArmFactory().alongWith(m_elevator.stowFactory())
                 .unless(() -> drivetrain.tipping().getAsBoolean()));
@@ -207,7 +210,7 @@ public class RobotContainer {
         if (Utils.isSimulation()) {
             drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
         }
-        drivetrain.registerTelemetry(logger::telemeterize);
+        // drivetrain.registerTelemetry(logger::telemeterize);
     }
 
     private Trigger isRightStickZero() {
@@ -217,12 +220,7 @@ public class RobotContainer {
 
     public void teleopInit() {
         drivetrain.setTargetHeading(drivetrain.getState().Pose.getRotation().getDegrees());
-
-        if (buttonBox.button(17).getAsBoolean()) {
-            m_shooter.runIdleSpeedFactory().schedule();
-        } else {
-            m_shooter.stopShooterFactory().schedule();
-        }
+        m_intake.intakeFactory().schedule();
     }
 
     public void disabledPeriodic() {

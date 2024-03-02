@@ -64,10 +64,6 @@ public class Climber extends SubsystemBase {
         p_PidPreferenceConstants.addChangeHandler(this::configureTalons);
     }
 
-    private void configureTalonsSlow(double unused) {
-        configureTalons(unused, p_maxVelocity.getValue() / 4.0);
-    }
-
     private void configureTalons(double unused) {
         configureTalons(unused, p_maxVelocity.getValue());
     }
