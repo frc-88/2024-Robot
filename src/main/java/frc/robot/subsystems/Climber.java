@@ -150,13 +150,10 @@ public class Climber extends SubsystemBase {
         m_armRight.setNeutralMode(NeutralModeValue.Brake);
     }
 
-    // public Command softLanding() {
-    // return new InstantCommand(() -> configureTalonsSlow(0)).andThen(new
-    // WaitCommand(0.25))
-    // .andThen(new RunCommand(() ->
-    // setClimberPostion(p_armPrepPosition.getValue()), this))
-    // .until(this::onTarget).finallyDo(() -> configureTalons(0));
-    // }
+    public void holdPosition() {
+        m_armRight.setControl(new DutyCycleOut(0.0));
+        m_armLeft.setControl(new DutyCycleOut(0.0));
+    }
 
     public Command softLandingFactory() {
         return new RunCommand(() -> softLanding(), this)
@@ -191,6 +188,10 @@ public class Climber extends SubsystemBase {
         return new InstantCommand(() -> {
             enableBrakeMode();
         }, this);
+    }
+
+    public Command holdPositionFactory() {
+        return new RunCommand(() -> holdPosition(), this);
     }
 
     @Override

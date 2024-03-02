@@ -95,11 +95,11 @@ public class RobotContainer {
 
         // set default commands
         drivetrain.setDefaultCommand(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)));
-        m_shooter.setDefaultCommand(m_shooter.runIdleSpeedFactory());
-        m_intake.setDefaultCommand(m_intake.stopMovingFactory());
-        m_elevator.setDefaultCommand(m_elevator.stowFactory());
+        m_shooter.setDefaultCommand(m_shooter.runIdleSpeedFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
+        m_intake.setDefaultCommand(m_intake.stopMovingFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
+        m_elevator.setDefaultCommand(m_elevator.stowFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         drivetrain.resetPose(new Pose2d());
-        m_climber.setDefaultCommand(m_climber.stowArmFactory());
+        m_climber.setDefaultCommand(m_climber.stowArmFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
     }
 
     private void configureRosNetworkTablesBridge() {
@@ -118,6 +118,7 @@ public class RobotContainer {
     }
 
     private void configureDriverController() {
+        drivetrain.tipping().whileTrue(m_climber.holdPositionFactory()).whileTrue(m_elevator.holdPositionFactory());
         m_shooter.shooterAtSpeed().onTrue(setRumble());
         joystick.b().onTrue(drivetrain.setHeadingFactory(270));
         joystick.x().onTrue(drivetrain.setHeadingFactory(90));
@@ -127,40 +128,47 @@ public class RobotContainer {
                 .onTrue(drivetrain.setHeadingFactory(() -> drivetrain.getState().Pose.getRotation().getDegrees()))
                 .whileFalse(drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick)));
         joystick.rightTrigger()
-                .whileTrue(m_intake.shootIndexerFactory());
+                .whileTrue(m_intake.shootIndexerFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         joystick.rightBumper()
                 .whileTrue(m_shooter.runShooterFactory().alongWith(new WaitUntilCommand(m_shooter::isShooterAtSpeed))
-                        .andThen(setRumble()))
-                .whileTrue(drivetrain.aimAtSpeakerFactory())
-                // .whileTrue(m_elevator.setPodiumFactory());
-                .whileTrue(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter()));
+                        .andThen(setRumble()).unless(() -> drivetrain.tipping().getAsBoolean()))
+                .whileTrue(drivetrain.aimAtSpeakerFactory().unless(() -> drivetrain.tipping().getAsBoolean()))
+                .whileTrue(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
+                        .unless(() -> drivetrain.tipping().getAsBoolean()));
         joystick.leftBumper().and(joystick.rightBumper()).whileFalse(
-                buttonBox.button(17).getAsBoolean() ? m_shooter.runIdleSpeedFactory()
-                        : m_shooter.stopShooterFactory());
+                buttonBox.button(17).getAsBoolean()
+                        ? m_shooter.runIdleSpeedFactory().unless(() -> drivetrain.tipping().getAsBoolean())
+                        : m_shooter.stopShooterFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         // joystick.rightBumper().whileTrue(drivetrain.applyRequest(drivetrain.brakeRequest()));
-        joystick.leftBumper().whileTrue(m_shooter.runShooterFactory());
+        joystick.leftBumper()
+                .whileTrue(m_shooter.runShooterFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
     }
 
     private void configureButtonBox() {
         m_intake.hasNote().onTrue(setRumble());
-        buttonBox.button(10).whileTrue(m_intake.intakeFactory());
-        buttonBox.button(20).whileTrue(m_intake.shootIndexerFactory());
-        buttonBox.button(18).whileTrue(m_intake.rejectFactory());
+        buttonBox.button(10).whileTrue(m_intake.intakeFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
+        buttonBox.button(20)
+                .whileTrue(m_intake.shootIndexerFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
+        buttonBox.button(18).whileTrue(m_intake.rejectFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         buttonBox.button(17).whileFalse(m_shooter.stopShooterFactory());
-        buttonBox.button(5).whileTrue(m_elevator.setPodiumFactory());
+        buttonBox.button(5).whileTrue(m_elevator.setPodiumFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         buttonBox.button(6)
                 .whileTrue(m_elevator.setAmpFactory().alongWith(m_shooter.slowSpeedFactory())
                         .until(() -> m_elevator.pivotOnTargetForAmp() && m_elevator.elevatorOnTarget())
-                        .andThen(m_shooter.runShooterFactory()))
-                .onFalse(m_shooter.stopShooterFactory());
-        buttonBox.button(11).onTrue(m_climber.stowArmFactory().alongWith(m_elevator.stowFactory()));
-        buttonBox.button(2).onTrue(m_climber.prepArmsFactory().alongWith(m_elevator.elevatorPrepFactory()));
+                        .andThen(m_shooter.runShooterFactory()).unless(() -> drivetrain.tipping().getAsBoolean()))
+                .onFalse(m_shooter.stopShooterFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
+        buttonBox.button(11).onTrue(m_climber.stowArmFactory().alongWith(m_elevator.stowFactory())
+                .unless(() -> drivetrain.tipping().getAsBoolean()));
+        buttonBox.button(2).onTrue(m_climber.prepArmsFactory().alongWith(m_elevator.elevatorPrepFactory())
+                .unless(() -> drivetrain.tipping().getAsBoolean()));
         buttonBox.button(15)
                 .whileTrue(new SequentialCommandGroup(
                         m_elevator.climbFactory().alongWith(m_climber.prepArmsFactory())
                                 .until(m_elevator::elevatorOnTarget),
-                        m_climber.climbFactory().alongWith(m_elevator.climbFactory())))
-                .onFalse(m_climber.softLandingFactory().alongWith(m_elevator.climbFactory()));
+                        m_climber.climbFactory().alongWith(m_elevator.climbFactory()))
+                        .unless(() -> drivetrain.tipping().getAsBoolean()))
+                .onFalse(m_climber.softLandingFactory().alongWith(m_elevator.climbFactory())
+                        .unless(() -> drivetrain.tipping().getAsBoolean()));
         // buttonBox.button(16).whileTrue(m_elevator.goToAimingPosition(() ->
         // m_aiming.speakerAngleForShooter()));
 

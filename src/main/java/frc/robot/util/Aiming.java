@@ -1,10 +1,8 @@
 package frc.robot.util;
 
 import java.util.ArrayList;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import edu.wpi.first.apriltag.AprilTagDetection;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -17,7 +15,6 @@ import frc.team88.ros.bridge.BridgePublisher;
 import frc.team88.ros.conversions.ROSConversions;
 import frc.team88.ros.conversions.TFListenerCompact;
 import frc.team88.ros.conversions.Transform3dStamped;
-import frc.team88.ros.messages.geometry_msgs.PoseStamped;
 import frc.team88.ros.messages.geometry_msgs.Vector3;
 import frc.team88.ros.messages.std_msgs.RosColorRGBA;
 import frc.team88.ros.messages.visualization_msgs.Marker;
@@ -30,7 +27,6 @@ public class Aiming {
     private TFListenerCompact tf_compact;
     private TagSubscriber tagSubscriber;
     private final int[] speakerTagsRed = { 3, 4 };
-    private final int[] speakerTagsBlue = { 7, 8 };
     private final double speakerHeight = Units.inchesToMeters(60.265913);
     private BridgePublisher<MarkerArray> aimPub;
 

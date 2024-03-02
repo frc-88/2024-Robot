@@ -191,6 +191,11 @@ public class Elevator extends SubsystemBase {
         m_elevatorMotor.setPosition(27.7 / kElevatorMotorToElevatorDistance);
     }
 
+    public void holdPosition() {
+        m_elevatorMotor.setControl(new DutyCycleOut(0.0));
+        m_pivotMotor.setControl(new DutyCycleOut(0.0));
+    }
+
     public Command elevatorPrepFactory() {
         return new RunCommand(() -> setElevatorPosition(p_elevatorPrepPosition.getValue()), this);
     }
@@ -263,6 +268,10 @@ public class Elevator extends SubsystemBase {
 
     public Command goToAimingPosition(DoubleSupplier position) {
         return new RunCommand(() -> setPivotPosition(position), this);
+    }
+
+    public Command holdPositionFactory() {
+        return new RunCommand(() -> holdPosition(), this);
     }
 
     @Override

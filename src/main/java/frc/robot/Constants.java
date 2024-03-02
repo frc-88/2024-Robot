@@ -60,7 +60,7 @@ public final class Constants {
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 2;
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 2;
 
-    public static final double TIPPING_THRESHOLD = 10.0;
+    public static final double TIPPING_THRESHOLD = 20.0;
 
     // Intake
     public static final int INTAKE_MOTOR_ID = 14;

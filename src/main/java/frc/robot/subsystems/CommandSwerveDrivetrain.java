@@ -41,6 +41,7 @@ import frc.robot.Constants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.Aiming;
 import frc.robot.util.DriveUtils;
+import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements
@@ -65,6 +66,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private boolean lowPowerMode = false;
     /* What to publish over networktables for telemetry */
     private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
+    private DoublePreferenceConstant p_tippingThreshold = new DoublePreferenceConstant("Tipping Threashold", 20.0);
 
     /* Robot pose for field positioning */
     private final NetworkTable table = inst.getTable("ROSPose");
@@ -304,7 +306,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public Trigger tipping() {
-        return new Trigger(() -> Math.abs(getPigeon2().getRoll().getValue()) >= Constants.TIPPING_THRESHOLD);
+        return new Trigger(() -> Math.abs(getPigeon2().getRoll().getValue()) >= p_tippingThreshold.getValue());
     }
 
     @Override
