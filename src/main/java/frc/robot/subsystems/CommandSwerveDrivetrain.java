@@ -68,10 +68,13 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private DoublePreferenceConstant p_tippingThreshold = new DoublePreferenceConstant("Tipping Threashold", 20.0);
 
     /* Robot pose for field positioning */
-    private final NetworkTable table = inst.getTable("ROSPose");
-    private final DoubleArrayPublisher fieldPub = table.getDoubleArrayTopic("robotPose")
+    private final NetworkTable rosPoseTable = inst.getTable("ROSPose");
+    private final DoubleArrayPublisher rosFieldPub = rosPoseTable.getDoubleArrayTopic("robotPose")
             .publish();
-    private final StringPublisher fieldTypePub = table.getStringTopic(".type").publish();
+    private final StringPublisher rosFieldTypePub = rosPoseTable.getStringTopic(".type").publish();
+    private final NetworkTable odomTable = inst.getTable("Pose");
+    private final DoubleArrayPublisher poseFieldPub = odomTable.getDoubleArrayTopic("robotPose").publish();
+    private final StringPublisher poseFieldTypePub = odomTable.getStringTopic(".type").publish();
 
     public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
@@ -300,8 +303,21 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         if (DriveUtils.redAlliance()) {
             pose = DriveUtils.redBlueTransform(pose);
         }
-        fieldTypePub.set("Field2d");
-        fieldPub.set(new double[] {
+        rosFieldTypePub.set("Field2d");
+        rosFieldPub.set(new double[] {
+                pose.getX(),
+                pose.getY(),
+                pose.getRotation().getDegrees()
+        });
+    }
+
+    private void sendOdomPose() {
+        Pose2d pose = m_aiming.getROSPose();
+        if (DriveUtils.redAlliance()) {
+            pose = DriveUtils.redBlueTransform(pose);
+        }
+        poseFieldTypePub.set("Field2d");
+        poseFieldPub.set(new double[] {
                 pose.getX(),
                 pose.getY(),
                 pose.getRotation().getDegrees()
@@ -319,14 +335,12 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     @Override
     public void periodic() {
         sendROSPose();
+        sendOdomPose();
         SmartDashboard.putNumber("Target Heading", targetHeading);
         SmartDashboard.putNumber("Speaker Angle", m_aiming.getSpeakerAngleForDrivetrian());
         SmartDashboard.putNumber("Speaker Distance", Units.metersToFeet(m_aiming.speakerDistance()));
         SmartDashboard.putBoolean("Tag sub", m_aiming.getDetections());
         SmartDashboard.putNumber("Shooter Aiming", m_aiming.speakerAngleForShooter());
-        SmartDashboard.putNumber("ROS X Translation", m_aiming.getROSPose().getX());
-        SmartDashboard.putNumber("ROS Y Translation", m_aiming.getROSPose().getY());
-        SmartDashboard.putNumber("ROS Rotation", m_aiming.getROSPose().getRotation().getDegrees());
         SmartDashboard.putNumber("Pigeon Yaw", getPigeon2().getYaw().getValueAsDouble());
         SmartDashboard.putNumber("Pigeon Roll", getPigeon2().getRoll().getValueAsDouble());
         SmartDashboard.putNumber("Pigeon Pitch", getPigeon2().getPitch().getValueAsDouble());
