@@ -30,6 +30,7 @@ public class Intake extends SubsystemBase {
     private final TalonFXConfiguration indexConfiguration = new TalonFXConfiguration();
 
     public boolean m_automaticMode = true;
+    public boolean lastMode = true;
 
     public Intake() {
         configureTalons();
@@ -104,12 +105,13 @@ public class Intake extends SubsystemBase {
         return m_indexMotor.getForwardLimit().getValueAsDouble() == 0;
     }
 
-    public void setAutoMode(boolean newMode) {
-        m_automaticMode = newMode;
+    public void disableAutoMode() {
+        lastMode = hasNote().getAsBoolean();
+        m_automaticMode = false;
     }
 
     public Trigger hasNote() {
-        return new Trigger(() -> hasNoteInIndexer());
+        return new Trigger(() -> (m_automaticMode) ? hasNoteInIndexer() : lastMode);
     }
 
     @Override

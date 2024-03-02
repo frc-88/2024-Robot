@@ -25,7 +25,6 @@ import frc.team88.ros.messages.visualization_msgs.MarkerArray;
 import com.ctre.phoenix6.Utils;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -146,11 +145,10 @@ public class RobotContainer {
     }
 
     private void configureButtonBox() {
-        m_intake.hasNote().whileTrue(m_shooter.runIdleSpeedFactory().unless(() -> !m_intake.m_automaticMode))
-                .onTrue(setRumble().unless(() -> !m_intake.m_automaticMode))
-                .onFalse(m_intake.intakeFactory().alongWith(m_shooter.stopShooterFactory())
-                        .unless(() -> !m_intake.m_automaticMode))
-                .debounce(0.25);
+        m_intake.hasNote().onTrue((m_shooter.runIdleSpeedFactory()).unless(() -> !m_intake.m_automaticMode))
+                .onTrue(setRumble().unless(() -> !m_intake.m_automaticMode));
+        m_intake.hasNote().and(() -> !m_intake.m_automaticMode)
+                .onFalse(m_intake.intakeFactory().alongWith(m_shooter.stopShooterFactory())).debounce(0.25);
         buttonBox.button(10).whileTrue(m_intake.intakeFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         buttonBox.button(20)
                 .whileTrue(m_intake.shootIndexerFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
@@ -178,13 +176,14 @@ public class RobotContainer {
                 .onFalse(m_climber.softLandingFactory().alongWith(m_elevator.climbFactory())
                         .unless(() -> drivetrain.tipping().getAsBoolean()));
         buttonBox.button(8)
-                .whileTrue(new InstantCommand(() -> m_intake.setAutoMode(false)).andThen(new ParallelCommandGroup(
-                        m_elevator.trapFactory(), m_climber.climbFactory(),
-                        m_shooter.slowSpeedFactory().until(m_elevator::pivotOnTargetForAmp)
-                                .andThen(m_shooter.runAmpTrapSpeedFactory().withTimeout(0.7))
-                                .andThen(m_intake.shootIndexerFactory()))))
+                .whileTrue(new InstantCommand(() -> m_intake.disableAutoMode()).andThen(new WaitCommand(0.1))
+                        .andThen(new ParallelCommandGroup(
+                                m_elevator.trapFactory(), m_climber.climbFactory(),
+                                m_shooter.slowSpeedFactory().until(m_elevator::pivotOnTargetForAmp)
+                                        .andThen(m_shooter.runAmpTrapSpeedFactory().withTimeout(0.7))
+                                        .andThen(m_intake.shootIndexerFactory()))))
                 .onFalse(m_elevator.climbFactory()).onFalse(m_climber.climbFactory())
-                .onFalse(new InstantCommand(() -> m_intake.setAutoMode(true)));
+                .onFalse(new InstantCommand(() -> m_intake.disableAutoMode()));
         // buttonBox.button(16).whileTrue(m_elevator.goToAimingPosition(() ->
         // m_aiming.speakerAngleForShooter()));
     }
