@@ -26,6 +26,10 @@ import frc.robot.Constants;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import frc.robot.util.preferenceconstants.PIDPreferenceConstants;
 
+// Lando heard Ackbar
+// But still flew the Falcon in
+// Courage rewarded
+
 public class Climber extends SubsystemBase {
     private DoublePreferenceConstant p_maxVelocity = new DoublePreferenceConstant("Arm/MotionMagicVelocity", 62.5);
     private DoublePreferenceConstant p_maxAcceleration = new DoublePreferenceConstant("Arm/MotionMagicAcceleration",
