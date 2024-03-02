@@ -218,6 +218,13 @@ public class Elevator extends SubsystemBase {
         }, this);
     }
 
+    public Command trapFactory() {
+        return new RunCommand(() -> {
+            setElevatorPosition(p_elevatorClimbPosition.getValue());
+            setPivotPosition(() -> p_pivotAmp.getValue());
+        }, this);
+    }
+
     public Command setAmpFactory() {
         return new RunCommand(() -> {
             setPivotPosition(() -> p_pivotAmp.getValue());

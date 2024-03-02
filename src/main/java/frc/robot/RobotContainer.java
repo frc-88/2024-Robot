@@ -79,7 +79,7 @@ public class RobotContainer {
 
         // PathPlanner Named Commands
         NamedCommands.registerCommand("Prep Shooter", m_shooter.runShooterFactory());
-        NamedCommands.registerCommand("Shoot", new WaitUntilCommand(m_shooter::isShooterAtSpeed)
+        NamedCommands.registerCommand("Shoot", new WaitUntilCommand(m_shooter::isShooterAtFullSpeed)
                 .andThen(m_intake.shootIndexerFactory().withTimeout(0.5)));
         NamedCommands.registerCommand("Localize", drivetrain.localizeFactory());
         NamedCommands.registerCommand("Intake", m_intake.intakeFactory());
@@ -137,16 +137,20 @@ public class RobotContainer {
                 .onTrue(m_intake.shootIndexerFactory()
                         .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer()));
         joystick.rightBumper()
-                .whileTrue(m_shooter.runShooterFactory().alongWith(new WaitUntilCommand(m_shooter::isShooterAtSpeed))
-                        .andThen(setRumble()).unless(() -> drivetrain.tipping().getAsBoolean()))
+                .whileTrue(
+                        m_shooter.runShooterFactory().alongWith(new WaitUntilCommand(m_shooter::isShooterAtFullSpeed))
+                                .andThen(setRumble()).unless(() -> drivetrain.tipping().getAsBoolean()))
                 .whileTrue(drivetrain.aimAtSpeakerFactory().unless(() -> drivetrain.tipping().getAsBoolean()))
                 .whileTrue(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
                         .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer()));
     }
 
     private void configureButtonBox() {
-        m_intake.hasNote().whileTrue(m_shooter.runIdleSpeedFactory()).onTrue(setRumble())
-                .onFalse(m_intake.intakeFactory().alongWith(m_shooter.stopShooterFactory())).debounce(0.25);
+        m_intake.hasNote().whileTrue(m_shooter.runIdleSpeedFactory().unless(() -> !m_intake.m_automaticMode))
+                .onTrue(setRumble().unless(() -> !m_intake.m_automaticMode))
+                .onFalse(m_intake.intakeFactory().alongWith(m_shooter.stopShooterFactory())
+                        .unless(() -> !m_intake.m_automaticMode))
+                .debounce(0.25);
         buttonBox.button(10).whileTrue(m_intake.intakeFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         buttonBox.button(20)
                 .whileTrue(m_intake.shootIndexerFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
@@ -173,9 +177,16 @@ public class RobotContainer {
                         .unless(() -> drivetrain.tipping().getAsBoolean()))
                 .onFalse(m_climber.softLandingFactory().alongWith(m_elevator.climbFactory())
                         .unless(() -> drivetrain.tipping().getAsBoolean()));
+        buttonBox.button(8)
+                .whileTrue(new InstantCommand(() -> m_intake.setAutoMode(false)).andThen(new ParallelCommandGroup(
+                        m_elevator.trapFactory(), m_climber.climbFactory(),
+                        m_shooter.slowSpeedFactory().until(m_elevator::pivotOnTargetForAmp)
+                                .andThen(m_shooter.runAmpTrapSpeedFactory().withTimeout(0.7))
+                                .andThen(m_intake.shootIndexerFactory()))))
+                .onFalse(m_elevator.climbFactory()).onFalse(m_climber.climbFactory())
+                .onFalse(new InstantCommand(() -> m_intake.setAutoMode(true)));
         // buttonBox.button(16).whileTrue(m_elevator.goToAimingPosition(() ->
         // m_aiming.speakerAngleForShooter()));
-
     }
 
     private void configureSmartDashboardButtons() {

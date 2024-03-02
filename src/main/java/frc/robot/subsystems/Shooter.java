@@ -27,6 +27,7 @@ public class Shooter extends SubsystemBase {
     private DoublePreferenceConstant idleShooterControl = new DoublePreferenceConstant("shooter/shooter/idleControl",
             0);
     private DoublePreferenceConstant p_slowSpeed = new DoublePreferenceConstant("shooter/shooter/slowspeed", 0);
+    private DoublePreferenceConstant p_ampTrapSpeed = new DoublePreferenceConstant("shooter/shooter/AmpTrap", 0);
     private DoublePreferenceConstant motor_kP = new DoublePreferenceConstant("shooter/shooter/motor_kP", 0);
     private DoublePreferenceConstant motor_kI = new DoublePreferenceConstant("shooter/shooter/motor_kI", 0);
     private DoublePreferenceConstant motor_kD = new DoublePreferenceConstant("shooter/shooter/motor_kD", 0);
@@ -85,10 +86,16 @@ public class Shooter extends SubsystemBase {
 
     }
 
-    public boolean isShooterAtSpeed() {
+    public boolean isShooterAtFullSpeed() {
         return (Math.abs(m_LeftShooter.getVelocity().getValueAsDouble() * 60 - leftShooterSpeed.getValue()) <= 500
                 && Math.abs(
                         m_RightShooter.getVelocity().getValueAsDouble() * 60 - rightShooterSpeed.getValue()) <= 500);
+    }
+
+    public boolean isShooterAtAmpTrapSpeed() {
+        return (Math.abs(m_LeftShooter.getVelocity().getValueAsDouble() * 60 - p_ampTrapSpeed.getValue()) <= 500
+                && Math.abs(
+                        m_RightShooter.getVelocity().getValueAsDouble() * 60 - p_ampTrapSpeed.getValue()) <= 500);
     }
 
     public void startShooter() {
@@ -111,8 +118,17 @@ public class Shooter extends SubsystemBase {
         m_RightShooter.setControl(velocityRequest.withVelocity(idleShooterControl.getValue() / 60));
     }
 
+    public void runAmpTrapSpeed() {
+        m_LeftShooter.setControl(velocityRequest.withVelocity(p_ampTrapSpeed.getValue() / 60));
+        m_RightShooter.setControl(velocityRequest.withVelocity(p_ampTrapSpeed.getValue() / 60));
+    }
+
     public Trigger shooterAtSpeed() {
-        return new Trigger(() -> isShooterAtSpeed());
+        return new Trigger(() -> isShooterAtFullSpeed());
+    }
+
+    public Command runAmpTrapSpeedFactory() {
+        return new RunCommand(() -> runAmpTrapSpeed(), this);
     }
 
     public Command runShooterFactory() {

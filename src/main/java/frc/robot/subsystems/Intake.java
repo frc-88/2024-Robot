@@ -29,6 +29,8 @@ public class Intake extends SubsystemBase {
 
     private final TalonFXConfiguration indexConfiguration = new TalonFXConfiguration();
 
+    public boolean m_automaticMode = true;
+
     public Intake() {
         configureTalons();
     }
@@ -102,8 +104,12 @@ public class Intake extends SubsystemBase {
         return m_indexMotor.getForwardLimit().getValueAsDouble() == 0;
     }
 
+    public void setAutoMode(boolean newMode) {
+        m_automaticMode = newMode;
+    }
+
     public Trigger hasNote() {
-        return new Trigger(this::hasNoteInIndexer);
+        return new Trigger(() -> hasNoteInIndexer());
     }
 
     @Override
