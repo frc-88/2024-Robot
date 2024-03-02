@@ -29,6 +29,10 @@ public class Intake extends SubsystemBase {
 
     private final TalonFXConfiguration indexConfiguration = new TalonFXConfiguration();
 
+    // I heard some folks say
+    // my recipes are one note
+    // but this intake cooks
+
     public Intake() {
         configureTalons();
     }
