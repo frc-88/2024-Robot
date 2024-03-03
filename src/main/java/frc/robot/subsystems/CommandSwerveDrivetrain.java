@@ -312,7 +312,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     private void sendOdomPose() {
-        Pose2d pose = m_aiming.getROSPose();
+        Pose2d pose = getState().Pose;
         if (DriveUtils.redAlliance()) {
             pose = DriveUtils.redBlueTransform(pose);
         }
