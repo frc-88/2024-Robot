@@ -64,8 +64,6 @@ public class Elevator extends SubsystemBase {
     private final Debouncer pivotDebouncer = new Debouncer(1, DebounceType.kRising);
     private final Debouncer elevatorDebouncer = new Debouncer(1, DebounceType.kRising);
 
-    private Aiming m_aiming = new Aiming();
-
     private double m_elevatorTarget;
     private boolean m_pivotCalibrated = false;
     private boolean m_elevatorCalibrated = false;
