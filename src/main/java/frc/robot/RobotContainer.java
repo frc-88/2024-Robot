@@ -100,7 +100,8 @@ public class RobotContainer {
 
         // set default commands
         drivetrain.setDefaultCommand(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)));
-        m_shooter.setDefaultCommand(m_shooter.stopShooterFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
+        m_shooter.setDefaultCommand(
+                m_shooter.stopShooterFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         m_intake.setDefaultCommand(m_intake.stopMovingFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         m_elevator.setDefaultCommand(m_elevator.stowFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         drivetrain.resetPose(new Pose2d());
@@ -156,7 +157,8 @@ public class RobotContainer {
                 .whileTrue(m_intake.shootIndexerFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         buttonBox.button(18).whileTrue(m_intake.rejectFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         buttonBox.button(17).whileFalse(m_shooter.stopShooterFactory());
-        buttonBox.button(5).whileTrue(m_elevator.setPodiumFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
+        buttonBox.button(5)
+                .whileTrue(m_elevator.setPodiumFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         buttonBox.button(6)
                 .whileTrue(m_elevator.setAmpFactory().alongWith(m_shooter.slowSpeedFactory())
                         .until(() -> m_elevator.pivotOnTargetForAmp() && m_elevator.elevatorOnTarget())

@@ -65,7 +65,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private boolean lowPowerMode = false;
     /* What to publish over networktables for telemetry */
     private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
-    private DoublePreferenceConstant p_tippingThreshold = new DoublePreferenceConstant("Tipping Threashold", 20.0);
+    private DoublePreferenceConstant p_tippingRollThreshold = new DoublePreferenceConstant("Tipping Roll Threashold",
+            20.0);
+    private DoublePreferenceConstant p_tippingPitchThreshold = new DoublePreferenceConstant("Tipping Pitch Threashold",
+            20.0);
 
     /* Robot pose for field positioning */
     private final NetworkTable rosPoseTable = inst.getTable("ROSPose");
@@ -328,8 +331,16 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return new Trigger(() -> onTarget());
     }
 
+    public boolean tippingRoll() {
+        return Math.abs(getPigeon2().getRoll().getValue()) >= p_tippingRollThreshold.getValue();
+    }
+
+    public boolean tippingPitch() {
+        return Math.abs(getPigeon2().getPitch().getValue()) >= p_tippingPitchThreshold.getValue();
+    }
+
     public Trigger tipping() {
-        return new Trigger(() -> Math.abs(getPigeon2().getRoll().getValue()) >= p_tippingThreshold.getValue());
+        return new Trigger(() -> tippingPitch() || tippingRoll());
     }
 
     @Override
