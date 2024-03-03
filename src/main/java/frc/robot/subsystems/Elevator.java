@@ -67,6 +67,8 @@ public class Elevator extends SubsystemBase {
     private Aiming m_aiming = new Aiming();
 
     private double m_elevatorTarget;
+    private boolean m_pivotCalibrated = false;
+    private boolean m_elevatorCalibrated = false;
 
     public Elevator() {
 
@@ -151,16 +153,28 @@ public class Elevator extends SubsystemBase {
     }
 
     public void pivotStow() {
-        m_pivotMotor.setControl(new DutyCycleOut(-p_pivotStowSpeed.getValue()));
-        if (pivotDebouncer.calculate(m_pivotMotor.getVelocity().getValueAsDouble() > -1)) {
-            calibratePivot();
+        if (m_pivotCalibrated) {
+            m_pivotMotor.setControl(
+                    m_pivotRequest.withPosition((Constants.PIVOT_BOTTOM + 0.7) / kPivotMotorRotationToShooterAngle));
+        } else {
+            m_pivotMotor.setControl(new DutyCycleOut(-p_pivotStowSpeed.getValue()));
+            if (pivotDebouncer.calculate(m_pivotMotor.getVelocity().getValueAsDouble() > -1)) {
+                calibratePivot();
+                m_pivotCalibrated = true;
+            }
         }
     }
 
     public void elevatorStow() {
-        m_elevatorMotor.setControl(new DutyCycleOut(-p_elevatorStowSpeed.getValue()));
-        if (elevatorDebouncer.calculate(m_elevatorMotor.getVelocity().getValueAsDouble() > -1)) {
-            calibrateElevator();
+        if (m_elevatorCalibrated) {
+            m_elevatorMotor.setControl(m_elevatorRequest
+                    .withPosition((Constants.ELEVATOR_BOTTOM + 0.3) / kElevatorMotorToElevatorDistance));
+        } else {
+            m_elevatorMotor.setControl(new DutyCycleOut(-p_elevatorStowSpeed.getValue()));
+            if (elevatorDebouncer.calculate(m_elevatorMotor.getVelocity().getValueAsDouble() > -1)) {
+                calibrateElevator();
+                m_elevatorCalibrated = true;
+            }
         }
     }
 
@@ -197,9 +211,11 @@ public class Elevator extends SubsystemBase {
         m_pivotMotor.setControl(new DutyCycleOut(0.0));
     }
 
-    public boolean elevatorIsUp() {
-        return m_elevatorMotor.getPosition().getValue() * kElevatorMotorToElevatorDistance
-                - Constants.ELEVATOR_BOTTOM < 1;
+    public boolean areElevatorAndPivotDown() {
+        return m_elevatorMotor.getPosition().getValueAsDouble() * kElevatorMotorToElevatorDistance
+                - Constants.ELEVATOR_BOTTOM < 1.0
+                && m_pivotMotor.getPosition().getValueAsDouble() * kPivotMotorRotationToShooterAngle
+                        - Constants.PIVOT_BOTTOM < 1.0;
     }
 
     public Command elevatorDownFactory() {

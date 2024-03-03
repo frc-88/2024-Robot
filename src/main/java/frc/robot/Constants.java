@@ -73,6 +73,7 @@ public final class Constants {
     public static final int ELEVATOR_MOTOR = 13;
     public static final int ELEVATOR_PIGEON_ID = 0;
     public static final double ELEVATOR_BOTTOM = 27.7;
+    public static final double PIVOT_BOTTOM = 42.0;
 
     // Shooter
     public static final int SHOOTER_LEFT_MOTOR = 11;

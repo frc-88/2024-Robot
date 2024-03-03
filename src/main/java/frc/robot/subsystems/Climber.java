@@ -31,6 +31,7 @@ public class Climber extends SubsystemBase {
     private DoublePreferenceConstant p_maxJerk = new DoublePreferenceConstant("Arm/MotionMagicJerk", 500);
     private DoublePreferenceConstant p_armTarget = new DoublePreferenceConstant("Arm/ArmTarget", 0);
     private DoublePreferenceConstant p_armStowSpeed = new DoublePreferenceConstant("Arm/ArmStowSpeed", 0);
+    private DoublePreferenceConstant p_softLandingspeed = new DoublePreferenceConstant("Arm/ArmSoftLandingSpeed", 0);
     private DoublePreferenceConstant p_armPrepPosition = new DoublePreferenceConstant("Arm/ArmPrepPosition", -20);
     private DoublePreferenceConstant p_armClimbPosition = new DoublePreferenceConstant("Arm/ArmClimbPosition", 0);
     private PIDPreferenceConstants p_PidPreferenceConstants = new PIDPreferenceConstants("Arm/PID");
@@ -97,23 +98,24 @@ public class Climber extends SubsystemBase {
     }
 
     public void stowArms() {
-        // if (m_calibrated) {
-        // m_armRight.setControl(m_motionMagic.withPosition(-79.0));
-        // m_armLeft.setControl(m_motionMagic.withPosition(-79.0));
-        // } else {
-        m_armRight.setControl(new DutyCycleOut(-p_armStowSpeed.getValue()));
-        m_armLeft.setControl(new DutyCycleOut(-p_armStowSpeed.getValue()));
-        if (climberDebouncer.calculate(m_armRight.getVelocity().getValueAsDouble() > -1)
-                && climberDebouncer.calculate(m_armLeft.getVelocity().getValueAsDouble() > -1)) {
-            calibrate();
-            m_calibrated = true;
+        if (m_calibrated) {
+            m_armRight.setControl(m_motionMagic.withPosition(-77.0 / kMotorRotationsToClimberPosition));
+            m_armLeft.setControl(m_motionMagic.withPosition(-77.0 / kMotorRotationsToClimberPosition));
+        } else {
+            m_armRight.setControl(new DutyCycleOut(-p_armStowSpeed.getValue()));
+            m_armLeft.setControl(new DutyCycleOut(-p_armStowSpeed.getValue()));
+
+            if (climberDebouncer.calculate(m_armRight.getVelocity().getValueAsDouble() > -1)
+                    && climberDebouncer.calculate(m_armLeft.getVelocity().getValueAsDouble() > -1)) {
+                calibrate();
+                m_calibrated = true;
+            }
         }
-        // }
     }
 
     public void softLanding() {
-        m_armRight.setControl(new DutyCycleOut(-p_armStowSpeed.getValue()));
-        m_armLeft.setControl(new DutyCycleOut(-p_armStowSpeed.getValue()));
+        m_armRight.setControl(new DutyCycleOut(-p_softLandingspeed.getValue()));
+        m_armLeft.setControl(new DutyCycleOut(-p_softLandingspeed.getValue()));
     }
 
     public void setClimberPostion(double position) {
@@ -133,10 +135,6 @@ public class Climber extends SubsystemBase {
     }
 
     public void calibrate() {
-        // rightStartPosition = m_armRight.getPosition().getValueAsDouble() *
-        // kMotorRotationsToClimberPosition;
-        // leftStartPosition = m_armLeft.getPosition().getValueAsDouble() *
-        // kMotorRotationsToClimberPosition;
         m_armRight.setPosition(-79.0 / kMotorRotationsToClimberPosition);
         m_armLeft.setPosition(-79.0 / kMotorRotationsToClimberPosition);
     }

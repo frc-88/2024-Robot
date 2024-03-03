@@ -28,15 +28,15 @@ public class Intake extends SubsystemBase {
     private final TalonFX m_intakeMotor = new TalonFX(Constants.INTAKE_MOTOR_ID, Constants.RIO_CANBUS);
     private final TalonFX m_guideMotor = new TalonFX(Constants.INTAKE_GUIDE_MOTOR_ID, Constants.RIO_CANBUS);
     private final TalonFX m_indexMotor = new TalonFX(Constants.INTAKE_INDEX_MOTOR_ID, Constants.CANIVORE_CANBUS);
-    private BooleanSupplier m_elevatorUp;
+    private BooleanSupplier m_elevatorAndPivotDown;
 
     private final TalonFXConfiguration indexConfiguration = new TalonFXConfiguration();
 
     public boolean m_automaticMode = true;
     public boolean lastMode = true;
 
-    public Intake(BooleanSupplier elevatorUp) {
-        m_elevatorUp = elevatorUp;
+    public Intake(BooleanSupplier elevatorAndPivotDown) {
+        m_elevatorAndPivotDown = elevatorAndPivotDown;
         configureTalons();
     }
 
@@ -60,7 +60,7 @@ public class Intake extends SubsystemBase {
     }
 
     public void intake() {
-        if (m_elevatorUp.getAsBoolean()) {
+        if (m_elevatorAndPivotDown.getAsBoolean()) {
             m_indexMotor.getConfigurator().refresh(indexConfiguration);
             indexConfiguration.HardwareLimitSwitch.ForwardLimitEnable = true;
             m_indexMotor.getConfigurator().apply(indexConfiguration);
