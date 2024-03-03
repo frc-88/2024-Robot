@@ -57,7 +57,7 @@ public class Elevator extends SubsystemBase {
     private final double kPivotMotorRotationToShooterAngle = 360.0 / 25.0;
     private final double kElevatorMotorToElevatorDistance = (7.086614173228346 / 14);
 
-    private final TalonFX m_pivotMotor = new TalonFX(Constants.ELEVATOR_ANGLER_MOTOR, Constants.CANIVORE_CANBUS);
+    private final TalonFX m_pivotMotor = new TalonFX(Constants.ELEVATOR_ANGLER_MOTOR, Constants.RIO_CANBUS);
     private final TalonFX m_elevatorMotor = new TalonFX(Constants.ELEVATOR_MOTOR, Constants.RIO_CANBUS);
     private MotionMagicVoltage m_pivotRequest = new MotionMagicVoltage(0);
     private MotionMagicVoltage m_elevatorRequest = new MotionMagicVoltage(0);

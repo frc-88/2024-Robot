@@ -41,7 +41,7 @@ public final class Constants {
     public static final double DRIVETRAIN_WHEELBASE_INCHES = 19.75;
 
     public static final double DRIVETRAIN_CENTER_OFFSET = 2.3125;
-    public static final String DRIVETRAIN_CANBUS = RIO_CANBUS;
+    public static final String DRIVETRAIN_CANBUS = CANIVORE_CANBUS;
     public static final int DRIVETRAIN_PIGEON_ID = 0;
 
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 5;
