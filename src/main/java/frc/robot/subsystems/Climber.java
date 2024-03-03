@@ -114,8 +114,16 @@ public class Climber extends SubsystemBase {
     }
 
     public void softLanding() {
-        m_armRight.setControl(new DutyCycleOut(-p_softLandingspeed.getValue()));
-        m_armLeft.setControl(new DutyCycleOut(-p_softLandingspeed.getValue()));
+        if (m_armLeft.getPosition().getValueAsDouble() * kMotorRotationsToClimberPosition > 10.0) {
+            m_armLeft.setControl(new DutyCycleOut(-p_softLandingspeed.getValue()));
+        } else {
+            m_armLeft.stopMotor();
+        }
+        if (m_armRight.getPosition().getValueAsDouble() * kMotorRotationsToClimberPosition > 10.0) {
+            m_armRight.setControl(new DutyCycleOut(-p_softLandingspeed.getValue()));
+        } else {
+            m_armRight.stopMotor();
+        }
     }
 
     public void setClimberPostion(double position) {
@@ -156,7 +164,10 @@ public class Climber extends SubsystemBase {
 
     public Command softLandingFactory() {
         return new RunCommand(() -> softLanding(), this)
-                .until(() -> climberOnTarget(p_armPrepPosition.getValue(), 2.0));
+                .until(() -> climberOnTarget(10.0, 2.0)).andThen(() -> {
+                    m_armRight.stopMotor();
+                    m_armLeft.stopMotor();
+                });
     }
 
     public Command climbFactory() {

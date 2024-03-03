@@ -134,7 +134,9 @@ public class RobotContainer {
                 .whileFalse(drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick)));
         joystick.rightTrigger()
                 .onTrue(m_intake.shootIndexerFactory()
-                        .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer()));
+                        .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer())
+                        .until(() -> !m_intake.hasNoteInIndexer())
+                        .andThen(m_intake.intakeFactory()));
         joystick.rightBumper()
                 .whileTrue(
                         m_shooter.runShooterFactory().alongWith(new WaitUntilCommand(m_shooter::isShooterAtFullSpeed))
@@ -163,8 +165,11 @@ public class RobotContainer {
                         .until(() -> m_elevator.elevatorOnTarget() && m_elevator.pivotOnTarget(42.0, 2.0))
                         .unless(() -> drivetrain.tipping().getAsBoolean()))
                 .onFalse(m_shooter.stopShooterFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
-        buttonBox.button(11).onTrue(m_climber.stowArmFactory().alongWith(m_elevator.stowFactory())
-                .unless(() -> drivetrain.tipping().getAsBoolean()));
+        buttonBox.button(11)
+                .onTrue(m_elevator.stowFactory()
+                        .until(() -> m_elevator.areElevatorAndPivotDown())
+                        .andThen(m_climber.stowArmFactory())
+                        .unless(() -> drivetrain.tipping().getAsBoolean()));
         buttonBox.button(2).onTrue(m_climber.prepArmsFactory().alongWith(m_elevator.elevatorPrepFactory())
                 .unless(() -> drivetrain.tipping().getAsBoolean()));
         buttonBox.button(15)
@@ -179,7 +184,9 @@ public class RobotContainer {
         buttonBox.button(8)
                 .onTrue(new InstantCommand(() -> m_intake.disableAutoMode()).andThen(new WaitCommand(0.1))
                         .andThen(new ParallelCommandGroup(
-                                m_elevator.trapFactory(), m_climber.climbFactory(),
+                                m_elevator.climbFactory().until(() -> m_elevator.elevatorOnTarget())
+                                        .andThen(m_elevator.trapFactory()),
+                                m_climber.climbFactory(),
                                 m_shooter.slowSpeedFactory().until(m_elevator::pivotOnTargetForAmp)
                                         .andThen(m_shooter.runAmpTrapSpeedFactory().withTimeout(1.5))
                                         .andThen(m_intake.shootIndexerFactory())))
