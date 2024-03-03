@@ -12,6 +12,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.utility.PhoenixPIDController;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -300,6 +301,15 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 pose.getY(),
                 pose.getRotation().getDegrees()
         });
+    }
+
+    public Command pathFindingCommand(Pose2d targetPose, double maxVelocity, double maxAcceleration,
+            double maxAngularRate, double maxAngularAcceleration) {
+        PathConstraints constraints = new PathConstraints(maxVelocity, maxAcceleration,
+                Units.degreesToRadians(maxAngularRate), Units.degreesToRadians(maxAngularAcceleration));
+
+        return AutoBuilder.pathfindToPose(targetPose, constraints, 0.0, 0.0);
+
     }
 
     @Override
