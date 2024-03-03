@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -188,7 +189,7 @@ public class Elevator extends SubsystemBase {
     }
 
     public void calibrateElevator() {
-        m_elevatorMotor.setPosition(27.7 / kElevatorMotorToElevatorDistance);
+        m_elevatorMotor.setPosition(Constants.ELEVATOR_BOTTOM / kElevatorMotorToElevatorDistance);
     }
 
     public void holdPosition() {
@@ -196,9 +197,14 @@ public class Elevator extends SubsystemBase {
         m_pivotMotor.setControl(new DutyCycleOut(0.0));
     }
 
+    public boolean elevatorIsUp() {
+        return m_elevatorMotor.getPosition().getValue() * kElevatorMotorToElevatorDistance
+                - Constants.ELEVATOR_BOTTOM < 1;
+    }
+
     public Command elevatorDownFactory() {
         return new RunCommand(() -> {
-            setElevatorPosition(28.5);
+            setElevatorPosition(Constants.ELEVATOR_BOTTOM + 0.8);
             setPivotPosition(42.0);
         }, this);
     }

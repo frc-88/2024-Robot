@@ -81,7 +81,11 @@ public class Aiming {
         Pose2d robotPose = getROSPose();
         robotPose = (getAlliance() == DriverStation.Alliance.Red) ? robotPose.relativeTo(Constants.RED_SPEAKER_POSE)
                 : robotPose.relativeTo(Constants.BLUE_SPEAKER_POSE);
-        return Math.atan2(robotPose.getY(), robotPose.getX()) * (180 / Math.PI);
+        double drivetrainAngle = Math.atan2(robotPose.getY(), robotPose.getX()) * (180 / Math.PI);
+        // if(robotPose.getTranslation().getNorm() > ) {
+        // drivetrainAngle -= robotPose.getTranslation().getNorm() * 0.13;
+        // }
+        return drivetrainAngle;
     }
 
     public double speakerAngleForShooter() {

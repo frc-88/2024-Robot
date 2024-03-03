@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
@@ -26,13 +28,15 @@ public class Intake extends SubsystemBase {
     private final TalonFX m_intakeMotor = new TalonFX(Constants.INTAKE_MOTOR_ID, Constants.RIO_CANBUS);
     private final TalonFX m_guideMotor = new TalonFX(Constants.INTAKE_GUIDE_MOTOR_ID, Constants.RIO_CANBUS);
     private final TalonFX m_indexMotor = new TalonFX(Constants.INTAKE_INDEX_MOTOR_ID, Constants.CANIVORE_CANBUS);
+    private BooleanSupplier m_elevatorUp;
 
     private final TalonFXConfiguration indexConfiguration = new TalonFXConfiguration();
 
     public boolean m_automaticMode = true;
     public boolean lastMode = true;
 
-    public Intake() {
+    public Intake(BooleanSupplier elevatorUp) {
+        m_elevatorUp = elevatorUp;
         configureTalons();
     }
 
@@ -56,12 +60,16 @@ public class Intake extends SubsystemBase {
     }
 
     public void intake() {
-        m_indexMotor.getConfigurator().refresh(indexConfiguration);
-        indexConfiguration.HardwareLimitSwitch.ForwardLimitEnable = true;
-        m_indexMotor.getConfigurator().apply(indexConfiguration);
-        m_intakeMotor.setControl(m_intakeRequest.withOutput(intakeRollerSpeed.getValue()));
-        m_guideMotor.setControl(m_intakeRequest.withOutput(guideRollerSpeed.getValue()));
-        m_indexMotor.setControl(m_intakeRequest.withOutput(indexRollerSpeed.getValue()));
+        if (m_elevatorUp.getAsBoolean()) {
+            m_indexMotor.getConfigurator().refresh(indexConfiguration);
+            indexConfiguration.HardwareLimitSwitch.ForwardLimitEnable = true;
+            m_indexMotor.getConfigurator().apply(indexConfiguration);
+            m_intakeMotor.setControl(m_intakeRequest.withOutput(intakeRollerSpeed.getValue()));
+            m_guideMotor.setControl(m_intakeRequest.withOutput(guideRollerSpeed.getValue()));
+            m_indexMotor.setControl(m_intakeRequest.withOutput(indexRollerSpeed.getValue()));
+        } else {
+            stopMoving();
+        }
     }
 
     public void stopMoving() {
@@ -108,6 +116,10 @@ public class Intake extends SubsystemBase {
     public void disableAutoMode() {
         lastMode = hasNote().getAsBoolean();
         m_automaticMode = false;
+    }
+
+    public void enableAutoMode() {
+        m_automaticMode = true;
     }
 
     public Trigger hasNote() {

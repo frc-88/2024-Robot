@@ -53,8 +53,8 @@ public class RobotContainer {
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(m_aiming); // My drivetrain
     private String m_autoCommandName = "Wait";
     private final Shooter m_shooter = new Shooter();
-    private final Intake m_intake = new Intake();
     private final Elevator m_elevator = new Elevator();
+    private final Intake m_intake = new Intake(m_elevator::elevatorIsUp);
     private Climber m_climber = new Climber();
 
     private Command m_autoCommand = new SequentialCommandGroup(
@@ -168,22 +168,22 @@ public class RobotContainer {
         buttonBox.button(2).onTrue(m_climber.prepArmsFactory().alongWith(m_elevator.elevatorPrepFactory())
                 .unless(() -> drivetrain.tipping().getAsBoolean()));
         buttonBox.button(15)
-                .whileTrue(new SequentialCommandGroup(
+                .onTrue(new SequentialCommandGroup(
                         m_elevator.climbFactory().alongWith(m_climber.prepArmsFactory())
                                 .until(m_elevator::elevatorOnTarget),
                         m_climber.climbFactory().alongWith(m_elevator.climbFactory()))
-                        .unless(() -> drivetrain.tipping().getAsBoolean()))
-                .onFalse(m_climber.softLandingFactory().alongWith(m_elevator.climbFactory())
                         .unless(() -> drivetrain.tipping().getAsBoolean()));
+        buttonBox.button(19).onTrue(m_climber.softLandingFactory().alongWith(m_elevator.climbFactory())
+                .unless(() -> drivetrain.tipping().getAsBoolean()))
+                .onFalse(new InstantCommand(() -> m_intake.enableAutoMode()));
         buttonBox.button(8)
-                .whileTrue(new InstantCommand(() -> m_intake.disableAutoMode()).andThen(new WaitCommand(0.1))
+                .onTrue(new InstantCommand(() -> m_intake.disableAutoMode()).andThen(new WaitCommand(0.1))
                         .andThen(new ParallelCommandGroup(
                                 m_elevator.trapFactory(), m_climber.climbFactory(),
                                 m_shooter.slowSpeedFactory().until(m_elevator::pivotOnTargetForAmp)
-                                        .andThen(m_shooter.runAmpTrapSpeedFactory().withTimeout(0.7))
-                                        .andThen(m_intake.shootIndexerFactory()))))
-                .onFalse(m_elevator.climbFactory()).onFalse(m_climber.climbFactory())
-                .onFalse(new InstantCommand(() -> m_intake.disableAutoMode()));
+                                        .andThen(m_shooter.runAmpTrapSpeedFactory().withTimeout(1.5))
+                                        .andThen(m_intake.shootIndexerFactory())))
+                        .unless(() -> drivetrain.tipping().getAsBoolean()));
         // buttonBox.button(16).whileTrue(m_elevator.goToAimingPosition(() ->
         // m_aiming.speakerAngleForShooter()));
     }
