@@ -66,7 +66,7 @@ public class RobotContainer {
 
     private Command climb(boolean trap) {
         return new SequentialCommandGroup(m_elevator.climbFactory().alongWith(m_climber.prepArmsFactory())
-                .until(m_elevator::elevatorOnTarget),
+                .until(m_elevator::isElevatorUp),
                 m_climber.climbFactory().alongWith(trap ? m_elevator.trapFactory() : m_elevator.climbFactory()))
                 .unless(() -> drivetrain.tipping().getAsBoolean());
     }

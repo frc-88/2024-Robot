@@ -140,6 +140,11 @@ public class Elevator extends SubsystemBase {
         return pivotOnTarget(p_pivotAmp.getValue(), 2.0);
     }
 
+    public boolean isElevatorUp() {
+        return Math.abs(m_elevatorMotor.getPosition().getValueAsDouble() * kElevatorMotorToElevatorDistance
+                - p_elevatorClimbPosition.getValue()) < 1.0;
+    }
+
     public void enableCoastMode() {
         m_elevatorMotor.setNeutralMode(NeutralModeValue.Coast);
         m_pivotMotor.setNeutralMode(NeutralModeValue.Coast);
