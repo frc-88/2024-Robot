@@ -20,6 +20,12 @@
                 "data": {
                   "commands": [
                     {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
+                      }
+                    },
+                    {
                       "type": "deadline",
                       "data": {
                         "commands": [
