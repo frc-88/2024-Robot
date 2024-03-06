@@ -155,10 +155,6 @@ public class RobotContainer {
     }
 
     private void configureButtonBox() {
-        m_intake.hasNote().onTrue((m_shooter.runIdleSpeedFactory()).unless(() -> !m_intake.m_automaticMode))
-                .onTrue(setRumble().unless(() -> !m_intake.m_automaticMode));
-        m_intake.hasNote().and(() -> !m_intake.m_automaticMode)
-                .onFalse(m_intake.intakeFactory().alongWith(m_shooter.stopShooterFactory())).debounce(0.25);
         buttonBox.button(10).whileTrue(m_intake.intakeFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         buttonBox.button(20)
                 .whileTrue(m_intake.shootIndexerFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
@@ -239,6 +235,12 @@ public class RobotContainer {
     }
 
     public void teleopInit() {
+        // enable triggers
+        m_intake.hasNote().onTrue((m_shooter.runIdleSpeedFactory()).unless(() -> !m_intake.m_automaticMode))
+                .onTrue(setRumble().unless(() -> !m_intake.m_automaticMode));
+        m_intake.hasNote().and(() -> !m_intake.m_automaticMode)
+                .onFalse(m_intake.intakeFactory().alongWith(m_shooter.stopShooterFactory())).debounce(0.25);
+
         drivetrain.setTargetHeading(drivetrain.getState().Pose.getRotation().getDegrees());
         m_intake.intakeFactory().schedule();
     }
