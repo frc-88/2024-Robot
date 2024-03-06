@@ -55,7 +55,7 @@ public class RobotContainer {
     private final Shooter m_shooter = new Shooter();
     private final Elevator m_elevator = new Elevator();
     private final Intake m_intake = new Intake(m_elevator::areElevatorAndPivotDown);
-    private Climber m_climber = new Climber(m_elevator::isElevatorUp);
+    private Climber m_climber = new Climber();
 
     private Command m_autoCommand = new SequentialCommandGroup(
             new WaitCommand(4),
