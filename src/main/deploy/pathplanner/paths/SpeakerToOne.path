@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.4014420821634435,
-        "y": 5.519087794932347
+        "x": 1.604825551993446,
+        "y": 5.426640763191436
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6787831773861743,
-        "y": 5.18627848066507
+        "x": 1.8914113503902672,
+        "y": 5.1955231838391605
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.4923170567061854,
-        "y": 4.455946929911878
+        "x": 2.640232307491642,
+        "y": 4.437457523563696
       },
       "prevControl": {
-        "x": 2.2334653678316365,
-        "y": 4.687064509264153
+        "x": 2.381380618617093,
+        "y": 4.6685751029159706
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,7 +30,25 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Shoot",
+      "waypointRelativePos": 0.5,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 5.21,
     "maxAcceleration": 3.5,
@@ -45,7 +63,7 @@
   "reversed": false,
   "folder": "FourPiece",
   "previewStartingState": {
-    "rotation": 0.0,
+    "rotation": -1.0416266760099933,
     "velocity": 0
   },
   "useDefaultConstraints": true

@@ -93,10 +93,10 @@ public class RobotContainer {
         // NamedCommands.registerCommand("Pivot Aim",
         // m_elevator.goToAnlgeFactory(p_autoCloseAim.getValue())
         // .until(() -> m_elevator.pivotOnTarget(p_autoCloseAim.getValue(), 2)));
-        // NamedCommands.registerCommand("Pivot Aim",
-        // m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
-        // .until(() -> m_elevator.pivotOnTarget(m_aiming.speakerAngleForShooter(),
-        // 2.0)));
+        NamedCommands.registerCommand("Pivot Aim",
+                m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
+                        .until(() -> m_elevator.pivotOnTarget(m_aiming.speakerAngleForShooter(),
+                                2.0)));
         NamedCommands.registerCommand("Aim",
                 new ParallelCommandGroup(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
                         .until(() -> m_elevator.pivotOnTarget(m_aiming.speakerAngleForShooter(), 2.0)),
@@ -156,10 +156,6 @@ public class RobotContainer {
     }
 
     private void configureButtonBox() {
-        m_intake.hasNote().onTrue((m_shooter.runIdleSpeedFactory()).unless(() -> !m_intake.m_automaticMode))
-                .onTrue(setRumble().unless(() -> !m_intake.m_automaticMode));
-        m_intake.hasNote().and(() -> !m_intake.m_automaticMode)
-                .onFalse(m_intake.intakeFactory().alongWith(m_shooter.stopShooterFactory())).debounce(0.25);
         buttonBox.button(10).whileTrue(m_intake.intakeFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         buttonBox.button(20)
                 .whileTrue(m_intake.shootIndexerFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
@@ -240,6 +236,12 @@ public class RobotContainer {
     }
 
     public void teleopInit() {
+        // enable triggers
+        m_intake.hasNote().onTrue((m_shooter.runIdleSpeedFactory()).unless(() -> !m_intake.m_automaticMode))
+                .onTrue(setRumble().unless(() -> !m_intake.m_automaticMode));
+        m_intake.hasNote().and(() -> !m_intake.m_automaticMode)
+                .onFalse(m_intake.intakeFactory().alongWith(m_shooter.stopShooterFactory())).debounce(0.25);
+
         drivetrain.setTargetHeading(drivetrain.getState().Pose.getRotation().getDegrees());
         m_intake.intakeFactory().schedule();
     }

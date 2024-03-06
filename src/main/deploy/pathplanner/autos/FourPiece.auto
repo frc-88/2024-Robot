@@ -20,12 +20,6 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "named",
-                      "data": {
-                        "name": "Shoot"
-                      }
-                    },
-                    {
                       "type": "deadline",
                       "data": {
                         "commands": [
@@ -55,6 +49,12 @@
                             }
                           }
                         ]
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Pivot Aim"
                       }
                     },
                     {
@@ -98,7 +98,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Aim"
+                        "name": "Pivot Aim"
                       }
                     },
                     {
@@ -142,7 +142,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Aim"
+                        "name": "Pivot Aim"
                       }
                     },
                     {
