@@ -8,33 +8,27 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0208371948275423,
-        "y": 4.982895010835067
+        "x": 1.6787831773861743,
+        "y": 5.18627848066507
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.5662746820989137,
-        "y": 4.261808163255966
+        "x": 2.4923170567061854,
+        "y": 4.455946929911878
       },
       "prevControl": {
-        "x": 2.1225289297425443,
-        "y": 4.770266837830974
+        "x": 2.2334653678316365,
+        "y": 4.687064509264153
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "FourPieceOne"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.7,
-      "rotationDegrees": -29.50999999999999,
-      "rotateFast": false
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
