@@ -246,6 +246,14 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         };
     }
 
+    public Supplier<SwerveRequest> autoSnapToAngleRequest() {
+        return () -> {
+            return snapToAngle.withVelocityX(0.0)
+                    .withVelocityY(0.0)
+                    .withTargetDirection(Rotation2d.fromDegrees(targetHeading));
+        };
+    }
+
     public Supplier<SwerveRequest> brakeRequest() {
         return () -> brake;
     }

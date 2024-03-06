@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -49,6 +50,8 @@ public class Climber extends SubsystemBase {
     private final double kMotorRotationsToClimberPosition = 360.0 / 250.0;
     private double m_angle;
     private boolean m_calibrated = false;
+
+    private BooleanSupplier elevatorUp;
 
     /** Creates a new Climber. */
     public Climber() {
