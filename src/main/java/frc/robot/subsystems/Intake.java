@@ -64,6 +64,7 @@ public class Intake extends SubsystemBase {
             m_indexMotor.getConfigurator().refresh(indexConfiguration);
             indexConfiguration.HardwareLimitSwitch.ForwardLimitEnable = true;
             m_indexMotor.getConfigurator().apply(indexConfiguration);
+            m_indexMotor.setInverted(true);
             m_intakeMotor.setControl(m_intakeRequest.withOutput(intakeRollerSpeed.getValue()));
             m_guideMotor.setControl(m_intakeRequest.withOutput(guideRollerSpeed.getValue()));
             m_indexMotor.setControl(m_intakeRequest.withOutput(indexRollerSpeed.getValue()));
@@ -82,6 +83,7 @@ public class Intake extends SubsystemBase {
         m_indexMotor.getConfigurator().refresh(indexConfiguration);
         indexConfiguration.HardwareLimitSwitch.ForwardLimitEnable = false;
         m_indexMotor.getConfigurator().apply(indexConfiguration);
+        m_indexMotor.setInverted(true);
         m_indexMotor.setControl(m_intakeRequest.withOutput(indexShootSpeed.getValue()));
         m_intakeMotor.setControl(m_intakeRequest.withOutput(0));
         m_guideMotor.setControl(m_intakeRequest.withOutput(0));
