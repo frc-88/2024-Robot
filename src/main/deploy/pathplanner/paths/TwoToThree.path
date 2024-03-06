@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.8528604804957354,
-        "y": 5.556066607628711
+        "x": 2.5662746820989137,
+        "y": 5.435885466365528
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8544325376939041,
-        "y": 6.064525282203719
+        "x": 1.5678467392970825,
+        "y": 5.944344140940536
       },
       "isLocked": false,
       "linkedName": "FourPieceTwo"
@@ -45,7 +45,7 @@
   "reversed": false,
   "folder": "FourPiece",
   "previewStartingState": {
-    "rotation": 0.7957235527392122,
+    "rotation": 0.0,
     "velocity": 0
   },
   "useDefaultConstraints": true
