@@ -41,6 +41,7 @@ import frc.robot.Constants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.Aiming;
 import frc.robot.util.DriveUtils;
+import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements
@@ -63,6 +64,16 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private double targetHeading = 0;
     private Aiming m_aiming;
     private boolean lowPowerMode = false;
+
+    private DoublePreferenceConstant p_maxVeloctiy = new DoublePreferenceConstant("drivetrain/PathFindingMaxVelocity",
+            5.21);
+    private DoublePreferenceConstant p_maxAcceleration = new DoublePreferenceConstant(
+            "drivetrain/PathFindingMaxAcceleration", 3.5);
+    private DoublePreferenceConstant p_maxAngularVelocity = new DoublePreferenceConstant(
+            "drivetrain/PathFindingMaxAngularVelocity", 540.0);
+    private DoublePreferenceConstant p_maxAngularAcceleration = new DoublePreferenceConstant(
+            "drivetrain/PathFindingMaxAngularAcceleration", 720);
+
     /* What to publish over networktables for telemetry */
     private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
@@ -303,10 +314,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         });
     }
 
-    public Command pathFindingCommand(Pose2d targetPose, double maxVelocity, double maxAcceleration,
-            double maxAngularRate, double maxAngularAcceleration) {
-        PathConstraints constraints = new PathConstraints(maxVelocity, maxAcceleration,
-                Units.degreesToRadians(maxAngularRate), Units.degreesToRadians(maxAngularAcceleration));
+    public Command pathFindingCommand(Pose2d targetPose) {
+        PathConstraints constraints = new PathConstraints(p_maxVeloctiy.getValue(), p_maxAcceleration.getValue(),
+                Units.degreesToRadians(p_maxAngularVelocity.getValue()),
+                Units.degreesToRadians(p_maxAngularAcceleration.getValue()));
 
         return AutoBuilder.pathfindToPose(targetPose, constraints, 0.0, 0.0);
 
