@@ -205,18 +205,25 @@ public class RobotContainer {
     }
 
     public void disabledPeriodic() {
-        if (buttonBox.button(12).getAsBoolean() && !m_autoCommandName.equals("FourPiece")) {
+        String nextAuto = m_autoCommandName;
+        if (buttonBox.button(12).getAsBoolean() && !nextAuto.equals("FourPiece")) {
             m_autoCommand = drivetrain.getAutoPath("FourPiece");
-            m_autoCommandName = "FourPiece";
+            nextAuto = "FourPiece";
         }
-        if ((buttonBox.button(8)).getAsBoolean() && !m_autoCommandName.equals("SixPiece")) {
+        if ((buttonBox.button(8)).getAsBoolean() && !nextAuto.equals("SixPiece")) {
             m_autoCommand = drivetrain.getAutoPath("SixPiece");
-            m_autoCommandName = "SixPiece";
+            nextAuto = "SixPiece";
         }
 
         if (buttonBox.button(13).getAsBoolean()) {
             m_autoCommand = new WaitCommand(15);
-            m_autoCommandName = "Waiting";
+            nextAuto = "Waiting";
+        }
+
+        if (!nextAuto.equals(m_autoCommandName)) {
+            bagManager.startBag(); // Start recording
+            m_autoCommandName = nextAuto;
+
         }
         SmartDashboard.putString("Auto", m_autoCommandName);
     }
