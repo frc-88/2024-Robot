@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 
 import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
@@ -99,6 +100,10 @@ public class Intake extends SubsystemBase {
 
     public boolean hasNoteInIndexer() {
         return m_indexMotor.getForwardLimit().getValueAsDouble() == 0;
+    }
+
+    public Trigger hasNote() {
+        return new Trigger(this::hasNoteInIndexer);
     }
 
     @Override

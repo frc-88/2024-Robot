@@ -3,32 +3,38 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.3771774811958186,
-        "y": 5.547612425391122
+        "x": 0.7044441642327478,
+        "y": 4.37764143936839
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9621629742071847,
-        "y": 5.557362183607978
+        "x": 1.3552185662929883,
+        "y": 4.224829350559602
       },
       "isLocked": false,
-      "linkedName": "SpeakerFront"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.615396774736544,
-        "y": 5.537862667174266
+        "x": 2.677211120188006,
+        "y": 4.345010491822786
       },
       "prevControl": {
-        "x": 2.1279088638937385,
-        "y": 5.557362183607978
+        "x": 2.1964865551352726,
+        "y": 4.335765788648695
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Close2"
+      "linkedName": "FourPieceOne"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.7,
+      "rotationDegrees": -29.50999999999999,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -39,13 +45,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0,
+    "rotation": -29.50999999999999,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "SixPiece",
+  "folder": "FourPiece",
   "previewStartingState": {
-    "rotation": 0.0,
+    "rotation": -58.62699485989155,
     "velocity": 0
   },
   "useDefaultConstraints": true

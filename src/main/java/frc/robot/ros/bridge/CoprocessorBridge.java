@@ -4,6 +4,8 @@
 
 package frc.robot.ros.bridge;
 
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
@@ -20,6 +22,8 @@ public class CoprocessorBridge extends SubsystemBase {
 
     private final ROSNetworkTablesBridge bridge;
     private boolean coprocessorAlive = false;
+    private Timer timer = new Timer();
+    private int counter = 0;
 
     public CoprocessorBridge(CommandSwerveDrivetrain drive, ROSNetworkTablesBridge bridge,
             TFListenerCompact tfListenerCompact) {
@@ -35,6 +39,8 @@ public class CoprocessorBridge extends SubsystemBase {
     public void onCoprocessorAlive() {
         preferenceBackupPublisher.publish();
         powerModePublisher.publish();
+        timer.start();
+        counter = 0;
     }
 
     // ---
@@ -43,6 +49,7 @@ public class CoprocessorBridge extends SubsystemBase {
 
     @Override
     public void periodic() {
+
         if (bridge.isAlive() && !coprocessorAlive) {
             coprocessorAlive = true;
             onCoprocessorAlive();
@@ -50,6 +57,9 @@ public class CoprocessorBridge extends SubsystemBase {
         tfListenerCompact.update();
         for (Publisher publisher : periodicPublishers) {
             publisher.publish();
+        }
+        if (coprocessorAlive) {
+            SmartDashboard.putNumber("ROS avg cycle time", timer.get() / ++counter);
         }
     }
 }

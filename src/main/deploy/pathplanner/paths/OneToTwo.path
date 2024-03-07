@@ -3,49 +3,49 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.3674277229789629,
-        "y": 5.52811290895741
+        "x": 2.677211120188006,
+        "y": 4.345010491822786
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.3949647137869634,
-        "y": 5.4913970578590545
+        "x": 1.6510490678639014,
+        "y": 4.761022134656883
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "FourPieceOne"
     },
     {
       "anchor": {
-        "x": 2.6641455658208244,
-        "y": 6.873579542883553
+        "x": 2.8528604804957354,
+        "y": 5.556066607628711
       },
       "prevControl": {
-        "x": 2.2741552371465805,
-        "y": 6.269094533438474
+        "x": 1.8528604804957354,
+        "y": 5.556066607628711
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "FourPieceTwo"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 5.21,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 40.79464299829143,
+    "rotation": -3.1221304621157655,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "FourPiece",
   "previewStartingState": {
-    "rotation": 0.0,
+    "rotation": -21.80140948635181,
     "velocity": 0
   },
   "useDefaultConstraints": true

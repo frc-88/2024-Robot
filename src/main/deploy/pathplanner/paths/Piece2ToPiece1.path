@@ -3,47 +3,47 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4789001597005584,
-        "y": 5.567111941824834
+        "x": 2.615396774736544,
+        "y": 5.537862667174266
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.7671678098700627,
-        "y": 5.888853962981085
+        "x": 1.9036644249060481,
+        "y": 5.859604688330517
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Close2"
     },
     {
       "anchor": {
-        "x": 2.5763977418691195,
-        "y": 6.8150809935824155
+        "x": 2.4923170567061854,
+        "y": 6.804101536131
       },
       "prevControl": {
-        "x": 1.8159166009543435,
-        "y": 6.532338005293589
+        "x": 1.7318359157914094,
+        "y": 6.521358547842174
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Close1"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 5.21,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 32.34744349944197,
+    "rotation": 22.89,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "SixPiece",
   "previewStartingState": {
     "rotation": -0.939190945735547,
     "velocity": 0
