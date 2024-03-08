@@ -68,9 +68,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     /* What to publish over networktables for telemetry */
     private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
     private DoublePreferenceConstant p_tippingRollThreshold = new DoublePreferenceConstant("Tipping Roll Threashold",
-            20.0);
+            8.0);
     private DoublePreferenceConstant p_tippingPitchThreshold = new DoublePreferenceConstant("Tipping Pitch Threashold",
-            20.0);
+            15.0);
 
     /* Robot pose for field positioning */
     private final NetworkTable rosPoseTable = inst.getTable("ROSPose");

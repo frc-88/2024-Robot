@@ -22,57 +22,6 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Wait For Shooter"
-                      }
-                    },
-                    {
-                      "type": "deadline",
-                      "data": {
-                        "commands": [
-                          {
-                            "type": "parallel",
-                            "data": {
-                              "commands": [
-                                {
-                                  "type": "path",
-                                  "data": {
-                                    "pathName": "SpeakerToOne"
-                                  }
-                                },
-                                {
-                                  "type": "sequential",
-                                  "data": {
-                                    "commands": [
-                                      {
-                                        "type": "named",
-                                        "data": {
-                                          "name": "Shoot"
-                                        }
-                                      },
-                                      {
-                                        "type": "named",
-                                        "data": {
-                                          "name": "Intake"
-                                        }
-                                      }
-                                    ]
-                                  }
-                                }
-                              ]
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "Pivot Stow"
-                            }
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
                         "name": "Pivot Aim"
                       }
                     },
@@ -90,17 +39,17 @@
                             "type": "parallel",
                             "data": {
                               "commands": [
+                                {
+                                  "type": "path",
+                                  "data": {
+                                    "pathName": "SpeakerToCenter5"
+                                  }
+                                },
                                 {
                                   "type": "named",
                                   "data": {
                                     "name": "Intake"
                                   }
-                                },
-                                {
-                                  "type": "path",
-                                  "data": {
-                                    "pathName": "OneToTwo"
-                                  }
                                 }
                               ]
                             }
@@ -135,53 +84,9 @@
                             "data": {
                               "commands": [
                                 {
-                                  "type": "named",
-                                  "data": {
-                                    "name": "Intake"
-                                  }
-                                },
-                                {
                                   "type": "path",
                                   "data": {
-                                    "pathName": "TwoToThree"
-                                  }
-                                }
-                              ]
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "Pivot Stow"
-                            }
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Pivot Aim"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Shoot"
-                      }
-                    },
-                    {
-                      "type": "deadline",
-                      "data": {
-                        "commands": [
-                          {
-                            "type": "deadline",
-                            "data": {
-                              "commands": [
-                                {
-                                  "type": "path",
-                                  "data": {
-                                    "pathName": "ThreeToFour"
+                                    "pathName": "SnipeToCenter4"
                                   }
                                 },
                                 {
@@ -224,18 +129,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stop Shooter"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Localize"
           }
         }
       ]
