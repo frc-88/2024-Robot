@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
+import frc.robot.ros.bridge.BagManager;
 import frc.robot.ros.bridge.CoprocessorBridge;
 import frc.robot.ros.bridge.TagSubscriber;
 import frc.robot.subsystems.Climber;
@@ -73,6 +74,7 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(TunerConstants.kSpeedAt12VoltsMps, drivetrain);
     private TFListenerCompact tfListenerCompact;
+    private BagManager bagManager;
     @SuppressWarnings("unused")
     private CoprocessorBridge coprocessorBridge;
 
@@ -248,9 +250,10 @@ public class RobotContainer {
     }
 
     public void disabledPeriodic() {
-        if (buttonBox.button(12).getAsBoolean() && !m_autoCommandName.equals("FourPiece")) {
+        String nextAuto = m_autoCommandName;
+        if (buttonBox.button(12).getAsBoolean() && !nextAuto.equals("FourPiece")) {
             m_autoCommand = drivetrain.getAutoPath("FourPiece");
-            m_autoCommandName = "FourPiece";
+            nextAuto = "FourPiece";
         }
 
         if (buttonBox.button(6).getAsBoolean() && !m_autoCommandName.equals("FivePiece")) {
@@ -260,12 +263,18 @@ public class RobotContainer {
 
         if ((buttonBox.button(8)).getAsBoolean() && !m_autoCommandName.equals("SixPiece")) {
             m_autoCommand = drivetrain.getAutoPath("SixPiece");
-            m_autoCommandName = "SixPiece";
+            nextAuto = "SixPiece";
         }
 
         if (buttonBox.button(13).getAsBoolean()) {
             m_autoCommand = new WaitCommand(15);
-            m_autoCommandName = "Waiting";
+            nextAuto = "Waiting";
+        }
+
+        if (!nextAuto.equals(m_autoCommandName)) {
+            bagManager.startBag(); // Start recording
+            m_autoCommandName = nextAuto;
+
         }
         SmartDashboard.putString("Auto", m_autoCommandName);
     }
