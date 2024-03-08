@@ -40,6 +40,10 @@ public class Shooter extends SubsystemBase {
 
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
 
+    // amplified and loud
+    // a symphony of scoring
+    // TJ rocks the house
+
     public Shooter() {
         applyAllConfigs(0);
         motor_kP.addChangeHandler(this::applyAllConfigs);

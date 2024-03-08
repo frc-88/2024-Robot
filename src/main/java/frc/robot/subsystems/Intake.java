@@ -35,6 +35,10 @@ public class Intake extends SubsystemBase {
     public boolean m_automaticMode = true;
     public boolean lastMode = true;
 
+    // I heard some folks say
+    // my recipes are one note
+    // but this intake cooks
+
     public Intake(BooleanSupplier elevatorAndPivotDown) {
         m_elevatorAndPivotDown = elevatorAndPivotDown;
         configureTalons();
