@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -23,49 +24,58 @@ import frc.robot.util.Aiming;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import frc.robot.util.preferenceconstants.PIDPreferenceConstants;
 
+// stay low when we go
+// bringing notes to new levels
+// go up to get down
+
 public class Elevator extends SubsystemBase {
-    private DoublePreferenceConstant p_pivotPodium = new DoublePreferenceConstant("Elevator/Podium", 60);
-    private DoublePreferenceConstant p_pivotFlat = new DoublePreferenceConstant("Elevator/Flat", 90);
-    private DoublePreferenceConstant p_pivotAmp = new DoublePreferenceConstant("Elevator/PivotAmp", 0);
-    private DoublePreferenceConstant p_elevatorAmp = new DoublePreferenceConstant("Elevator/ElevatorAmp", 0);
+    private DoublePreferenceConstant p_pivotPodium = new DoublePreferenceConstant("Elevator/Podium", 66);
+    private DoublePreferenceConstant p_pivotFlat = new DoublePreferenceConstant("Elevator/Flat", 42.0);
+    private DoublePreferenceConstant p_pivotAmp = new DoublePreferenceConstant("Elevator/PivotAmp", 110);
+    private DoublePreferenceConstant p_elevatorAmp = new DoublePreferenceConstant("Elevator/ElevatorAmp", 43);
     private DoublePreferenceConstant p_PivotMaxVelocity = new DoublePreferenceConstant(
-            "Elevator/PivotMotionMagicVelocity", 0);
+            "Elevator/PivotMotionMagicVelocity", 100);
     private DoublePreferenceConstant p_PivotMaxAcceleration = new DoublePreferenceConstant(
-            "Elevator/PivotMotionMagicAcceleration", 0);
-    private DoublePreferenceConstant p_PivotMaxJerk = new DoublePreferenceConstant("Elevator/PivotMotionMagicJerk", 0);
+            "Elevator/PivotMotionMagicAcceleration", 200);
+    private DoublePreferenceConstant p_PivotMaxJerk = new DoublePreferenceConstant("Elevator/PivotMotionMagicJerk",
+            10000);
     private DoublePreferenceConstant p_ElevatorMaxVelocity = new DoublePreferenceConstant(
-            "Elevator/ElevatorMotionMagicVelocity", 0);
+            "Elevator/ElevatorMotionMagicVelocity", 100);
     private DoublePreferenceConstant p_ElevatorMaxAcceleration = new DoublePreferenceConstant(
-            "Elevator/ElevatorMotionMagicAcceleration", 0);
+            "Elevator/ElevatorMotionMagicAcceleration", 200);
     private DoublePreferenceConstant p_ElevatorMaxJerk = new DoublePreferenceConstant(
-            "Elevator/ElevatorMotionMagicJerk", 0);
-    private DoublePreferenceConstant p_elevatorGravityFeedForward = new DoublePreferenceConstant("Elevator/Gravity", 0);
+            "Elevator/ElevatorMotionMagicJerk", 10000);
+    private DoublePreferenceConstant p_elevatorGravityFeedForward = new DoublePreferenceConstant("Elevator/Gravity",
+            0.75);
 
     private DoublePreferenceConstant p_pivotStowSpeed = new DoublePreferenceConstant("Elevator/PivotStowSpeed", 0.05);
     private DoublePreferenceConstant p_elevatorStowSpeed = new DoublePreferenceConstant("Elevator/ElevatorStowSpeed",
-            0.05);
+            0.075);
     private DoublePreferenceConstant p_elevatorClimbPosition = new DoublePreferenceConstant(
-            "Elevator/ElevatorClimbPosition", 0);
+            "Elevator/ElevatorClimbPosition", 47);
     private DoublePreferenceConstant p_elevatorPrepPosition = new DoublePreferenceConstant(
-            "Elevator/ElevatorPrepPosition", 0);
+            "Elevator/ElevatorPrepPosition", 32);
 
-    private PIDPreferenceConstants p_PivotPIDPreferenceConstants = new PIDPreferenceConstants("Elevator/PivotPID");
+    private PIDPreferenceConstants p_PivotPIDPreferenceConstants = new PIDPreferenceConstants("Elevator/PivotPID", 50.0,
+            0.0, 0.0,
+            0.1, 0.0, 0.0, 0.0, 0.0);
     private PIDPreferenceConstants p_ElevatorPIDPreferenceConstants = new PIDPreferenceConstants(
-            "Elevator/ElevatorPID");
+            "Elevator/ElevatorPID", 10.0, 0.0, 0.2,
+            0.14, 0.0, 0.0, 0.0, 0.0);
 
     private final double kPivotMotorRotationToShooterAngle = 360.0 / 25.0;
     private final double kElevatorMotorToElevatorDistance = (7.086614173228346 / 14);
 
-    private final TalonFX m_pivotMotor = new TalonFX(Constants.ELEVATOR_ANGLER_MOTOR, Constants.CANIVORE_CANBUS);
+    private final TalonFX m_pivotMotor = new TalonFX(Constants.ELEVATOR_ANGLER_MOTOR, Constants.RIO_CANBUS);
     private final TalonFX m_elevatorMotor = new TalonFX(Constants.ELEVATOR_MOTOR, Constants.RIO_CANBUS);
     private MotionMagicVoltage m_pivotRequest = new MotionMagicVoltage(0);
     private MotionMagicVoltage m_elevatorRequest = new MotionMagicVoltage(0);
     private final Debouncer pivotDebouncer = new Debouncer(1, DebounceType.kRising);
     private final Debouncer elevatorDebouncer = new Debouncer(1, DebounceType.kRising);
 
-    private Aiming m_aiming = new Aiming();
-
     private double m_elevatorTarget;
+    private boolean m_pivotCalibrated = false;
+    private boolean m_elevatorCalibrated = false;
 
     public Elevator() {
 
@@ -135,6 +145,15 @@ public class Elevator extends SubsystemBase {
                 - position) < tolerance;
     }
 
+    public boolean pivotOnTargetForAmp() {
+        return pivotOnTarget(p_pivotAmp.getValue(), 2.0);
+    }
+
+    public boolean isElevatorUp() {
+        return Math.abs(m_elevatorMotor.getPosition().getValueAsDouble() * kElevatorMotorToElevatorDistance
+                - p_elevatorClimbPosition.getValue()) < 1.0;
+    }
+
     public void enableCoastMode() {
         m_elevatorMotor.setNeutralMode(NeutralModeValue.Coast);
         m_pivotMotor.setNeutralMode(NeutralModeValue.Coast);
@@ -146,16 +165,28 @@ public class Elevator extends SubsystemBase {
     }
 
     public void pivotStow() {
-        m_pivotMotor.setControl(new DutyCycleOut(-p_pivotStowSpeed.getValue()));
-        if (pivotDebouncer.calculate(m_pivotMotor.getVelocity().getValueAsDouble() > -1)) {
-            calibratePivot();
+        if (m_pivotCalibrated) {
+            m_pivotMotor.setControl(
+                    m_pivotRequest.withPosition((Constants.PIVOT_BOTTOM + 0.7) / kPivotMotorRotationToShooterAngle));
+        } else {
+            m_pivotMotor.setControl(new DutyCycleOut(-p_pivotStowSpeed.getValue()));
+            if (pivotDebouncer.calculate(m_pivotMotor.getVelocity().getValueAsDouble() > -1)) {
+                calibratePivot();
+                m_pivotCalibrated = true;
+            }
         }
     }
 
     public void elevatorStow() {
-        m_elevatorMotor.setControl(new DutyCycleOut(-p_elevatorStowSpeed.getValue()));
-        if (elevatorDebouncer.calculate(m_elevatorMotor.getVelocity().getValueAsDouble() > -1)) {
-            calibrateElevator();
+        if (m_elevatorCalibrated) {
+            m_elevatorMotor.setControl(m_elevatorRequest
+                    .withPosition((Constants.ELEVATOR_BOTTOM + 0.3) / kElevatorMotorToElevatorDistance));
+        } else {
+            m_elevatorMotor.setControl(new DutyCycleOut(-p_elevatorStowSpeed.getValue()));
+            if (elevatorDebouncer.calculate(m_elevatorMotor.getVelocity().getValueAsDouble() > -1)) {
+                calibrateElevator();
+                m_elevatorCalibrated = true;
+            }
         }
     }
 
@@ -174,6 +205,7 @@ public class Elevator extends SubsystemBase {
     }
 
     public void setElevatorPosition(DoubleSupplier height) {
+        m_elevatorTarget = height.getAsDouble();
         m_elevatorMotor
                 .setControl(m_elevatorRequest.withPosition(height.getAsDouble() / kElevatorMotorToElevatorDistance));
     }
@@ -183,7 +215,26 @@ public class Elevator extends SubsystemBase {
     }
 
     public void calibrateElevator() {
-        m_elevatorMotor.setPosition(27.7 / kElevatorMotorToElevatorDistance);
+        m_elevatorMotor.setPosition(Constants.ELEVATOR_BOTTOM / kElevatorMotorToElevatorDistance);
+    }
+
+    public void holdPosition() {
+        m_elevatorMotor.setControl(new DutyCycleOut(0.0));
+        m_pivotMotor.setControl(new DutyCycleOut(0.0));
+    }
+
+    public boolean areElevatorAndPivotDown() {
+        return m_elevatorMotor.getPosition().getValueAsDouble() * kElevatorMotorToElevatorDistance
+                - Constants.ELEVATOR_BOTTOM < 1.0
+                && m_pivotMotor.getPosition().getValueAsDouble() * kPivotMotorRotationToShooterAngle
+                        - Constants.PIVOT_BOTTOM < 1.0;
+    }
+
+    public Command elevatorDownFactory() {
+        return new RunCommand(() -> {
+            setElevatorPosition(Constants.ELEVATOR_BOTTOM + 0.8);
+            setPivotPosition(42.0);
+        }, this);
     }
 
     public Command elevatorPrepFactory() {
@@ -198,6 +249,13 @@ public class Elevator extends SubsystemBase {
         return new RunCommand(() -> {
             setElevatorPosition(p_elevatorClimbPosition.getValue());
             pivotStow();
+        }, this);
+    }
+
+    public Command trapFactory() {
+        return new RunCommand(() -> {
+            setElevatorPosition(p_elevatorClimbPosition.getValue());
+            setPivotPosition(() -> p_pivotAmp.getValue());
         }, this);
     }
 
@@ -258,6 +316,10 @@ public class Elevator extends SubsystemBase {
 
     public Command goToAimingPosition(DoubleSupplier position) {
         return new RunCommand(() -> setPivotPosition(position), this);
+    }
+
+    public Command holdPositionFactory() {
+        return new RunCommand(() -> holdPosition(), this);
     }
 
     @Override

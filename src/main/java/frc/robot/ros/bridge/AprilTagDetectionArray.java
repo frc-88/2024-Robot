@@ -1,0 +1,59 @@
+// Auto generated!! Do not modify.
+package frc.robot.ros.bridge;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.annotations.Expose;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+public class AprilTagDetectionArray extends frc.team88.ros.messages.RosMessage {
+
+    private frc.team88.ros.messages.std_msgs.RosHeader header = new frc.team88.ros.messages.std_msgs.RosHeader();
+    private ArrayList<frc.robot.ros.bridge.AprilTagDetection> detections = new ArrayList<>();
+
+    @Expose(serialize = false, deserialize = false)
+    public final java.lang.String _type = "apriltag_ros/AprilTagDetectionArray";
+
+    public AprilTagDetectionArray() {
+
+    }
+
+    public AprilTagDetectionArray(frc.team88.ros.messages.std_msgs.RosHeader header,
+            frc.robot.ros.bridge.AprilTagDetection[] detections) {
+        this.header = header;
+        this.detections = new ArrayList<>(Arrays.asList(detections));
+    }
+
+    public AprilTagDetectionArray(JsonObject jsonObj) {
+        this.header = new frc.team88.ros.messages.std_msgs.RosHeader(jsonObj.get("header").getAsJsonObject());
+        for (JsonElement detections_element : jsonObj.getAsJsonArray("detections")) {
+            this.detections.add(
+                    new frc.robot.ros.bridge.AprilTagDetection(detections_element.getAsJsonObject()));
+        }
+    }
+
+    public frc.team88.ros.messages.std_msgs.RosHeader getHeader() {
+        return this.header;
+    }
+
+    public ArrayList<frc.robot.ros.bridge.AprilTagDetection> getDetections() {
+        return this.detections;
+    }
+
+    public void setHeader(frc.team88.ros.messages.std_msgs.RosHeader header) {
+        this.header = header;
+    }
+
+    public void setDetections(ArrayList<frc.robot.ros.bridge.AprilTagDetection> detections) {
+        this.detections = detections;
+    }
+
+    public JsonObject toJSON() {
+        return ginst.toJsonTree(this).getAsJsonObject();
+    }
+
+    public java.lang.String toString() {
+        return ginst.toJson(this);
+    }
+}
