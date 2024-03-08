@@ -22,16 +22,17 @@ import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 public class Shooter extends SubsystemBase {
     /** Creates a new Shooter. */
 
-    private DoublePreferenceConstant leftShooterSpeed = new DoublePreferenceConstant("shooter/shooter/Leftspeed", 0);
-    private DoublePreferenceConstant rightShooterSpeed = new DoublePreferenceConstant("shooter/shooter/Rightspeed", 0);
+    private DoublePreferenceConstant leftShooterSpeed = new DoublePreferenceConstant("shooter/shooter/Leftspeed", 5600);
+    private DoublePreferenceConstant rightShooterSpeed = new DoublePreferenceConstant("shooter/shooter/Rightspeed",
+            5000);
     private DoublePreferenceConstant idleShooterControl = new DoublePreferenceConstant("shooter/shooter/idleControl",
-            0);
-    private DoublePreferenceConstant p_slowSpeed = new DoublePreferenceConstant("shooter/shooter/slowspeed", 0);
-    private DoublePreferenceConstant p_ampTrapSpeed = new DoublePreferenceConstant("shooter/shooter/AmpTrap", 0);
-    private DoublePreferenceConstant motor_kP = new DoublePreferenceConstant("shooter/shooter/motor_kP", 0);
+            1500);
+    private DoublePreferenceConstant p_slowSpeed = new DoublePreferenceConstant("shooter/shooter/slowspeed", 500);
+    private DoublePreferenceConstant p_ampTrapSpeed = new DoublePreferenceConstant("shooter/shooter/AmpTrap", 2000);
+    private DoublePreferenceConstant motor_kP = new DoublePreferenceConstant("shooter/shooter/motor_kP", 0.02);
     private DoublePreferenceConstant motor_kI = new DoublePreferenceConstant("shooter/shooter/motor_kI", 0);
     private DoublePreferenceConstant motor_kD = new DoublePreferenceConstant("shooter/shooter/motor_kD", 0);
-    private DoublePreferenceConstant motor_kV = new DoublePreferenceConstant("shooter/shooter/motor_kV", 0);
+    private DoublePreferenceConstant motor_kV = new DoublePreferenceConstant("shooter/shooter/motor_kV", 0.129);
     private DoublePreferenceConstant motor_kS = new DoublePreferenceConstant("shooter/shooter/motor_kS", 0);
 
     private final TalonFX m_LeftShooter = new TalonFX(Constants.SHOOTER_LEFT_MOTOR, Constants.RIO_CANBUS);

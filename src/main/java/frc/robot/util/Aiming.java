@@ -32,7 +32,7 @@ public class Aiming {
     private BridgePublisher<MarkerArray> aimPub;
 
     private DoublePreferenceConstant p_aimingOffset = new DoublePreferenceConstant("Aiming Offset",
-            0.14);
+            0.15);
 
     // TODO get these bounds
     // private final double[] shootingAngleBounds = { 44.0, 26.0 };

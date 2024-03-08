@@ -44,10 +44,6 @@ import frc.robot.util.Aiming;
 import frc.robot.subsystems.Intake;
 
 public class RobotContainer {
-
-    // private DoublePreferenceConstant p_autoCloseAim = new
-    // DoublePreferenceConstant("Auto/AutoCloseAim", 63.0);
-
     private final Aiming m_aiming = new Aiming();
     private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
     private final CommandGenericHID buttonBox = new CommandGenericHID(1); // The buttons???
@@ -256,7 +252,7 @@ public class RobotContainer {
         String nextAuto = m_autoCommandName;
         if (buttonBox.button(12).getAsBoolean() && !nextAuto.equals("FourPiece")) {
             m_autoCommand = drivetrain.getAutoPath("FourPiece");
-            nextAuto = "FourPiece";
+            m_autoCommandName = "FourPiece";
         }
 
         if (buttonBox.button(6).getAsBoolean() && !m_autoCommandName.equals("FivePiece")) {
@@ -264,14 +260,19 @@ public class RobotContainer {
             m_autoCommandName = "FivePiece";
         }
 
+        if (buttonBox.button(11).getAsBoolean() && !nextAuto.equals("Cleanside")) {
+            m_autoCommand = drivetrain.getAutoPath("Cleanside");
+            m_autoCommandName = "Cleanside";
+        }
+
         if ((buttonBox.button(8)).getAsBoolean() && !m_autoCommandName.equals("SixPiece")) {
             m_autoCommand = drivetrain.getAutoPath("SixPiece");
-            nextAuto = "SixPiece";
+            m_autoCommandName = "SixPiece";
         }
 
         if (buttonBox.button(13).getAsBoolean()) {
             m_autoCommand = new WaitCommand(15);
-            nextAuto = "Waiting";
+            m_autoCommandName = "Waiting";
         }
 
         // if (!nextAuto.equals(m_autoCommandName)) {
