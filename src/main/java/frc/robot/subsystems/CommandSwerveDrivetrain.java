@@ -329,6 +329,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return new RunCommand(() -> setTargetHeading(m_aiming.getSpeakerAngleForDrivetrian()));
     }
 
+    public Command aimAtAmpFactory() {
+        return new RunCommand(() -> setTargetHeading(m_aiming.getAmpAngleForDrivetrain()));
+    }
+
     private void sendROSPose() {
         /* Telemeterize the pose */
         Pose2d pose = m_aiming.getROSPose();
