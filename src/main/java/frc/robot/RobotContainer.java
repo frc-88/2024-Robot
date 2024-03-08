@@ -143,7 +143,7 @@ public class RobotContainer {
                 .onTrue(drivetrain.setHeadingFactory(() -> drivetrain.getState().Pose.getRotation().getDegrees()))
                 .whileFalse(drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick)));
         joystick.rightTrigger()
-                .onTrue(m_intake.shootIndexerFactory()
+                .onTrue(m_intake.shootIndexerFactory().alongWith(drivetrain.localizeFactory())
                         .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer())
                         .until(() -> !m_intake.hasNoteInIndexer())
                         .andThen(m_intake.intakeFactory()));
