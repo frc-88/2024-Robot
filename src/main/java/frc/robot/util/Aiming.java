@@ -112,6 +112,14 @@ public class Aiming {
         return shootingAngle;
     }
 
+    public double getAmpAngleForDrivetrain() {
+        Pose2d robotPose = getROSPose();
+        robotPose = (getAlliance() == DriverStation.Alliance.Red) ? robotPose.relativeTo(Constants.RED_AMP_POSE)
+                : robotPose.relativeTo(Constants.BLUE_AMP_POSE);
+        double drivetrainAmpAngle = Math.atan2(robotPose.getY(), robotPose.getX()) * (180 / Math.PI);
+        return drivetrainAmpAngle;
+    }
+
     public boolean getDetections() {
         try {
             var header = tagSubscriber.receive().get().getHeader();
