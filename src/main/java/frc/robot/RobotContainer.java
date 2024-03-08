@@ -129,6 +129,8 @@ public class RobotContainer {
         TagSubscriber tagsub = new TagSubscriber(bridge);
         BridgePublisher<MarkerArray> aimPub = new BridgePublisher<>(bridge, "target_aiming");
         coprocessorBridge = new CoprocessorBridge(drivetrain, bridge, tfListenerCompact);
+        bagManager = new BagManager(bridge);
+
         m_aiming.setTFListener(tfListenerCompact);
         m_aiming.setTagListener(tagsub);
         m_aiming.setAimPub(aimPub);
@@ -261,7 +263,7 @@ public class RobotContainer {
 
         if (buttonBox.button(6).getAsBoolean() && !m_autoCommandName.equals("FivePiece")) {
             m_autoCommand = drivetrain.getAutoPath("FivePiece");
-            m_autoCommandName = "FivePiece";
+            nextAuto = "FivePiece";
         }
 
         if ((buttonBox.button(8)).getAsBoolean() && !m_autoCommandName.equals("SixPiece")) {
@@ -274,10 +276,10 @@ public class RobotContainer {
             nextAuto = "Waiting";
         }
 
-        // if (!nextAuto.equals(m_autoCommandName)) {
-        // bagManager.startBag(); // Start recording
-        // m_autoCommandName = nextAuto;
-        // }
+        if (!nextAuto.equals(m_autoCommandName)) {
+            bagManager.startBag(); // Start recording
+            m_autoCommandName = nextAuto;
+        }
 
         SmartDashboard.putString("Auto", m_autoCommandName);
     }
