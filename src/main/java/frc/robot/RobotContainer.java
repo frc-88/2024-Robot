@@ -254,7 +254,7 @@ public class RobotContainer {
         String nextAuto = m_autoCommandName;
         if (buttonBox.button(12).getAsBoolean() && !nextAuto.equals("FourPiece")) {
             m_autoCommand = drivetrain.getAutoPath("FourPiece");
-            m_autoCommandName = "FourPiece";
+            nextAuto = "FourPiece";
         }
 
         if (buttonBox.button(6).getAsBoolean() && !m_autoCommandName.equals("FivePiece")) {
@@ -264,17 +264,17 @@ public class RobotContainer {
 
         if (buttonBox.button(11).getAsBoolean() && !nextAuto.equals("Cleanside")) {
             m_autoCommand = drivetrain.getAutoPath("Cleanside");
-            m_autoCommandName = "Cleanside";
+            nextAuto = "Cleanside";
         }
 
         if ((buttonBox.button(8)).getAsBoolean() && !m_autoCommandName.equals("SixPiece")) {
             m_autoCommand = drivetrain.getAutoPath("SixPiece");
-            m_autoCommandName = "SixPiece";
+            nextAuto = "SixPiece";
         }
 
         if (buttonBox.button(13).getAsBoolean()) {
             m_autoCommand = new WaitCommand(15);
-            m_autoCommandName = "Waiting";
+            nextAuto = "Waiting";
         }
 
         if (!nextAuto.equals(m_autoCommandName)) {
