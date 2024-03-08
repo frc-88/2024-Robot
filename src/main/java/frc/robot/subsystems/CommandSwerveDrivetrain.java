@@ -394,6 +394,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         SmartDashboard.putNumber("Pigeon Roll", getPigeon2().getRoll().getValueAsDouble());
         SmartDashboard.putNumber("Pigeon Pitch", getPigeon2().getPitch().getValueAsDouble());
         SmartDashboard.putString("PowerMode", lowPowerMode ? "LowPowerMode" : "HighPowerMode");
+        SmartDashboard.putNumber("AmpShuttle", m_aiming.getAmpAngleForDrivetrain());
         m_aiming.sendTarget();
     }
 }
