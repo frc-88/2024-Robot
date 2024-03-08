@@ -169,7 +169,7 @@ public class RobotContainer {
         buttonBox.button(6)
                 .whileTrue(m_elevator.setAmpFactory().alongWith(m_shooter.slowSpeedFactory())
                         .until(() -> m_elevator.pivotOnTargetForAmp() && m_elevator.elevatorOnTarget())
-                        .andThen(m_shooter.runShooterFactory()).unless(() -> drivetrain.tipping().getAsBoolean()))
+                        .andThen(m_shooter.runAmpTrapSpeedFactory()).unless(() -> drivetrain.tipping().getAsBoolean()))
                 .onFalse(m_elevator.elevatorDownFactory()
                         .until(() -> m_elevator.elevatorOnTarget() && m_elevator.pivotOnTarget(42.0, 2.0))
                         .unless(() -> drivetrain.tipping().getAsBoolean()))
