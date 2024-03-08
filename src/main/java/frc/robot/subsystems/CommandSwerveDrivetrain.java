@@ -4,6 +4,7 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
@@ -32,6 +33,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -263,6 +265,25 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 Rotation2d.fromDegrees(getModule(0).getCANcoder().getAbsolutePosition().getValueAsDouble() * 360));
     }
 
+    public void setOffsetsToZero() {
+        CANcoderConfiguration configuration = new CANcoderConfiguration();
+        configuration.MagnetSensor.MagnetOffset = 0;
+        for (int i = 0; i < 4; i++) {
+            getModule(i).getCANcoder().getConfigurator().apply(configuration);
+        }
+    }
+
+    public void setOffsets() {
+        TunerConstants.p_frontLeftEncoderOffset
+                .setValue(getModule(0).getCANcoder().getAbsolutePosition().getValueAsDouble());
+        TunerConstants.p_frontRightEncoderOffset
+                .setValue(getModule(1).getCANcoder().getAbsolutePosition().getValueAsDouble());
+        TunerConstants.p_backLeftEncoderOffset
+                .setValue(getModule(2).getCANcoder().getAbsolutePosition().getValueAsDouble());
+        TunerConstants.p_backRightEncoderOffset
+                .setValue(getModule(3).getCANcoder().getAbsolutePosition().getValueAsDouble());
+    }
+
     public void localize() {
         resetPose(m_aiming.getROSPose());
     }
@@ -337,6 +358,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public Trigger drivetrainOnTarget() {
         return new Trigger(() -> onTarget());
+    }
+
+    public Command calibrateFactory() {
+        return new SequentialCommandGroup(new InstantCommand(this::setOffsetsToZero), new WaitCommand(5),
+                new InstantCommand(this::setOffsets));
     }
 
     public boolean tippingRoll() {

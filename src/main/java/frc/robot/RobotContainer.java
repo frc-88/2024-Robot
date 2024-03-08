@@ -201,6 +201,7 @@ public class RobotContainer {
         // Drive
         SmartDashboard.putData("SetLowPowerMode", drivetrain.lowPowerModeFactory());
         SmartDashboard.putData("SetHighPowerMode", drivetrain.highPowerModeFactory());
+        SmartDashboard.putData("CalibrateDrivetrain", drivetrain.calibrateFactory().ignoringDisable(true));
         SmartDashboard.putData("Localize", drivetrain.localizeFactory().ignoringDisable(true));
 
         // Shooter
