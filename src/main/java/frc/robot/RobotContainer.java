@@ -272,11 +272,11 @@ public class RobotContainer {
             nextAuto = "Waiting";
         }
 
-        if (!nextAuto.equals(m_autoCommandName)) {
-            bagManager.startBag(); // Start recording
-            m_autoCommandName = nextAuto;
+        // if (!nextAuto.equals(m_autoCommandName)) {
+        // bagManager.startBag(); // Start recording
+        // m_autoCommandName = nextAuto;
+        // }
 
-        }
         SmartDashboard.putString("Auto", m_autoCommandName);
     }
 
