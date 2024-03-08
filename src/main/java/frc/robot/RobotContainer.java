@@ -44,10 +44,6 @@ import frc.robot.util.Aiming;
 import frc.robot.subsystems.Intake;
 
 public class RobotContainer {
-
-    // private DoublePreferenceConstant p_autoCloseAim = new
-    // DoublePreferenceConstant("Auto/AutoCloseAim", 63.0);
-
     private final Aiming m_aiming = new Aiming();
     private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
     private final CommandGenericHID buttonBox = new CommandGenericHID(1); // The buttons???

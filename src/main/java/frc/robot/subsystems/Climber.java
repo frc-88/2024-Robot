@@ -30,16 +30,17 @@ import frc.robot.util.preferenceconstants.PIDPreferenceConstants;
 // Courage rewarded
 
 public class Climber extends SubsystemBase {
-    private DoublePreferenceConstant p_maxVelocity = new DoublePreferenceConstant("Arm/MotionMagicVelocity", 62.5);
+    private DoublePreferenceConstant p_maxVelocity = new DoublePreferenceConstant("Arm/MotionMagicVelocity", 100);
     private DoublePreferenceConstant p_maxAcceleration = new DoublePreferenceConstant("Arm/MotionMagicAcceleration",
-            250);
-    private DoublePreferenceConstant p_maxJerk = new DoublePreferenceConstant("Arm/MotionMagicJerk", 500);
-    private DoublePreferenceConstant p_armTarget = new DoublePreferenceConstant("Arm/ArmTarget", 0);
-    private DoublePreferenceConstant p_armStowSpeed = new DoublePreferenceConstant("Arm/ArmStowSpeed", 0);
-    private DoublePreferenceConstant p_softLandingspeed = new DoublePreferenceConstant("Arm/ArmSoftLandingSpeed", 0);
-    private DoublePreferenceConstant p_armPrepPosition = new DoublePreferenceConstant("Arm/ArmPrepPosition", -20);
-    private DoublePreferenceConstant p_armClimbPosition = new DoublePreferenceConstant("Arm/ArmClimbPosition", 0);
-    private PIDPreferenceConstants p_PidPreferenceConstants = new PIDPreferenceConstants("Arm/PID");
+            1000);
+    private DoublePreferenceConstant p_maxJerk = new DoublePreferenceConstant("Arm/MotionMagicJerk", 100000);
+    private DoublePreferenceConstant p_armStowSpeed = new DoublePreferenceConstant("Arm/ArmStowSpeed", 0.05);
+    private DoublePreferenceConstant p_softLandingspeed = new DoublePreferenceConstant("Arm/ArmSoftLandingSpeed", 0.25);
+    private DoublePreferenceConstant p_armPrepPosition = new DoublePreferenceConstant("Arm/ArmPrepPosition", -45);
+    private DoublePreferenceConstant p_armClimbPosition = new DoublePreferenceConstant("Arm/ArmClimbPosition", 108);
+    private PIDPreferenceConstants p_PidPreferenceConstants = new PIDPreferenceConstants("Arm/PID", 10.0, 0.0, 0.3,
+            0.12, 0.0, 0.0, 0.0, 0.0);
+
     private final TalonFX m_armRight = new TalonFX(Constants.CLIMBER_RIGHT_MOTOR, Constants.RIO_CANBUS);
     private final TalonFX m_armLeft = new TalonFX(Constants.CLIMBER_LEFT_MOTOR, Constants.RIO_CANBUS);
 
