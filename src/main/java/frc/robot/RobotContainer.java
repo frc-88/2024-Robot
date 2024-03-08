@@ -91,7 +91,7 @@ public class RobotContainer {
                 .andThen(m_intake.shootIndexerFactory().withTimeout(0.5)));
         NamedCommands.registerCommand("Wait For Shooter", new WaitUntilCommand(m_shooter::isShooterAtFullSpeed));
         NamedCommands.registerCommand("Localize", drivetrain.localizeFactory());
-        NamedCommands.registerCommand("Intake", m_intake.intakeFactory());
+        NamedCommands.registerCommand("Intake", m_intake.intakeFactory().withTimeout(4.0));
         NamedCommands.registerCommand("Pivot Stow", m_elevator.stowFactory());
         // NamedCommands.registerCommand("Pivot Aim",
         // m_elevator.goToAnlgeFactory(p_autoCloseAim.getValue())
