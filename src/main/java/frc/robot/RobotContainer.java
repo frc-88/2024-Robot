@@ -125,6 +125,8 @@ public class RobotContainer {
         TagSubscriber tagsub = new TagSubscriber(bridge);
         BridgePublisher<MarkerArray> aimPub = new BridgePublisher<>(bridge, "target_aiming");
         coprocessorBridge = new CoprocessorBridge(drivetrain, bridge, tfListenerCompact);
+        bagManager = new BagManager(bridge);
+
         m_aiming.setTFListener(tfListenerCompact);
         m_aiming.setTagListener(tagsub);
         m_aiming.setAimPub(aimPub);
@@ -252,33 +254,33 @@ public class RobotContainer {
         String nextAuto = m_autoCommandName;
         if (buttonBox.button(12).getAsBoolean() && !nextAuto.equals("FourPiece")) {
             m_autoCommand = drivetrain.getAutoPath("FourPiece");
-            m_autoCommandName = "FourPiece";
+            nextAuto = "FourPiece";
         }
 
         if (buttonBox.button(6).getAsBoolean() && !m_autoCommandName.equals("FivePiece")) {
             m_autoCommand = drivetrain.getAutoPath("FivePiece");
-            m_autoCommandName = "FivePiece";
+            nextAuto = "FivePiece";
         }
 
         if (buttonBox.button(11).getAsBoolean() && !nextAuto.equals("Cleanside")) {
             m_autoCommand = drivetrain.getAutoPath("Cleanside");
-            m_autoCommandName = "Cleanside";
+            nextAuto = "Cleanside";
         }
 
         if ((buttonBox.button(8)).getAsBoolean() && !m_autoCommandName.equals("SixPiece")) {
             m_autoCommand = drivetrain.getAutoPath("SixPiece");
-            m_autoCommandName = "SixPiece";
+            nextAuto = "SixPiece";
         }
 
         if (buttonBox.button(13).getAsBoolean()) {
             m_autoCommand = new WaitCommand(15);
-            m_autoCommandName = "Waiting";
+            nextAuto = "Waiting";
         }
 
-        // if (!nextAuto.equals(m_autoCommandName)) {
-        // bagManager.startBag(); // Start recording
-        // m_autoCommandName = nextAuto;
-        // }
+        if (!nextAuto.equals(m_autoCommandName)) {
+            bagManager.startBag(); // Start recording
+            m_autoCommandName = nextAuto;
+        }
 
         SmartDashboard.putString("Auto", m_autoCommandName);
     }
