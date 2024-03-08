@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
@@ -25,11 +27,20 @@ public class Intake extends SubsystemBase {
     private final DutyCycleOut m_intakeRequest = new DutyCycleOut(0.0);
     private final TalonFX m_intakeMotor = new TalonFX(Constants.INTAKE_MOTOR_ID, Constants.RIO_CANBUS);
     private final TalonFX m_guideMotor = new TalonFX(Constants.INTAKE_GUIDE_MOTOR_ID, Constants.RIO_CANBUS);
-    private final TalonFX m_indexMotor = new TalonFX(Constants.INTAKE_INDEX_MOTOR_ID, Constants.CANIVORE_CANBUS);
+    private final TalonFX m_indexMotor = new TalonFX(Constants.INTAKE_INDEX_MOTOR_ID, Constants.RIO_CANBUS);
+    private BooleanSupplier m_elevatorAndPivotDown;
 
     private final TalonFXConfiguration indexConfiguration = new TalonFXConfiguration();
 
-    public Intake() {
+    public boolean m_automaticMode = true;
+    public boolean lastMode = true;
+
+    // I heard some folks say
+    // my recipes are one note
+    // but this intake cooks
+
+    public Intake(BooleanSupplier elevatorAndPivotDown) {
+        m_elevatorAndPivotDown = elevatorAndPivotDown;
         configureTalons();
     }
 
@@ -53,12 +64,17 @@ public class Intake extends SubsystemBase {
     }
 
     public void intake() {
-        m_indexMotor.getConfigurator().refresh(indexConfiguration);
-        indexConfiguration.HardwareLimitSwitch.ForwardLimitEnable = true;
-        m_indexMotor.getConfigurator().apply(indexConfiguration);
-        m_intakeMotor.setControl(m_intakeRequest.withOutput(intakeRollerSpeed.getValue()));
-        m_guideMotor.setControl(m_intakeRequest.withOutput(guideRollerSpeed.getValue()));
-        m_indexMotor.setControl(m_intakeRequest.withOutput(indexRollerSpeed.getValue()));
+        if (m_elevatorAndPivotDown.getAsBoolean()) {
+            m_indexMotor.getConfigurator().refresh(indexConfiguration);
+            indexConfiguration.HardwareLimitSwitch.ForwardLimitEnable = true;
+            m_indexMotor.getConfigurator().apply(indexConfiguration);
+            m_indexMotor.setInverted(true);
+            m_intakeMotor.setControl(m_intakeRequest.withOutput(intakeRollerSpeed.getValue()));
+            m_guideMotor.setControl(m_intakeRequest.withOutput(guideRollerSpeed.getValue()));
+            m_indexMotor.setControl(m_intakeRequest.withOutput(indexRollerSpeed.getValue()));
+        } else {
+            stopMoving();
+        }
     }
 
     public void stopMoving() {
@@ -71,6 +87,7 @@ public class Intake extends SubsystemBase {
         m_indexMotor.getConfigurator().refresh(indexConfiguration);
         indexConfiguration.HardwareLimitSwitch.ForwardLimitEnable = false;
         m_indexMotor.getConfigurator().apply(indexConfiguration);
+        m_indexMotor.setInverted(true);
         m_indexMotor.setControl(m_intakeRequest.withOutput(indexShootSpeed.getValue()));
         m_intakeMotor.setControl(m_intakeRequest.withOutput(0));
         m_guideMotor.setControl(m_intakeRequest.withOutput(0));
@@ -102,8 +119,17 @@ public class Intake extends SubsystemBase {
         return m_indexMotor.getForwardLimit().getValueAsDouble() == 0;
     }
 
+    public void disableAutoMode() {
+        lastMode = hasNote().getAsBoolean();
+        m_automaticMode = false;
+    }
+
+    public void enableAutoMode() {
+        m_automaticMode = true;
+    }
+
     public Trigger hasNote() {
-        return new Trigger(this::hasNoteInIndexer);
+        return new Trigger(() -> (m_automaticMode) ? hasNoteInIndexer() : lastMode);
     }
 
     @Override
