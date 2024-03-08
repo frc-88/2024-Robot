@@ -30,7 +30,7 @@ import frc.robot.util.preferenceconstants.PIDPreferenceConstants;
 
 public class Elevator extends SubsystemBase {
     private DoublePreferenceConstant p_pivotPodium = new DoublePreferenceConstant("Elevator/Podium", 66);
-    private DoublePreferenceConstant p_pivotFlat = new DoublePreferenceConstant("Elevator/Flat", 90);
+    private DoublePreferenceConstant p_pivotFlat = new DoublePreferenceConstant("Elevator/Flat", 42.0);
     private DoublePreferenceConstant p_pivotAmp = new DoublePreferenceConstant("Elevator/PivotAmp", 110);
     private DoublePreferenceConstant p_elevatorAmp = new DoublePreferenceConstant("Elevator/ElevatorAmp", 43);
     private DoublePreferenceConstant p_PivotMaxVelocity = new DoublePreferenceConstant(
