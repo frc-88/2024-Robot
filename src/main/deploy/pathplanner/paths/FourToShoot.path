@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.909515486489407,
-        "y": 7.712058749533177
+        "x": 7.870516453621981,
+        "y": 7.468314794111773
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.461026608514025,
-        "y": 7.604811409147759
+        "x": 7.4220275756466,
+        "y": 7.361067453726355
       },
       "isLocked": false,
       "linkedName": "FivePieceCenter"
@@ -33,7 +33,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 3.5,
+    "maxAcceleration": 3.4,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

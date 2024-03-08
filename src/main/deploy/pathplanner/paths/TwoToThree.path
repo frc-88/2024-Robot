@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.595897258302831,
-        "y": 5.664609523993395
+        "x": 2.166907896761163,
+        "y": 6.659084862112717
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.754629269460547,
-        "y": 5.673854227167487
+        "x": 2.4009020939657093,
+        "y": 6.990576641485824
       },
       "isLocked": false,
       "linkedName": "FourPieceTwo"
     },
     {
       "anchor": {
-        "x": 2.683645082254536,
-        "y": 7.097823981871242
+        "x": 3.9316141340121176,
+        "y": 7.205071322256659
       },
       "prevControl": {
-        "x": 2.156697001331347,
-        "y": 6.848216996170785
+        "x": 3.5416238053378732,
+        "y": 7.195321564039803
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,13 +33,13 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 3.5,
+    "maxAcceleration": 3.4,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 22.890551656248434,
+    "rotation": 24.443954780416565,
     "rotateFast": false
   },
   "reversed": false,
