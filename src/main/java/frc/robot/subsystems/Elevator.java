@@ -55,6 +55,8 @@ public class Elevator extends SubsystemBase {
             "Elevator/ElevatorClimbPosition", 47);
     private DoublePreferenceConstant p_elevatorPrepPosition = new DoublePreferenceConstant(
             "Elevator/ElevatorPrepPosition", 32);
+    private DoublePreferenceConstant p_elevatorSourceHeight = new DoublePreferenceConstant(
+            "Elevator/ElevatorSourceHeight", 32.0);
 
     private PIDPreferenceConstants p_PivotPIDPreferenceConstants = new PIDPreferenceConstants("Elevator/PivotPID", 50.0,
             0.0, 0.0,
@@ -332,6 +334,13 @@ public class Elevator extends SubsystemBase {
 
     public Command holdPositionFactory() {
         return new RunCommand(() -> holdPosition(), this);
+    }
+
+    public Command sourceIntakeFactory() {
+        return new RunCommand(() -> {
+            pivotStow();
+            setElevatorPosition(p_elevatorSourceHeight.getValue());
+        }, this);
     }
 
     @Override

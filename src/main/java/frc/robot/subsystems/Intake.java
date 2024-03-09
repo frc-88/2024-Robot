@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,6 +24,9 @@ public class Intake extends SubsystemBase {
     private DoublePreferenceConstant guideRollerSpeed = new DoublePreferenceConstant("Intake/GuideRollerSpeed", 1);
     private DoublePreferenceConstant indexRollerSpeed = new DoublePreferenceConstant("Intake/IndexRollerSpeed", 0.25);
     private DoublePreferenceConstant indexShootSpeed = new DoublePreferenceConstant("Intake/IndexerShootSetup", 1);
+    private DoublePreferenceConstant p_indexSourceSpeed = new DoublePreferenceConstant("Intake/IndexSourceSpeed", 0.4);
+
+    private DoublePreferenceConstant p_debounceTime = new DoublePreferenceConstant("Intake/IndexDebounceTime", 0.25);
 
     private final DutyCycleOut m_intakeRequest = new DutyCycleOut(0.0);
     private final TalonFX m_intakeMotor = new TalonFX(Constants.INTAKE_MOTOR_ID, Constants.RIO_CANBUS);
@@ -99,6 +103,12 @@ public class Intake extends SubsystemBase {
         m_indexMotor.setControl(m_intakeRequest.withOutput(-1));
     }
 
+    public void sourceIntake() {
+        m_intakeMotor.stopMotor();
+        m_guideMotor.stopMotor();
+        m_indexMotor.setControl(m_intakeRequest.withOutput(-p_indexSourceSpeed.getValue()));
+    }
+
     public Command intakeFactory() {
         return new RunCommand(() -> intake(), this).until(() -> hasNoteInIndexer());
     }
@@ -113,6 +123,10 @@ public class Intake extends SubsystemBase {
 
     public Command shootIndexerFactory() {
         return new RunCommand(() -> shootIndexer(), this);
+    }
+
+    public Command sourceIntakeFactory() {
+        return new RunCommand(() -> sourceIntake(), this);
     }
 
     public boolean hasNoteInIndexer() {
@@ -130,6 +144,10 @@ public class Intake extends SubsystemBase {
 
     public Trigger hasNote() {
         return new Trigger(() -> (m_automaticMode) ? hasNoteInIndexer() : lastMode);
+    }
+
+    public Trigger hasNoteDebounced() {
+        return hasNote().debounce(p_debounceTime.getValue());
     }
 
     @Override
