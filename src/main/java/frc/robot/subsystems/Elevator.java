@@ -135,6 +135,14 @@ public class Elevator extends SubsystemBase {
         m_elevatorMotor.setInverted(true);
     }
 
+    public boolean isPivotCalibrated() {
+        return m_pivotCalibrated;
+    }
+
+    public boolean isElevatorCalibrated() {
+        return m_elevatorCalibrated;
+    }
+
     public boolean isElevatorNotDown() {
         return m_elevatorMotor.getPosition().getValueAsDouble() * kElevatorMotorToElevatorDistance > 27.7;
     }

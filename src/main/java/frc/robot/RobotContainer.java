@@ -102,6 +102,8 @@ public class RobotContainer {
                         drivetrain.applyRequest(drivetrain.autoSnapToAngleRequest()),
                         drivetrain.aimAtSpeakerFactory().until(drivetrain::onTarget)));
         NamedCommands.registerCommand("Stop Shooter", m_shooter.stopShooterFactory().withTimeout(0.2));
+        NamedCommands.registerCommand("Pivot Calibrated",
+                new WaitUntilCommand(m_elevator::isPivotCalibrated));
 
         configureSmartDashboardButtons();
 
