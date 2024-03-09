@@ -157,6 +157,7 @@ public class RobotContainer {
                         .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer()));
         joystick.leftBumper().whileTrue(drivetrain.aimAtAmpFactory().alongWith(m_elevator.setFlatFactory())
                 .alongWith(m_shooter.runAmpTrapSpeedFactory()));
+        joystick.leftTrigger().whileTrue(m_shooter.runShooterFactory());
     }
 
     private void configureButtonBox() {
