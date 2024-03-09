@@ -143,11 +143,11 @@ public class RobotContainer {
                 .onTrue(drivetrain.setHeadingFactory(() -> drivetrain.getState().Pose.getRotation().getDegrees()))
                 .whileFalse(drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick)));
         joystick.rightTrigger()
-                .onTrue(m_intake.shootIndexerFactory().alongWith(drivetrain.localizeFactory())
-                        .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer())
-                        .until(() -> !m_intake.hasNoteInIndexer())
-                        .andThen(m_intake.intakeFactory()))
-                .onFalse(m_intake.intakeFactory());
+                .onTrue(drivetrain.localizeFactory().unless(m_elevator::isElevatorNotDown));
+        joystick.rightTrigger().onTrue(m_intake.shootIndexerFactory()
+                .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer())
+                .until(() -> !m_intake.hasNoteInIndexer())
+                .andThen(m_intake.intakeFactory()));
         joystick.rightBumper()
                 .whileTrue(
                         m_shooter.runShooterFactory().alongWith(new WaitUntilCommand(m_shooter::isShooterAtFullSpeed))

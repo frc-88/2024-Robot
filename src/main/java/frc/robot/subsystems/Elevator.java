@@ -135,6 +135,10 @@ public class Elevator extends SubsystemBase {
         m_elevatorMotor.setInverted(true);
     }
 
+    public boolean isElevatorNotDown() {
+        return m_elevatorMotor.getPosition().getValueAsDouble() * kElevatorMotorToElevatorDistance > 27.7;
+    }
+
     public boolean elevatorOnTarget() {
         return Math.abs(m_elevatorMotor.getPosition().getValueAsDouble() * kElevatorMotorToElevatorDistance
                 - m_elevatorTarget) < 2;
