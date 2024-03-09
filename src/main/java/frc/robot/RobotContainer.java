@@ -108,7 +108,7 @@ public class RobotContainer {
         configureSmartDashboardButtons();
 
         // set default commands
-        drivetrain.setDefaultCommand(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)));
+        drivetrain.setDefaultCommand(drivetrain.defaultDriveCommand(joystick));
         m_shooter.setDefaultCommand(
                 m_shooter.stopShooterFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         m_intake.setDefaultCommand(m_intake.stopMovingFactory().unless(() -> drivetrain.tipping().getAsBoolean()));

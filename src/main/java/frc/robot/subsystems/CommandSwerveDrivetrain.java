@@ -42,6 +42,7 @@ import frc.robot.Constants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.Aiming;
 import frc.robot.util.DriveUtils;
+import frc.robot.util.HoldAnglesRequest;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 
 /**
@@ -65,6 +66,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private double targetHeading = 0;
     private Aiming m_aiming;
     private boolean lowPowerMode = false;
+
+    private boolean holdingDirections = false;
+
     /* What to publish over networktables for telemetry */
     private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
     private DoublePreferenceConstant p_tippingRollThreshold = new DoublePreferenceConstant("Tipping Roll Threashold",
@@ -83,7 +87,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+    private final SwerveRequest.Idle idle = new SwerveRequest.Idle();
+    private final HoldAnglesRequest holdAngles = new HoldAnglesRequest();
     private final SwerveRequest.FieldCentricFacingAngle snapToAngle = new SwerveRequest.FieldCentricFacingAngle()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     private final SwerveRequest.PointWheelsAt pointWheelsAt = new SwerveRequest.PointWheelsAt();
@@ -151,6 +156,26 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
         return run(() -> this.setControl(requestSupplier.get()));
+    }
+
+    public Command defaultDriveCommand(CommandXboxController joystick) {
+        return run(() -> {
+            if (joystick.getLeftX() < .001 && joystick.getLeftY() < .001 && joystick.getRightX() < 0.001
+                    && this.headingController.getPositionError() < 0.015) {
+                if (!holdingDirections) {
+                    Rotation2d directions[] = new Rotation2d[4];
+                    for (int i = 0; i < 4; i++) {
+                        directions[i] = getModule(i).getCurrentState().angle;
+                    }
+                    holdAngles.setModuleDirections(directions);
+                    holdingDirections = true;
+                }
+                this.setControl(holdAngles);
+            } else {
+                this.setControl(this.SnapToAngleRequest(joystick).get());
+                holdingDirections = false;
+            }
+        });
     }
 
     public Command getAutoPath(String pathName) {
@@ -245,6 +270,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             return snapToAngle.withVelocityX(filterX.calculate(DriveUtils.signedPow(leftY, 2) * MaxSpeed))
                     .withVelocityY(filterY.calculate(DriveUtils.signedPow(leftX, 2) * MaxSpeed))
                     .withTargetDirection(Rotation2d.fromDegrees(targetHeading));
+
         };
     }
 
@@ -256,8 +282,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         };
     }
 
-    public Supplier<SwerveRequest> brakeRequest() {
-        return () -> brake;
+    public Supplier<SwerveRequest> idleRequest() {
+        return () -> idle;
     }
 
     public Supplier<SwerveRequest> pointWheelsAtRequest() {
