@@ -12,12 +12,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Pivot Calibrated"
-          }
-        },
-        {
           "type": "deadline",
           "data": {
             "commands": [
