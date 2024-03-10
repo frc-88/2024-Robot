@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.302706821629859,
-        "y": 1.5
+        "x": 4.293878587757177,
+        "y": 2.0523241046482092
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.040711018358973,
-        "y": 1.056254247643631
+        "x": 6.031882784486291,
+        "y": 1.6085783522918402
       },
       "isLocked": false,
       "linkedName": "Snipe"
@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 5.302706821629859,
-        "y": 1.5
+        "x": 4.293878587757177,
+        "y": 2.0523241046482092
       },
       "prevControl": {
-        "x": 6.7818593294844245,
-        "y": 1.0654989508177215
+        "x": 5.773031095611742,
+        "y": 1.6178230554659307
       },
       "nextControl": null,
       "isLocked": false,
@@ -65,7 +65,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Cleanside",
+  "folder": null,
   "previewStartingState": {
     "rotation": -37.370000000000005,
     "velocity": 0

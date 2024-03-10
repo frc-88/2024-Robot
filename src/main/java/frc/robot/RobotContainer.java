@@ -69,10 +69,12 @@ public class RobotContainer {
     }
 
     private Command intakeFromSource() {
-        return new SequentialCommandGroup(m_shooter.runSourceIntakeFactory().alongWith(m_elevator.sourceIntakeFactory(),
-                m_intake.sourceIntakeFactory()).until(m_intake.hasNoteDebounced()),
+        return new SequentialCommandGroup(new InstantCommand(m_intake::disableAutoMode), new WaitCommand(0.1),
                 m_shooter.runSourceIntakeFactory().alongWith(m_elevator.sourceIntakeFactory(),
-                        m_intake.sourceIntakeFactory()).until(m_intake.hasNoteDebounced().negate()));
+                        m_intake.sourceIntakeFactory()).until(m_intake.hasNoteDebounced()),
+                m_shooter.runSourceIntakeFactory().alongWith(m_elevator.sourceIntakeFactory(),
+                        m_intake.sourceIntakeFactory()).until(m_intake.hasNoteDebounced().negate()),
+                m_intake.intakeFactory().deadlineWith(m_shooter.stopShooterFactory(), m_elevator.stowFactory()));
     }
 
     private final Telemetry logger = new Telemetry(TunerConstants.kSpeedAt12VoltsMps, drivetrain);
@@ -204,7 +206,8 @@ public class RobotContainer {
                                         .andThen(m_shooter.runAmpTrapSpeedFactory().withTimeout(1.5))
                                         .andThen(m_intake.shootIndexerFactory())))
                         .unless(() -> drivetrain.tipping().getAsBoolean()));
-        buttonBox.button(16).whileTrue(intakeFromSource());
+        buttonBox.button(16).whileTrue(intakeFromSource())
+                .onFalse(new InstantCommand(m_intake::enableAutoMode));
         // buttonBox.button(16).whileTrue(m_elevator.goToAimingPosition(() ->
         // m_aiming.speakerAngleForShooter()));
     }
@@ -259,6 +262,7 @@ public class RobotContainer {
                 .onFalse(m_intake.intakeFactory().alongWith(m_shooter.stopShooterFactory())).debounce(0.25);
 
         drivetrain.setTargetHeading(drivetrain.getState().Pose.getRotation().getDegrees());
+        drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)).schedule();
         m_intake.intakeFactory().schedule();
     }
 
