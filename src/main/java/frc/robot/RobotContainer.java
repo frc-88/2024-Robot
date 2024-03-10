@@ -68,6 +68,13 @@ public class RobotContainer {
                 .unless(() -> drivetrain.tipping().getAsBoolean());
     }
 
+    private Command intakeFromSource() {
+        return new SequentialCommandGroup(m_shooter.runSourceIntakeFactory().alongWith(m_elevator.sourceIntakeFactory(),
+                m_intake.sourceIntakeFactory()).until(m_intake.hasNoteDebounced()),
+                m_shooter.runSourceIntakeFactory().alongWith(m_elevator.sourceIntakeFactory(),
+                        m_intake.sourceIntakeFactory()).until(m_intake.hasNoteDebounced().negate()));
+    }
+
     private final Telemetry logger = new Telemetry(TunerConstants.kSpeedAt12VoltsMps, drivetrain);
     private TFListenerCompact tfListenerCompact;
     private BagManager bagManager;
@@ -197,6 +204,7 @@ public class RobotContainer {
                                         .andThen(m_shooter.runAmpTrapSpeedFactory().withTimeout(1.5))
                                         .andThen(m_intake.shootIndexerFactory())))
                         .unless(() -> drivetrain.tipping().getAsBoolean()));
+        buttonBox.button(16).whileTrue(intakeFromSource());
         // buttonBox.button(16).whileTrue(m_elevator.goToAimingPosition(() ->
         // m_aiming.speakerAngleForShooter()));
     }
