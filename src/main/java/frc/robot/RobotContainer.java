@@ -279,6 +279,11 @@ public class RobotContainer {
             nextAuto = "Cleanside";
         }
 
+        if (buttonBox.button(19).getAsBoolean() && !nextAuto.equals("Cleanside2")) {
+            m_autoCommand = drivetrain.getAutoPath("Cleanside2");
+            nextAuto = "Cleanside2";
+        }
+
         if ((buttonBox.button(8)).getAsBoolean() && !m_autoCommandName.equals("SixPiece")) {
             m_autoCommand = drivetrain.getAutoPath("SixPiece");
             nextAuto = "SixPiece";
