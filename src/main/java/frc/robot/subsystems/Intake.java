@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -36,6 +37,9 @@ public class Intake extends SubsystemBase {
 
     private final TalonFXConfiguration indexConfiguration = new TalonFXConfiguration();
 
+    private Trigger m_hasNoteDebounced = new Trigger(this::hasNoteInIndexer).debounce(p_debounceTime.getValue(),
+            DebounceType.kBoth);
+
     public boolean m_automaticMode = true;
     public boolean lastMode = true;
 
@@ -52,16 +56,19 @@ public class Intake extends SubsystemBase {
         // There are many configs we can set
         TalonFXConfiguration intakeConfiguration = new TalonFXConfiguration();
         intakeConfiguration.CurrentLimits.SupplyCurrentLimit = Constants.INTAKE_CURRENT_LIMIT;
+        intakeConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
         intakeConfiguration.OpenLoopRamps = new OpenLoopRampsConfigs().withDutyCycleOpenLoopRampPeriod(.5);
         m_intakeMotor.getConfigurator().apply(intakeConfiguration);
         m_intakeMotor.setInverted(true);
 
         TalonFXConfiguration guideConfiguration = new TalonFXConfiguration();
         guideConfiguration.CurrentLimits.SupplyCurrentLimit = Constants.INTAKE_CURRENT_LIMIT;
+        guideConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
         guideConfiguration.OpenLoopRamps = new OpenLoopRampsConfigs().withDutyCycleOpenLoopRampPeriod(.5);
         m_guideMotor.getConfigurator().apply(guideConfiguration);
 
         indexConfiguration.CurrentLimits.SupplyCurrentLimit = Constants.INTAKE_CURRENT_LIMIT;
+        indexConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
         indexConfiguration.OpenLoopRamps = new OpenLoopRampsConfigs().withDutyCycleOpenLoopRampPeriod(.5);
         m_indexMotor.getConfigurator().apply(indexConfiguration);
         m_indexMotor.setInverted(true);
@@ -147,7 +154,7 @@ public class Intake extends SubsystemBase {
     }
 
     public Trigger hasNoteDebounced() {
-        return hasNote().debounce(p_debounceTime.getValue());
+        return m_hasNoteDebounced;
     }
 
     @Override
@@ -159,5 +166,6 @@ public class Intake extends SubsystemBase {
         SmartDashboard.putNumber("Intake/Intake Current", m_intakeMotor.getStatorCurrent().getValueAsDouble());
         SmartDashboard.putNumber("Intake/Guide Current", m_guideMotor.getStatorCurrent().getValueAsDouble());
         SmartDashboard.putNumber("Intake/Index Current", m_indexMotor.getStatorCurrent().getValueAsDouble());
+        SmartDashboard.putBoolean("Intake/HasNoteDebounced", hasNoteDebounced().getAsBoolean());
     }
 }
