@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,6 +25,9 @@ public class Intake extends SubsystemBase {
     private DoublePreferenceConstant guideRollerSpeed = new DoublePreferenceConstant("Intake/GuideRollerSpeed", 1);
     private DoublePreferenceConstant indexRollerSpeed = new DoublePreferenceConstant("Intake/IndexRollerSpeed", 0.25);
     private DoublePreferenceConstant indexShootSpeed = new DoublePreferenceConstant("Intake/IndexerShootSetup", 1);
+    private DoublePreferenceConstant p_indexSourceSpeed = new DoublePreferenceConstant("Intake/IndexSourceSpeed", 0.4);
+
+    private DoublePreferenceConstant p_debounceTime = new DoublePreferenceConstant("Intake/IndexDebounceTime", 0.25);
 
     private final DutyCycleOut m_intakeRequest = new DutyCycleOut(0.0);
     private final TalonFX m_intakeMotor = new TalonFX(Constants.INTAKE_MOTOR_ID, Constants.RIO_CANBUS);
@@ -31,6 +36,9 @@ public class Intake extends SubsystemBase {
     private BooleanSupplier m_elevatorAndPivotDown;
 
     private final TalonFXConfiguration indexConfiguration = new TalonFXConfiguration();
+
+    private Trigger m_hasNoteDebounced = new Trigger(this::hasNoteInIndexer).debounce(p_debounceTime.getValue(),
+            DebounceType.kBoth);
 
     public boolean m_automaticMode = true;
     public boolean lastMode = true;
@@ -48,16 +56,19 @@ public class Intake extends SubsystemBase {
         // There are many configs we can set
         TalonFXConfiguration intakeConfiguration = new TalonFXConfiguration();
         intakeConfiguration.CurrentLimits.SupplyCurrentLimit = Constants.INTAKE_CURRENT_LIMIT;
+        intakeConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
         intakeConfiguration.OpenLoopRamps = new OpenLoopRampsConfigs().withDutyCycleOpenLoopRampPeriod(.5);
         m_intakeMotor.getConfigurator().apply(intakeConfiguration);
         m_intakeMotor.setInverted(true);
 
         TalonFXConfiguration guideConfiguration = new TalonFXConfiguration();
         guideConfiguration.CurrentLimits.SupplyCurrentLimit = Constants.INTAKE_CURRENT_LIMIT;
+        guideConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
         guideConfiguration.OpenLoopRamps = new OpenLoopRampsConfigs().withDutyCycleOpenLoopRampPeriod(.5);
         m_guideMotor.getConfigurator().apply(guideConfiguration);
 
         indexConfiguration.CurrentLimits.SupplyCurrentLimit = Constants.INTAKE_CURRENT_LIMIT;
+        indexConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
         indexConfiguration.OpenLoopRamps = new OpenLoopRampsConfigs().withDutyCycleOpenLoopRampPeriod(.5);
         m_indexMotor.getConfigurator().apply(indexConfiguration);
         m_indexMotor.setInverted(true);
@@ -99,6 +110,12 @@ public class Intake extends SubsystemBase {
         m_indexMotor.setControl(m_intakeRequest.withOutput(-1));
     }
 
+    public void sourceIntake() {
+        m_intakeMotor.stopMotor();
+        m_guideMotor.stopMotor();
+        m_indexMotor.setControl(m_intakeRequest.withOutput(-p_indexSourceSpeed.getValue()));
+    }
+
     public Command intakeFactory() {
         return new RunCommand(() -> intake(), this).until(() -> hasNoteInIndexer());
     }
@@ -113,6 +130,10 @@ public class Intake extends SubsystemBase {
 
     public Command shootIndexerFactory() {
         return new RunCommand(() -> shootIndexer(), this);
+    }
+
+    public Command sourceIntakeFactory() {
+        return new RunCommand(() -> sourceIntake(), this);
     }
 
     public boolean hasNoteInIndexer() {
@@ -132,6 +153,10 @@ public class Intake extends SubsystemBase {
         return new Trigger(() -> (m_automaticMode) ? hasNoteInIndexer() : lastMode);
     }
 
+    public Trigger hasNoteDebounced() {
+        return m_hasNoteDebounced;
+    }
+
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Intake/Intake Speed", m_intakeMotor.getVelocity().getValueAsDouble() * 60);
@@ -141,5 +166,6 @@ public class Intake extends SubsystemBase {
         SmartDashboard.putNumber("Intake/Intake Current", m_intakeMotor.getStatorCurrent().getValueAsDouble());
         SmartDashboard.putNumber("Intake/Guide Current", m_guideMotor.getStatorCurrent().getValueAsDouble());
         SmartDashboard.putNumber("Intake/Index Current", m_indexMotor.getStatorCurrent().getValueAsDouble());
+        SmartDashboard.putBoolean("Intake/HasNoteDebounced", hasNoteDebounced().getAsBoolean());
     }
 }
