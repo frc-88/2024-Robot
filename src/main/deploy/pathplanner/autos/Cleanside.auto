@@ -12,12 +12,6 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.25
-          }
-        },
-        {
           "type": "deadline",
           "data": {
             "commands": [

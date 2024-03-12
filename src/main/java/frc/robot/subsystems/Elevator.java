@@ -30,7 +30,7 @@ import frc.robot.util.preferenceconstants.PIDPreferenceConstants;
 
 public class Elevator extends SubsystemBase {
     private DoublePreferenceConstant p_pivotPodium = new DoublePreferenceConstant("Elevator/Podium", 66);
-    private DoublePreferenceConstant p_pivotFlat = new DoublePreferenceConstant("Elevator/Flat", 90);
+    private DoublePreferenceConstant p_pivotFlat = new DoublePreferenceConstant("Elevator/Flat", 42.0);
     private DoublePreferenceConstant p_pivotAmp = new DoublePreferenceConstant("Elevator/PivotAmp", 110);
     private DoublePreferenceConstant p_elevatorAmp = new DoublePreferenceConstant("Elevator/ElevatorAmp", 43);
     private DoublePreferenceConstant p_PivotMaxVelocity = new DoublePreferenceConstant(
@@ -55,6 +55,8 @@ public class Elevator extends SubsystemBase {
             "Elevator/ElevatorClimbPosition", 47);
     private DoublePreferenceConstant p_elevatorPrepPosition = new DoublePreferenceConstant(
             "Elevator/ElevatorPrepPosition", 32);
+    private DoublePreferenceConstant p_elevatorSourceHeight = new DoublePreferenceConstant(
+            "Elevator/ElevatorSourceHeight", 32.0);
 
     private PIDPreferenceConstants p_PivotPIDPreferenceConstants = new PIDPreferenceConstants("Elevator/PivotPID", 50.0,
             0.0, 0.0,
@@ -133,6 +135,18 @@ public class Elevator extends SubsystemBase {
         m_elevatorMotor.getConfigurator().apply(elevatorConfig);
 
         m_elevatorMotor.setInverted(true);
+    }
+
+    public boolean isPivotCalibrated() {
+        return m_pivotCalibrated;
+    }
+
+    public boolean isElevatorCalibrated() {
+        return m_elevatorCalibrated;
+    }
+
+    public boolean isElevatorNotDown() {
+        return m_elevatorMotor.getPosition().getValueAsDouble() * kElevatorMotorToElevatorDistance > 27.7;
     }
 
     public boolean elevatorOnTarget() {
@@ -320,6 +334,13 @@ public class Elevator extends SubsystemBase {
 
     public Command holdPositionFactory() {
         return new RunCommand(() -> holdPosition(), this);
+    }
+
+    public Command sourceIntakeFactory() {
+        return new RunCommand(() -> {
+            pivotStow();
+            setElevatorPosition(p_elevatorSourceHeight.getValue());
+        }, this);
     }
 
     @Override

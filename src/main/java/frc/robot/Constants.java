@@ -66,7 +66,7 @@ public final class Constants {
     public static final int INTAKE_MOTOR_ID = 14;
     public static final int INTAKE_GUIDE_MOTOR_ID = 15;
     public static final int INTAKE_INDEX_MOTOR_ID = 16;
-    public static final int INTAKE_CURRENT_LIMIT = 30;
+    public static final int INTAKE_CURRENT_LIMIT = 80;
 
     // Elevator
     public static final int ELEVATOR_ANGLER_MOTOR = 10;
@@ -105,7 +105,7 @@ public final class Constants {
     public static final Pose2d BLUE_SPEAKER_POSE = new Pose2d(new Translation2d(0, 5.547868),
             Rotation2d.fromDegrees(0));
     public static final Pose2d BLUE_AMP_POSE = new Pose2d(new Translation2d(1.83, 7.65),
-            Rotation2d.fromDegrees(270));
+            Rotation2d.fromDegrees(0));
     public static final Pose2d RED_AMP_POSE = DriveUtils.redBlueTransform(new Pose2d(new Translation2d(14.7, 7.65),
-            Rotation2d.fromDegrees(270)));
+            Rotation2d.fromDegrees(180)));
 }
