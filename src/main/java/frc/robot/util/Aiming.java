@@ -1,20 +1,38 @@
 package frc.robot.util;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.ros.bridge.Frames;
+import frc.robot.ros.bridge.TagSubscriber;
+import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
+import frc.team88.ros.bridge.BridgePublisher;
+import frc.team88.ros.conversions.ROSConversions;
 import frc.team88.ros.conversions.TFListenerCompact;
 import frc.team88.ros.conversions.Transform3dStamped;
+import frc.team88.ros.messages.geometry_msgs.Vector3;
+import frc.team88.ros.messages.std_msgs.RosColorRGBA;
+import frc.team88.ros.messages.visualization_msgs.Marker;
+import frc.team88.ros.messages.visualization_msgs.MarkerArray;
 import frc.robot.Constants;
 
 public class Aiming {
     private Pose2d robotPose;
     private Alliance alliance;
     private TFListenerCompact tf_compact;
+    private TagSubscriber tagSubscriber;
+    private final int[] speakerTagsRed = { 3, 4 };
+    private final double speakerHeight = Units.inchesToMeters(60.265913);
+    private BridgePublisher<MarkerArray> aimPub;
+
+    private DoublePreferenceConstant p_aimingOffset = new DoublePreferenceConstant("Aiming Offset",
+            0.15);
 
     // TODO get these bounds
     // private final double[] shootingAngleBounds = { 44.0, 26.0 };
@@ -27,6 +45,26 @@ public class Aiming {
 
     public void setTFListener(TFListenerCompact tfListener) {
         tf_compact = tfListener;
+    }
+
+    public void setTagListener(TagSubscriber tagsub) {
+        tagSubscriber = tagsub;
+    }
+
+    public void setAimPub(BridgePublisher<MarkerArray> array) {
+        aimPub = array;
+    }
+
+    public void sendTarget() {
+        Marker marker = new Marker();
+        marker.setHeader(aimPub.getHeader(Frames.BASE_FRAME));
+        marker.setAction(Marker.ADD);
+        marker.setFrameLocked(false);
+        marker.setPose(ROSConversions.wpiToRosPose(aimPose()));
+        marker.setType(Marker.ARROW);
+        marker.setScale(new Vector3(0.05, 0.05, 0.5));
+        marker.setColor(new RosColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
+        aimPub.send(new MarkerArray(new Marker[] { marker }));
     }
 
     public double mapValue(double x, double min, double max, double newMin, double newMax) {
@@ -47,7 +85,11 @@ public class Aiming {
         Pose2d robotPose = getROSPose();
         robotPose = (getAlliance() == DriverStation.Alliance.Red) ? robotPose.relativeTo(Constants.RED_SPEAKER_POSE)
                 : robotPose.relativeTo(Constants.BLUE_SPEAKER_POSE);
-        return Math.atan2(robotPose.getY(), robotPose.getX()) * (180 / Math.PI);
+        double drivetrainAngle = Math.atan2(robotPose.getY(), robotPose.getX()) * (180 / Math.PI);
+        // if(robotPose.getTranslation().getNorm() > ) {
+        // drivetrainAngle -= robotPose.getTranslation().getNorm() * 0.13;
+        // }
+        return drivetrainAngle;
     }
 
     public double speakerAngleForShooter() {
@@ -55,18 +97,60 @@ public class Aiming {
         double distance = (getAlliance() == DriverStation.Alliance.Red)
                 ? robotPose.relativeTo(Constants.RED_SPEAKER_POSE).getTranslation().getNorm()
                 : robotPose.relativeTo(Constants.BLUE_SPEAKER_POSE).getTranslation().getNorm();
-        // TODO also get this from CAD
-        final double speakerHeight = Units.inchesToMeters(60.265913);
-        // Speaker height 79.829
-        // 23.563087
+
         double shootingAngle = Math.atan2(distance, speakerHeight) * (180 / Math.PI);
-        // return mapValue(shootingAngle, shootingAngleBounds[0],
-        // shootingAngleBounds[1], pivotAngleBounds[0], pivotAngleBounds[1]);
+        distance = Units.metersToFeet(distance);
+
+        shootingAngle -= distance * p_aimingOffset.getValue(); // aim higher based on distance
+        // double shootingAngle = 19.2 + (6.03 * distance) - (0.171 * distance *
+        // distance);
+
         if (shootingAngle < 42) {
             shootingAngle = 42;
         }
 
         return shootingAngle;
+    }
+
+    public double getAmpAngleForDrivetrain() {
+        Pose2d robotPose = getROSPose();
+        robotPose = (getAlliance() == DriverStation.Alliance.Red) ? robotPose.relativeTo(Constants.RED_AMP_POSE)
+                : robotPose.relativeTo(Constants.BLUE_AMP_POSE);
+        double drivetrainAmpAngle = Math.atan2(robotPose.getY(), robotPose.getX()) * (180 / Math.PI);
+        return drivetrainAmpAngle;
+    }
+
+    public boolean getDetections() {
+        try {
+            var header = tagSubscriber.receive().get().getHeader();
+            if (header.getFrameId() == "optical_camera_0") {
+                var detections = tagSubscriber.receive().get().getDetections();
+                for (var detection : detections) {
+                    ArrayList<Integer> ids = detection.getId();
+                    if (ids.contains(speakerTagsRed[0]) && ids.contains(speakerTagsRed[1])) {
+                        return true;
+                    }
+                }
+            }
+
+        } catch (Exception exception) {
+            return false;
+        }
+        return false;
+    }
+
+    public Pose3d aimPose() {
+        Pose2d robotPose = getROSPose();
+        robotPose = (getAlliance() == DriverStation.Alliance.Red) ? Constants.RED_SPEAKER_POSE.relativeTo(robotPose)
+                : Constants.BLUE_SPEAKER_POSE.relativeTo(robotPose);
+        return new Pose3d(robotPose.getX(), robotPose.getY(), speakerHeight, new Rotation3d());
+    }
+
+    public double speakerDistance() {
+        Pose2d robotPose = getROSPose();
+        return (getAlliance() == DriverStation.Alliance.Red)
+                ? robotPose.relativeTo(Constants.RED_SPEAKER_POSE).getTranslation().getNorm()
+                : robotPose.relativeTo(Constants.BLUE_SPEAKER_POSE).getTranslation().getNorm();
     }
 
     // originPoint should be relative to the origin of whatever alliance we are on

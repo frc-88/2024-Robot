@@ -94,10 +94,6 @@ public class Telemetry {
                 pose.getRotation().getDegrees()
         });
 
-        SmartDashboard.putNumber("Drivetrain X", state.Pose.getX());
-        SmartDashboard.putNumber("Drivetrain Y", state.Pose.getY());
-        SmartDashboard.putNumber("Angle of Robot", state.Pose.getRotation().getDegrees());
-
         /* Telemeterize the robot's general speeds */
         double currentTime = Utils.getCurrentTimeSeconds();
         double diffTime = currentTime - lastTime;
