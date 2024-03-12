@@ -4,6 +4,7 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
@@ -32,6 +33,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -46,7 +48,7 @@ import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
  * Class that extends the Phoenix SwerveDrivetrain class and implements
  * subsystem so it can be used in command-based projects easily.
  * 
- * why did the chicken
+ * why did the robot
  * cross the road? electronics!
  * that's why we did it
  */
@@ -66,9 +68,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     /* What to publish over networktables for telemetry */
     private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
     private DoublePreferenceConstant p_tippingRollThreshold = new DoublePreferenceConstant("Tipping Roll Threashold",
-            20.0);
+            8.0);
     private DoublePreferenceConstant p_tippingPitchThreshold = new DoublePreferenceConstant("Tipping Pitch Threashold",
-            20.0);
+            15.0);
 
     /* Robot pose for field positioning */
     private final NetworkTable rosPoseTable = inst.getTable("ROSPose");
@@ -246,6 +248,14 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         };
     }
 
+    public Supplier<SwerveRequest> autoSnapToAngleRequest() {
+        return () -> {
+            return snapToAngle.withVelocityX(0.0)
+                    .withVelocityY(0.0)
+                    .withTargetDirection(Rotation2d.fromDegrees(targetHeading));
+        };
+    }
+
     public Supplier<SwerveRequest> brakeRequest() {
         return () -> brake;
     }
@@ -253,6 +263,25 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public Supplier<SwerveRequest> pointWheelsAtRequest() {
         return () -> pointWheelsAt.withModuleDirection(
                 Rotation2d.fromDegrees(getModule(0).getCANcoder().getAbsolutePosition().getValueAsDouble() * 360));
+    }
+
+    public void setOffsetsToZero() {
+        CANcoderConfiguration configuration = new CANcoderConfiguration();
+        configuration.MagnetSensor.MagnetOffset = 0;
+        for (int i = 0; i < 4; i++) {
+            getModule(i).getCANcoder().getConfigurator().apply(configuration);
+        }
+    }
+
+    public void setOffsets() {
+        TunerConstants.p_frontLeftEncoderOffset
+                .setValue(getModule(0).getCANcoder().getAbsolutePosition().getValueAsDouble());
+        TunerConstants.p_frontRightEncoderOffset
+                .setValue(getModule(1).getCANcoder().getAbsolutePosition().getValueAsDouble());
+        TunerConstants.p_backLeftEncoderOffset
+                .setValue(getModule(2).getCANcoder().getAbsolutePosition().getValueAsDouble());
+        TunerConstants.p_backRightEncoderOffset
+                .setValue(getModule(3).getCANcoder().getAbsolutePosition().getValueAsDouble());
     }
 
     public void localize() {
@@ -300,6 +329,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return new RunCommand(() -> setTargetHeading(m_aiming.getSpeakerAngleForDrivetrian()));
     }
 
+    public Command aimAtAmpFactory() {
+        return new RunCommand(() -> setTargetHeading(m_aiming.getAmpAngleForDrivetrain()));
+    }
+
     private void sendROSPose() {
         /* Telemeterize the pose */
         Pose2d pose = m_aiming.getROSPose();
@@ -331,6 +364,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return new Trigger(() -> onTarget());
     }
 
+    public Command calibrateFactory() {
+        return new SequentialCommandGroup(new InstantCommand(this::setOffsetsToZero), new WaitCommand(5),
+                new InstantCommand(this::setOffsets));
+    }
+
     public boolean tippingRoll() {
         return Math.abs(getPigeon2().getRoll().getValue()) >= p_tippingRollThreshold.getValue();
     }
@@ -356,6 +394,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         SmartDashboard.putNumber("Pigeon Roll", getPigeon2().getRoll().getValueAsDouble());
         SmartDashboard.putNumber("Pigeon Pitch", getPigeon2().getPitch().getValueAsDouble());
         SmartDashboard.putString("PowerMode", lowPowerMode ? "LowPowerMode" : "HighPowerMode");
+        SmartDashboard.putNumber("AmpShuttle", m_aiming.getAmpAngleForDrivetrain());
         m_aiming.sendTarget();
     }
 }

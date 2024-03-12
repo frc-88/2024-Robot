@@ -30,7 +30,7 @@ public class CoprocessorBridge extends SubsystemBase {
         this.bridge = bridge;
         this.tfListenerCompact = tfListenerCompact;
         this.pingPublisher = new PingPublisher(bridge);
-        this.powerModePublisher = new PowerModePublisher(bridge, 5);
+        this.powerModePublisher = new PowerModePublisher(bridge, PowerModePublisher.JetsonPowerMode.HIGH_POWER);
         this.preferenceBackupPublisher = new PreferenceBackupPublisher(bridge);
         odomPublisher = new OdomPublisher(drive, bridge);
         periodicPublishers = new Publisher[] { pingPublisher, odomPublisher };

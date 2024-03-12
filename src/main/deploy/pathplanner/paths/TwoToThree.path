@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.8528604804957354,
-        "y": 5.556066607628711
+        "x": 2.166907896761163,
+        "y": 6.659084862112717
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8544325376939041,
-        "y": 6.064525282203719
+        "x": 2.4009020939657093,
+        "y": 6.990576641485824
       },
       "isLocked": false,
       "linkedName": "FourPieceTwo"
     },
     {
       "anchor": {
-        "x": 2.7511687455807343,
-        "y": 6.952016786916457
+        "x": 3.9316141340121176,
+        "y": 7.205071322256659
       },
       "prevControl": {
-        "x": 2.0115924916534516,
-        "y": 6.563739253604634
+        "x": 3.5417359519129494,
+        "y": 7.19532436770418
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,20 +32,20 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 5.21,
-    "maxAcceleration": 3.5,
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 22.890551656248434,
+    "velocity": 0.0,
+    "rotation": 22.93,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "FourPiece",
   "previewStartingState": {
-    "rotation": 0.7957235527392122,
+    "rotation": 27.13,
     "velocity": 0
   },
   "useDefaultConstraints": true

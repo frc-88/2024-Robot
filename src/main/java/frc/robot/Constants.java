@@ -41,7 +41,7 @@ public final class Constants {
     public static final double DRIVETRAIN_WHEELBASE_INCHES = 19.75;
 
     public static final double DRIVETRAIN_CENTER_OFFSET = 2.3125;
-    public static final String DRIVETRAIN_CANBUS = RIO_CANBUS;
+    public static final String DRIVETRAIN_CANBUS = CANIVORE_CANBUS;
     public static final int DRIVETRAIN_PIGEON_ID = 0;
 
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 5;
@@ -66,7 +66,7 @@ public final class Constants {
     public static final int INTAKE_MOTOR_ID = 14;
     public static final int INTAKE_GUIDE_MOTOR_ID = 15;
     public static final int INTAKE_INDEX_MOTOR_ID = 16;
-    public static final int INTAKE_CURRENT_LIMIT = 30;
+    public static final int INTAKE_CURRENT_LIMIT = 80;
 
     // Elevator
     public static final int ELEVATOR_ANGLER_MOTOR = 10;
@@ -104,4 +104,8 @@ public final class Constants {
                     Rotation2d.fromDegrees(180)));
     public static final Pose2d BLUE_SPEAKER_POSE = new Pose2d(new Translation2d(0, 5.547868),
             Rotation2d.fromDegrees(0));
+    public static final Pose2d BLUE_AMP_POSE = new Pose2d(new Translation2d(1.83, 7.65),
+            Rotation2d.fromDegrees(0));
+    public static final Pose2d RED_AMP_POSE = DriveUtils.redBlueTransform(new Pose2d(new Translation2d(14.7, 7.65),
+            Rotation2d.fromDegrees(180)));
 }

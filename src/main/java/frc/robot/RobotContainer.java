@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
+import frc.robot.ros.bridge.BagManager;
 import frc.robot.ros.bridge.CoprocessorBridge;
 import frc.robot.ros.bridge.TagSubscriber;
 import frc.robot.subsystems.Climber;
@@ -43,10 +44,6 @@ import frc.robot.util.Aiming;
 import frc.robot.subsystems.Intake;
 
 public class RobotContainer {
-
-    // private DoublePreferenceConstant p_autoCloseAim = new
-    // DoublePreferenceConstant("Auto/AutoCloseAim", 63.0);
-
     private final Aiming m_aiming = new Aiming();
     private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
     private final CommandGenericHID buttonBox = new CommandGenericHID(1); // The buttons???
@@ -71,8 +68,18 @@ public class RobotContainer {
                 .unless(() -> drivetrain.tipping().getAsBoolean());
     }
 
+    private Command intakeFromSource() {
+        return new SequentialCommandGroup(new InstantCommand(m_intake::disableAutoMode), new WaitCommand(0.1),
+                m_shooter.runSourceIntakeFactory().alongWith(m_elevator.sourceIntakeFactory(),
+                        m_intake.sourceIntakeFactory()).until(m_intake.hasNoteDebounced()),
+                m_shooter.runSourceIntakeFactory().alongWith(m_elevator.sourceIntakeFactory(),
+                        m_intake.sourceIntakeFactory()).until(m_intake.hasNoteDebounced().negate()),
+                m_intake.intakeFactory().deadlineWith(m_shooter.stopShooterFactory(), m_elevator.stowFactory()));
+    }
+
     private final Telemetry logger = new Telemetry(TunerConstants.kSpeedAt12VoltsMps, drivetrain);
     private TFListenerCompact tfListenerCompact;
+    private BagManager bagManager;
     @SuppressWarnings("unused")
     private CoprocessorBridge coprocessorBridge;
 
@@ -87,21 +94,25 @@ public class RobotContainer {
         NamedCommands.registerCommand("Prep Shooter", m_shooter.runShooterFactory());
         NamedCommands.registerCommand("Shoot", new WaitUntilCommand(m_shooter::isShooterAtFullSpeed)
                 .andThen(m_intake.shootIndexerFactory().withTimeout(0.5)));
+        NamedCommands.registerCommand("Wait For Shooter", new WaitUntilCommand(m_shooter::isShooterAtFullSpeed));
         NamedCommands.registerCommand("Localize", drivetrain.localizeFactory());
-        NamedCommands.registerCommand("Intake", m_intake.intakeFactory());
+        NamedCommands.registerCommand("Intake", m_intake.intakeFactory().withTimeout(4.0));
         NamedCommands.registerCommand("Pivot Stow", m_elevator.stowFactory());
         // NamedCommands.registerCommand("Pivot Aim",
         // m_elevator.goToAnlgeFactory(p_autoCloseAim.getValue())
         // .until(() -> m_elevator.pivotOnTarget(p_autoCloseAim.getValue(), 2)));
-        // NamedCommands.registerCommand("Pivot Aim",
-        // m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
-        // .until(() -> m_elevator.pivotOnTarget(m_aiming.speakerAngleForShooter(),
-        // 2.0)));
+        NamedCommands.registerCommand("Pivot Aim",
+                m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
+                        .until(() -> m_elevator.pivotOnTarget(m_aiming.speakerAngleForShooter(),
+                                2.0)));
         NamedCommands.registerCommand("Aim",
                 new ParallelCommandGroup(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
                         .until(() -> m_elevator.pivotOnTarget(m_aiming.speakerAngleForShooter(), 2.0)),
+                        drivetrain.applyRequest(drivetrain.autoSnapToAngleRequest()),
                         drivetrain.aimAtSpeakerFactory().until(drivetrain::onTarget)));
         NamedCommands.registerCommand("Stop Shooter", m_shooter.stopShooterFactory().withTimeout(0.2));
+        NamedCommands.registerCommand("Pivot Calibrated",
+                new WaitUntilCommand(m_elevator::isPivotCalibrated));
 
         configureSmartDashboardButtons();
 
@@ -125,6 +136,8 @@ public class RobotContainer {
         TagSubscriber tagsub = new TagSubscriber(bridge);
         BridgePublisher<MarkerArray> aimPub = new BridgePublisher<>(bridge, "target_aiming");
         coprocessorBridge = new CoprocessorBridge(drivetrain, bridge, tfListenerCompact);
+        bagManager = new BagManager(bridge);
+
         m_aiming.setTFListener(tfListenerCompact);
         m_aiming.setTagListener(tagsub);
         m_aiming.setAimPub(aimPub);
@@ -141,10 +154,11 @@ public class RobotContainer {
                 .onTrue(drivetrain.setHeadingFactory(() -> drivetrain.getState().Pose.getRotation().getDegrees()))
                 .whileFalse(drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick)));
         joystick.rightTrigger()
-                .onTrue(m_intake.shootIndexerFactory()
-                        .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer())
-                        .until(() -> !m_intake.hasNoteInIndexer())
-                        .andThen(m_intake.intakeFactory()));
+                .onTrue(drivetrain.localizeFactory().unless(m_elevator::isElevatorNotDown));
+        joystick.rightTrigger().onTrue(m_intake.shootIndexerFactory()
+                .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer())
+                .until(() -> !m_intake.hasNoteInIndexer())
+                .andThen(m_intake.intakeFactory()));
         joystick.rightBumper()
                 .whileTrue(
                         m_shooter.runShooterFactory().alongWith(new WaitUntilCommand(m_shooter::isShooterAtFullSpeed))
@@ -152,6 +166,9 @@ public class RobotContainer {
                 .whileTrue(drivetrain.aimAtSpeakerFactory().unless(() -> drivetrain.tipping().getAsBoolean()))
                 .whileTrue(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
                         .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer()));
+        joystick.leftBumper().whileTrue(drivetrain.aimAtAmpFactory().alongWith(m_elevator.setFlatFactory())
+                .alongWith(m_shooter.runShuttlePassFactory()));
+        joystick.leftTrigger().whileTrue(m_shooter.runShooterFactory());
     }
 
     private void configureButtonBox() {
@@ -165,7 +182,7 @@ public class RobotContainer {
         buttonBox.button(6)
                 .whileTrue(m_elevator.setAmpFactory().alongWith(m_shooter.slowSpeedFactory())
                         .until(() -> m_elevator.pivotOnTargetForAmp() && m_elevator.elevatorOnTarget())
-                        .andThen(m_shooter.runShooterFactory()).unless(() -> drivetrain.tipping().getAsBoolean()))
+                        .andThen(m_shooter.runAmpTrapSpeedFactory()).unless(() -> drivetrain.tipping().getAsBoolean()))
                 .onFalse(m_elevator.elevatorDownFactory()
                         .until(() -> m_elevator.elevatorOnTarget() && m_elevator.pivotOnTarget(42.0, 2.0))
                         .unless(() -> drivetrain.tipping().getAsBoolean()))
@@ -189,6 +206,8 @@ public class RobotContainer {
                                         .andThen(m_shooter.runAmpTrapSpeedFactory().withTimeout(1.5))
                                         .andThen(m_intake.shootIndexerFactory())))
                         .unless(() -> drivetrain.tipping().getAsBoolean()));
+        buttonBox.button(16).whileTrue(intakeFromSource())
+                .onFalse(new InstantCommand(m_intake::enableAutoMode));
         // buttonBox.button(16).whileTrue(m_elevator.goToAimingPosition(() ->
         // m_aiming.speakerAngleForShooter()));
     }
@@ -197,6 +216,7 @@ public class RobotContainer {
         // Drive
         SmartDashboard.putData("SetLowPowerMode", drivetrain.lowPowerModeFactory());
         SmartDashboard.putData("SetHighPowerMode", drivetrain.highPowerModeFactory());
+        SmartDashboard.putData("CalibrateDrivetrain", drivetrain.calibrateFactory().ignoringDisable(true));
         SmartDashboard.putData("Localize", drivetrain.localizeFactory().ignoringDisable(true));
 
         // Shooter
@@ -242,23 +262,42 @@ public class RobotContainer {
                 .onFalse(m_intake.intakeFactory().alongWith(m_shooter.stopShooterFactory())).debounce(0.25);
 
         drivetrain.setTargetHeading(drivetrain.getState().Pose.getRotation().getDegrees());
+        drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)).schedule();
         m_intake.intakeFactory().schedule();
     }
 
     public void disabledPeriodic() {
-        if (buttonBox.button(12).getAsBoolean() && !m_autoCommandName.equals("FourPiece")) {
+        String nextAuto = m_autoCommandName;
+        if (buttonBox.button(12).getAsBoolean() && !nextAuto.equals("FourPiece")) {
             m_autoCommand = drivetrain.getAutoPath("FourPiece");
-            m_autoCommandName = "FourPiece";
+            nextAuto = "FourPiece";
         }
+
+        if (buttonBox.button(6).getAsBoolean() && !m_autoCommandName.equals("FivePiece")) {
+            m_autoCommand = drivetrain.getAutoPath("FivePiece");
+            nextAuto = "FivePiece";
+        }
+
+        if (buttonBox.button(11).getAsBoolean() && !nextAuto.equals("Cleanside")) {
+            m_autoCommand = drivetrain.getAutoPath("Cleanside");
+            nextAuto = "Cleanside";
+        }
+
         if ((buttonBox.button(8)).getAsBoolean() && !m_autoCommandName.equals("SixPiece")) {
             m_autoCommand = drivetrain.getAutoPath("SixPiece");
-            m_autoCommandName = "SixPiece";
+            nextAuto = "SixPiece";
         }
 
         if (buttonBox.button(13).getAsBoolean()) {
             m_autoCommand = new WaitCommand(15);
-            m_autoCommandName = "Waiting";
+            nextAuto = "Waiting";
         }
+
+        if (!nextAuto.equals(m_autoCommandName)) {
+            bagManager.startBag(); // Start recording
+            m_autoCommandName = nextAuto;
+        }
+
         SmartDashboard.putString("Auto", m_autoCommandName);
     }
 

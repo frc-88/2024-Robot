@@ -22,23 +22,32 @@ import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 public class Shooter extends SubsystemBase {
     /** Creates a new Shooter. */
 
-    private DoublePreferenceConstant leftShooterSpeed = new DoublePreferenceConstant("shooter/shooter/Leftspeed", 0);
-    private DoublePreferenceConstant rightShooterSpeed = new DoublePreferenceConstant("shooter/shooter/Rightspeed", 0);
+    private DoublePreferenceConstant leftShooterSpeed = new DoublePreferenceConstant("shooter/shooter/Leftspeed", 5600);
+    private DoublePreferenceConstant rightShooterSpeed = new DoublePreferenceConstant("shooter/shooter/Rightspeed",
+            5000);
     private DoublePreferenceConstant idleShooterControl = new DoublePreferenceConstant("shooter/shooter/idleControl",
-            0);
-    private DoublePreferenceConstant p_slowSpeed = new DoublePreferenceConstant("shooter/shooter/slowspeed", 0);
-    private DoublePreferenceConstant p_ampTrapSpeed = new DoublePreferenceConstant("shooter/shooter/AmpTrap", 0);
-    private DoublePreferenceConstant motor_kP = new DoublePreferenceConstant("shooter/shooter/motor_kP", 0);
+            1500);
+    private DoublePreferenceConstant p_slowSpeed = new DoublePreferenceConstant("shooter/shooter/slowspeed", 500);
+    private DoublePreferenceConstant p_ampTrapSpeed = new DoublePreferenceConstant("shooter/shooter/AmpTrap", 2000);
+    private DoublePreferenceConstant motor_kP = new DoublePreferenceConstant("shooter/shooter/motor_kP", 0.02);
     private DoublePreferenceConstant motor_kI = new DoublePreferenceConstant("shooter/shooter/motor_kI", 0);
     private DoublePreferenceConstant motor_kD = new DoublePreferenceConstant("shooter/shooter/motor_kD", 0);
-    private DoublePreferenceConstant motor_kV = new DoublePreferenceConstant("shooter/shooter/motor_kV", 0);
+    private DoublePreferenceConstant motor_kV = new DoublePreferenceConstant("shooter/shooter/motor_kV", 0.129);
     private DoublePreferenceConstant motor_kS = new DoublePreferenceConstant("shooter/shooter/motor_kS", 0);
+    private DoublePreferenceConstant p_shuttlePassSpeed = new DoublePreferenceConstant(
+            "shooter/shooter/ShuttlePassSpeed", 2800);
+    private DoublePreferenceConstant p_sourceIntakeSpeed = new DoublePreferenceConstant(
+            "shooter/shooter/SourceIntakeSpeed", 2800);
 
-    private final TalonFX m_LeftShooter = new TalonFX(Constants.SHOOTER_LEFT_MOTOR, Constants.CANIVORE_CANBUS);
-    private final TalonFX m_RightShooter = new TalonFX(Constants.SHOOTER_RIGHT_MOTOR, Constants.CANIVORE_CANBUS);
+    private final TalonFX m_LeftShooter = new TalonFX(Constants.SHOOTER_LEFT_MOTOR, Constants.RIO_CANBUS);
+    private final TalonFX m_RightShooter = new TalonFX(Constants.SHOOTER_RIGHT_MOTOR, Constants.RIO_CANBUS);
     private double talonFree = 6380;
 
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
+
+    // amplified and loud
+    // a symphony of scoring
+    // TJ rocks the house
 
     public Shooter() {
         applyAllConfigs(0);
@@ -123,6 +132,16 @@ public class Shooter extends SubsystemBase {
         m_RightShooter.setControl(velocityRequest.withVelocity(p_ampTrapSpeed.getValue() / 60));
     }
 
+    public void runShuttlePassSpeed() {
+        m_LeftShooter.setControl(velocityRequest.withVelocity(p_shuttlePassSpeed.getValue() / 60));
+        m_RightShooter.setControl(velocityRequest.withVelocity(p_shuttlePassSpeed.getValue() / 60));
+    }
+
+    public void runSourceIntake() {
+        m_LeftShooter.setControl(velocityRequest.withVelocity(-p_sourceIntakeSpeed.getValue() / 60));
+        m_RightShooter.setControl(velocityRequest.withVelocity(-p_sourceIntakeSpeed.getValue() / 60));
+    }
+
     public Trigger shooterAtSpeed() {
         return new Trigger(() -> isShooterAtFullSpeed());
     }
@@ -143,8 +162,16 @@ public class Shooter extends SubsystemBase {
         return new RunCommand(() -> runIdleSpeed(), this);
     }
 
+    public Command runShuttlePassFactory() {
+        return new RunCommand(() -> runShuttlePassSpeed(), this);
+    }
+
     public Command slowSpeedFactory() {
         return new RunCommand(() -> slowSpeed(), this);
+    }
+
+    public Command runSourceIntakeFactory() {
+        return new RunCommand(() -> runSourceIntake(), this);
     }
 
     @Override

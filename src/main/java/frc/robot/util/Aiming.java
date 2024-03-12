@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.ros.bridge.Frames;
 import frc.robot.ros.bridge.TagSubscriber;
+import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import frc.team88.ros.bridge.BridgePublisher;
 import frc.team88.ros.conversions.ROSConversions;
 import frc.team88.ros.conversions.TFListenerCompact;
@@ -29,6 +30,9 @@ public class Aiming {
     private final int[] speakerTagsRed = { 3, 4 };
     private final double speakerHeight = Units.inchesToMeters(60.265913);
     private BridgePublisher<MarkerArray> aimPub;
+
+    private DoublePreferenceConstant p_aimingOffset = new DoublePreferenceConstant("Aiming Offset",
+            0.15);
 
     // TODO get these bounds
     // private final double[] shootingAngleBounds = { 44.0, 26.0 };
@@ -97,7 +101,7 @@ public class Aiming {
         double shootingAngle = Math.atan2(distance, speakerHeight) * (180 / Math.PI);
         distance = Units.metersToFeet(distance);
 
-        shootingAngle -= distance * 0.13; // aim higher based on distance
+        shootingAngle -= distance * p_aimingOffset.getValue(); // aim higher based on distance
         // double shootingAngle = 19.2 + (6.03 * distance) - (0.171 * distance *
         // distance);
 
@@ -106,6 +110,14 @@ public class Aiming {
         }
 
         return shootingAngle;
+    }
+
+    public double getAmpAngleForDrivetrain() {
+        Pose2d robotPose = getROSPose();
+        robotPose = (getAlliance() == DriverStation.Alliance.Red) ? robotPose.relativeTo(Constants.RED_AMP_POSE)
+                : robotPose.relativeTo(Constants.BLUE_AMP_POSE);
+        double drivetrainAmpAngle = Math.atan2(robotPose.getY(), robotPose.getX()) * (180 / Math.PI);
+        return drivetrainAmpAngle;
     }
 
     public boolean getDetections() {

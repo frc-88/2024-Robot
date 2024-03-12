@@ -3,50 +3,50 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.8159166009543433,
-        "y": 5.5086133925236975
+        "x": 3.9316141340121176,
+        "y": 7.205071322256659
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.186407413194875,
-        "y": 5.537862667174267
+        "x": 4.42885180307178,
+        "y": 7.224570838690371
       },
       "isLocked": false,
-      "linkedName": "FourPieceOne"
+      "linkedName": "FourPieceThree"
     },
     {
       "anchor": {
-        "x": 2.586147500085975,
-        "y": 5.537862667174266
+        "x": 8.25075702407937,
+        "y": 6.015600819800215
       },
       "prevControl": {
-        "x": 2.331904911216085,
-        "y": 5.537862667174266
+        "x": 8.046012101525392,
+        "y": 5.411115810355138
       },
       "nextControl": {
-        "x": 2.946888554109651,
-        "y": 5.537862667174266
+        "x": 8.701332662561644,
+        "y": 7.345871752462165
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.166907896761163,
-        "y": 6.659084862112717
+        "x": 4.497100110589771,
+        "y": 6.454339939558739
       },
       "prevControl": {
-        "x": 2.3034045117971473,
-        "y": 6.556712400835729
+        "x": 4.906589955697726,
+        "y": 6.493338972426163
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "FourPieceTwo"
+      "linkedName": "WingShot"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1,
+      "waypointRelativePos": 0.75,
       "rotationDegrees": 0,
       "rotateFast": false
     }
@@ -61,13 +61,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 27.13,
+    "rotation": 11.34,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "FourPiece",
   "previewStartingState": {
-    "rotation": -1.245364266768191,
+    "rotation": 18.79,
     "velocity": 0
   },
   "useDefaultConstraints": true
