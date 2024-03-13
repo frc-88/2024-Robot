@@ -20,12 +20,6 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "named",
-                      "data": {
-                        "name": "Wait For Shooter"
-                      }
-                    },
-                    {
                       "type": "deadline",
                       "data": {
                         "commands": [
@@ -36,7 +30,7 @@
                                 {
                                   "type": "path",
                                   "data": {
-                                    "pathName": "SpeakerToOne"
+                                    "pathName": "SpeakerToNote2"
                                   }
                                 },
                                 {
@@ -54,32 +48,32 @@
                                         "data": {
                                           "name": "Intake"
                                         }
+                                      },
+                                      {
+                                        "type": "named",
+                                        "data": {
+                                          "name": "Pivot Aim"
+                                        }
+                                      },
+                                      {
+                                        "type": "named",
+                                        "data": {
+                                          "name": "Shoot"
+                                        }
+                                      },
+                                      {
+                                        "type": "named",
+                                        "data": {
+                                          "name": "Pivot Stow"
+                                        }
                                       }
                                     ]
                                   }
                                 }
                               ]
                             }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "Pivot Stow"
-                            }
                           }
                         ]
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Pivot Aim"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Shoot"
                       }
                     },
                     {
@@ -91,15 +85,15 @@
                             "data": {
                               "commands": [
                                 {
-                                  "type": "named",
+                                  "type": "path",
                                   "data": {
-                                    "name": "Intake"
+                                    "pathName": "Note2ToNote3"
                                   }
                                 },
                                 {
-                                  "type": "path",
+                                  "type": "named",
                                   "data": {
-                                    "pathName": "OneToTwo"
+                                    "name": "Intake"
                                   }
                                 }
                               ]
@@ -143,7 +137,7 @@
                                 {
                                   "type": "path",
                                   "data": {
-                                    "pathName": "TwoToThree"
+                                    "pathName": "Note3ToNote1"
                                   }
                                 }
                               ]
