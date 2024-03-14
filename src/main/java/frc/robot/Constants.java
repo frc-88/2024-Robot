@@ -78,6 +78,7 @@ public final class Constants {
     // Shooter
     public static final int SHOOTER_LEFT_MOTOR = 11;
     public static final int SHOOTER_RIGHT_MOTOR = 12;
+    public static final int SHOOTER_CURRENT_LIMIT = 80;
 
     // Climber
     public static final int CLIMBER_LEFT_MOTOR = 9;
