@@ -37,10 +37,10 @@ public class Shooter extends SubsystemBase {
     private DoublePreferenceConstant motor_kV = new DoublePreferenceConstant("shooter/shooter/motor_kV", 0.129);
     private DoublePreferenceConstant motor_kS = new DoublePreferenceConstant("shooter/shooter/motor_kS", 0);
     private DoublePreferenceConstant p_shuttlePassSpeed = new DoublePreferenceConstant(
-            "shooter/shooter/ShuttlePassSpeed", 2800);
+            "shooter/shooter/ShuttlePassSpeed", 2750);
     private DoublePreferenceConstant p_sourceIntakeSpeed = new DoublePreferenceConstant(
             "shooter/shooter/SourceIntakeSpeed", 2800);
-    private DoublePreferenceConstant p_shuttlePassSlowSpeed = new DoublePreferenceConstant("shooter/shooter/ShuttlePassSlowSpeed", 0);
+    private DoublePreferenceConstant p_shuttlePassSlowSpeed = new DoublePreferenceConstant("shooter/shooter/ShuttlePassSlowSpeed", 2500);
 
     private final TalonFX m_LeftShooter = new TalonFX(Constants.SHOOTER_LEFT_MOTOR, Constants.RIO_CANBUS);
     private final TalonFX m_RightShooter = new TalonFX(Constants.SHOOTER_RIGHT_MOTOR, Constants.RIO_CANBUS);
