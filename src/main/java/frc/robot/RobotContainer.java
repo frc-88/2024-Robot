@@ -167,7 +167,7 @@ public class RobotContainer {
                 .whileTrue(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
                         .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer()));
         joystick.leftBumper().whileTrue(drivetrain.aimAtAmpFactory().alongWith(m_elevator.setFlatFactory())
-                .alongWith(m_shooter.runShuttlePassFactory()));
+                .alongWith(m_shooter.runShuttlePassFactory(buttonBox.button(17))));
         joystick.leftTrigger().whileTrue(m_shooter.runShooterFactory());
     }
 
@@ -176,7 +176,6 @@ public class RobotContainer {
         buttonBox.button(20)
                 .whileTrue(m_intake.shootIndexerFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         buttonBox.button(18).whileTrue(m_intake.rejectFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
-        buttonBox.button(17).whileFalse(m_shooter.stopShooterFactory());
         buttonBox.button(5)
                 .whileTrue(m_elevator.setPodiumFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         buttonBox.button(6)
