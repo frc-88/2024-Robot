@@ -139,8 +139,8 @@ public class Shooter extends SubsystemBase {
     }
 
     public void runShuttlePassSpeed(boolean highSpeed) {
-        m_LeftShooter.setControl(velocityRequest.withVelocity(highSpeed ? (p_shuttlePassSpeed.getValue() / 60) : (p_shuttlePassSlowSpeed.getValue() / 60)));
-        m_RightShooter.setControl(velocityRequest.withVelocity(highSpeed ? (p_shuttlePassSpeed.getValue() / 60) : (p_shuttlePassSlowSpeed.getValue() / 60)));
+        m_LeftShooter.setControl(velocityRequest.withVelocity(highSpeed ? ((p_shuttlePassSpeed.getValue() + 500) / 60) : ((p_shuttlePassSlowSpeed.getValue() + 500) / 60)));
+        m_RightShooter.setControl(velocityRequest.withVelocity(highSpeed ? ((p_shuttlePassSpeed.getValue() - 500) / 60) : ((p_shuttlePassSlowSpeed.getValue() - 500) / 60)));
     }
 
     public void runSourceIntake() {
