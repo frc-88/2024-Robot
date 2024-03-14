@@ -160,7 +160,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public Command defaultDriveCommand(CommandXboxController joystick) {
         return run(() -> {
-            if (joystick.getLeftX() < .001 && joystick.getLeftY() < .001 && joystick.getRightX() < 0.001
+            if (Math.abs(joystick.getLeftX()) < .05 && Math.abs(joystick.getLeftY()) < .05 && Math.abs(joystick.getRightX()) < 0.05
                     && this.headingController.getPositionError() < 0.015) {
                 if (!holdingDirections) {
                     Rotation2d directions[] = new Rotation2d[4];
