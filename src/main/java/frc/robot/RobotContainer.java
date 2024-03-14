@@ -206,7 +206,7 @@ public class RobotContainer {
                                         .andThen(m_shooter.runAmpTrapSpeedFactory().withTimeout(1.5))
                                         .andThen(m_intake.shootIndexerFactory())))
                         .unless(() -> drivetrain.tipping().getAsBoolean()));
-        buttonBox.button(16).whileTrue(intakeFromSource())
+        buttonBox.button(16).onTrue(intakeFromSource())
                 .onFalse(new InstantCommand(m_intake::enableAutoMode));
         // buttonBox.button(16).whileTrue(m_elevator.goToAimingPosition(() ->
         // m_aiming.speakerAngleForShooter()));
