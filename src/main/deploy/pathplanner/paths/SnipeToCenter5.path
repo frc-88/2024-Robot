@@ -9,7 +9,7 @@
       "prevControl": null,
       "nextControl": {
         "x": 5.977545226733417,
-        "y": 1.2479820743119294
+        "y": 1.2479820743119299
       },
       "isLocked": false,
       "linkedName": "Snipe"
@@ -37,7 +37,7 @@
       },
       "prevControl": {
         "x": 5.89216750208592,
-        "y": 1.3229807227658712
+        "y": 1.322980722765871
       },
       "nextControl": null,
       "isLocked": false,
