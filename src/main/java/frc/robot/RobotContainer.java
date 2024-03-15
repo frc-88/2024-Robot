@@ -215,7 +215,7 @@ public class RobotContainer {
                 .onFalse(new InstantCommand(m_intake::enableAutoMode).andThen(m_intake.intakeFactory()));
         buttonBox.button(13).whileTrue(new InstantCommand(m_intake::disableAutoMode).andThen(goblinModeFactory()))
                                    .onFalse(new InstantCommand(m_intake::enableAutoMode));
-        buttonBox.button(0).onTrue(drivetrain.pathFindingCommand(Constants.RED_AMP_POSE));
+        buttonBox.button(12).onTrue(drivetrain.pathFindingCommand(Constants.RED_AMP_POSE));
         // buttonBox.button(16).whileTrue(m_elevator.goToAimingPosition(() ->
         // m_aiming.speakerAngleForShooter()));
     }
