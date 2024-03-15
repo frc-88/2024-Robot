@@ -146,7 +146,7 @@ public class Elevator extends SubsystemBase {
     }
 
     public boolean isElevatorNotDown() {
-        return m_elevatorMotor.getPosition().getValueAsDouble() * kElevatorMotorToElevatorDistance > 27.7;
+        return m_elevatorMotor.getPosition().getValueAsDouble() * kElevatorMotorToElevatorDistance > (Constants.ELEVATOR_BOTTOM + 1.0);
     }
 
     public boolean elevatorOnTarget() {

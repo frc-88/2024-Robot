@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -13,6 +14,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.utility.PhoenixPIDController;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -27,6 +29,7 @@ import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -42,6 +45,7 @@ import frc.robot.Constants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.Aiming;
 import frc.robot.util.DriveUtils;
+import frc.robot.util.HoldAnglesRequest;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 
 /**
@@ -65,6 +69,17 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private double targetHeading = 0;
     private Aiming m_aiming;
     private boolean lowPowerMode = false;
+
+    private boolean holdingDirections = false;
+    private DoublePreferenceConstant p_maxVeloctiy = new DoublePreferenceConstant("drivetrain/PathFindingMaxVelocity",
+            5.21);
+    private DoublePreferenceConstant p_maxAcceleration = new DoublePreferenceConstant(
+            "drivetrain/PathFindingMaxAcceleration", 3.0);
+    private DoublePreferenceConstant p_maxAngularVelocity = new DoublePreferenceConstant(
+            "drivetrain/PathFindingMaxAngularVelocity", 540.0);
+    private DoublePreferenceConstant p_maxAngularAcceleration = new DoublePreferenceConstant(
+            "drivetrain/PathFindingMaxAngularAcceleration", 720);
+
     /* What to publish over networktables for telemetry */
     private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
     private DoublePreferenceConstant p_tippingRollThreshold = new DoublePreferenceConstant("Tipping Roll Threashold",
@@ -83,7 +98,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+    private final SwerveRequest.Idle idle = new SwerveRequest.Idle();
+    private final HoldAnglesRequest holdAngles = new HoldAnglesRequest();
     private final SwerveRequest.FieldCentricFacingAngle snapToAngle = new SwerveRequest.FieldCentricFacingAngle()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     private final SwerveRequest.PointWheelsAt pointWheelsAt = new SwerveRequest.PointWheelsAt();
@@ -153,6 +169,27 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return run(() -> this.setControl(requestSupplier.get()));
     }
 
+    public Command defaultDriveCommand(CommandXboxController joystick) {
+        return run(() -> {
+            if (Math.abs(joystick.getLeftX()) < .05 && Math.abs(joystick.getLeftY()) < .05
+                    && Math.abs(joystick.getRightX()) < 0.05
+                    && Math.abs(getCurrentRobotAngle() - targetHeading) < 1) {
+                if (!holdingDirections) {
+                    Rotation2d directions[] = new Rotation2d[4];
+                    for (int i = 0; i < 4; i++) {
+                        directions[i] = getModule(i).getCurrentState().angle;
+                    }
+                    holdAngles.setModuleDirections(directions);
+                    holdingDirections = true;
+                }
+                this.setControl(holdAngles);
+            } else {
+                this.setControl(this.SnapToAngleRequest(joystick).get());
+                holdingDirections = false;
+            }
+        });
+    }
+
     public Command getAutoPath(String pathName) {
         try {
             Command autoPath = new PathPlannerAuto(pathName);
@@ -204,7 +241,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         AutoBuilder.configureHolonomic(this::getPoseBlue, this::resetPoseBlue,
                 this::getChassisSpeeds, this::setChassisSpeeds,
                 new HolonomicPathFollowerConfig(new PIDConstants(10.0, 0.0, 0.0), // Translational constant
-                        new PIDConstants(10.0, 0.0, 0.0), // Rotational constant
+                        new PIDConstants(9.0, 0.0, 0.3), // Rotational constant
                         TunerConstants.kSpeedAt12VoltsMps, // in m/s
                         driveBaseRadius, // in meters
                         new ReplanningConfig()),
@@ -245,6 +282,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             return snapToAngle.withVelocityX(filterX.calculate(DriveUtils.signedPow(leftY, 2) * MaxSpeed))
                     .withVelocityY(filterY.calculate(DriveUtils.signedPow(leftX, 2) * MaxSpeed))
                     .withTargetDirection(Rotation2d.fromDegrees(targetHeading));
+
         };
     }
 
@@ -256,8 +294,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         };
     }
 
-    public Supplier<SwerveRequest> brakeRequest() {
-        return () -> brake;
+    public Supplier<SwerveRequest> idleRequest() {
+        return () -> idle;
     }
 
     public Supplier<SwerveRequest> pointWheelsAtRequest() {
@@ -329,8 +367,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return new RunCommand(() -> setTargetHeading(m_aiming.getSpeakerAngleForDrivetrian()));
     }
 
-    public Command aimAtAmpFactory() {
-        return new RunCommand(() -> setTargetHeading(m_aiming.getAmpAngleForDrivetrain()));
+    public Command aimAtAmpDumpingGroundFactory(BooleanSupplier amp) {
+        return new RunCommand(() -> setTargetHeading(
+                amp.getAsBoolean() ? m_aiming.getAmpAngleForDrivetrain() : m_aiming.getDumpingGroundAngle()));
     }
 
     private void sendROSPose() {
@@ -345,6 +384,17 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 pose.getY(),
                 pose.getRotation().getDegrees()
         });
+    }
+
+    public Command pathFindingCommand(Pose2d targetPose) {
+        Pose2d pose = (DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
+                ? DriveUtils.redBlueTransform(targetPose)
+                : targetPose;
+        PathConstraints constraints = new PathConstraints(p_maxVeloctiy.getValue(), p_maxAcceleration.getValue(),
+                Units.degreesToRadians(p_maxAngularVelocity.getValue()),
+                Units.degreesToRadians(p_maxAngularAcceleration.getValue()));
+
+        return AutoBuilder.pathfindToPose(pose, constraints, 0.0, 0.0);
     }
 
     private void sendOdomPose() {

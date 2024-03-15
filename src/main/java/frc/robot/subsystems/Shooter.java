@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
@@ -35,9 +37,10 @@ public class Shooter extends SubsystemBase {
     private DoublePreferenceConstant motor_kV = new DoublePreferenceConstant("shooter/shooter/motor_kV", 0.129);
     private DoublePreferenceConstant motor_kS = new DoublePreferenceConstant("shooter/shooter/motor_kS", 0);
     private DoublePreferenceConstant p_shuttlePassSpeed = new DoublePreferenceConstant(
-            "shooter/shooter/ShuttlePassSpeed", 2800);
+            "shooter/shooter/ShuttlePassSpeed", 2750);
     private DoublePreferenceConstant p_sourceIntakeSpeed = new DoublePreferenceConstant(
             "shooter/shooter/SourceIntakeSpeed", 2800);
+    private DoublePreferenceConstant p_shuttlePassSlowSpeed = new DoublePreferenceConstant("shooter/shooter/ShuttlePassSlowSpeed", 2500);
 
     private final TalonFX m_LeftShooter = new TalonFX(Constants.SHOOTER_LEFT_MOTOR, Constants.RIO_CANBUS);
     private final TalonFX m_RightShooter = new TalonFX(Constants.SHOOTER_RIGHT_MOTOR, Constants.RIO_CANBUS);
@@ -83,6 +86,9 @@ public class Shooter extends SubsystemBase {
         // volts / Rotation per second
         configs.Slot0.kS = motor_kS.getValue();
 
+        configs.CurrentLimits.SupplyCurrentLimit = Constants.SHOOTER_CURRENT_LIMIT;
+        configs.CurrentLimits.SupplyCurrentLimitEnable = true;
+
         StatusCode status = StatusCode.StatusCodeNotInitialized;
         for (int i = 0; i < 5; ++i) {
             status = motor.getConfigurator().apply(configs);
@@ -105,6 +111,12 @@ public class Shooter extends SubsystemBase {
         return (Math.abs(m_LeftShooter.getVelocity().getValueAsDouble() * 60 - p_ampTrapSpeed.getValue()) <= 500
                 && Math.abs(
                         m_RightShooter.getVelocity().getValueAsDouble() * 60 - p_ampTrapSpeed.getValue()) <= 500);
+    }
+
+    public boolean isShooterAtSlowSpeed() {
+        return (Math.abs(m_LeftShooter.getVelocity().getValueAsDouble() * 60 - p_slowSpeed.getValue()) <= 200
+                && Math.abs(
+                        m_RightShooter.getVelocity().getValueAsDouble() * 60 - p_slowSpeed.getValue()) <= 200);
     }
 
     public void startShooter() {
@@ -132,9 +144,9 @@ public class Shooter extends SubsystemBase {
         m_RightShooter.setControl(velocityRequest.withVelocity(p_ampTrapSpeed.getValue() / 60));
     }
 
-    public void runShuttlePassSpeed() {
-        m_LeftShooter.setControl(velocityRequest.withVelocity(p_shuttlePassSpeed.getValue() / 60));
-        m_RightShooter.setControl(velocityRequest.withVelocity(p_shuttlePassSpeed.getValue() / 60));
+    public void runShuttlePassSpeed(boolean highSpeed) {
+        m_LeftShooter.setControl(velocityRequest.withVelocity(highSpeed ? ((p_shuttlePassSpeed.getValue() + 500) / 60) : ((p_shuttlePassSlowSpeed.getValue() + 500) / 60)));
+        m_RightShooter.setControl(velocityRequest.withVelocity(highSpeed ? ((p_shuttlePassSpeed.getValue() - 500) / 60) : ((p_shuttlePassSlowSpeed.getValue() - 500) / 60)));
     }
 
     public void runSourceIntake() {
@@ -162,8 +174,8 @@ public class Shooter extends SubsystemBase {
         return new RunCommand(() -> runIdleSpeed(), this);
     }
 
-    public Command runShuttlePassFactory() {
-        return new RunCommand(() -> runShuttlePassSpeed(), this);
+    public Command runShuttlePassFactory(BooleanSupplier sourceSpeed) {
+        return new RunCommand(() -> runShuttlePassSpeed(sourceSpeed.getAsBoolean()), this);
     }
 
     public Command slowSpeedFactory() {
