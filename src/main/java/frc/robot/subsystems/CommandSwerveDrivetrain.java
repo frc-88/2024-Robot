@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -355,10 +356,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return new RunCommand(() -> setTargetHeading(m_aiming.getSpeakerAngleForDrivetrian()));
     }
 
-    public Command aimAtAmpFactory() {
-        return new RunCommand(() -> setTargetHeading(m_aiming.getAmpAngleForDrivetrain()));
+    public Command aimAtAmpDumpingGroundFactory(BooleanSupplier amp) {
+        return new RunCommand(() -> setTargetHeading(amp.getAsBoolean() ? m_aiming.getAmpAngleForDrivetrain() : m_aiming.getDumpingGroundAngle()));
     }
-
+    
     private void sendROSPose() {
         /* Telemeterize the pose */
         Pose2d pose = m_aiming.getROSPose();
