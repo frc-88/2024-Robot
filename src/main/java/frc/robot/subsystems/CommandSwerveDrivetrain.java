@@ -14,6 +14,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.utility.PhoenixPIDController;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -69,6 +70,14 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private boolean lowPowerMode = false;
 
     private boolean holdingDirections = false;
+    private DoublePreferenceConstant p_maxVeloctiy = new DoublePreferenceConstant("drivetrain/PathFindingMaxVelocity",
+            5.21);
+    private DoublePreferenceConstant p_maxAcceleration = new DoublePreferenceConstant(
+            "drivetrain/PathFindingMaxAcceleration", 3.5);
+    private DoublePreferenceConstant p_maxAngularVelocity = new DoublePreferenceConstant(
+            "drivetrain/PathFindingMaxAngularVelocity", 540.0);
+    private DoublePreferenceConstant p_maxAngularAcceleration = new DoublePreferenceConstant(
+            "drivetrain/PathFindingMaxAngularAcceleration", 720);
 
     /* What to publish over networktables for telemetry */
     private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
@@ -161,7 +170,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public Command defaultDriveCommand(CommandXboxController joystick) {
         return run(() -> {
-            if (Math.abs(joystick.getLeftX()) < .05 && Math.abs(joystick.getLeftY()) < .05 && Math.abs(joystick.getRightX()) < 0.05
+            if (Math.abs(joystick.getLeftX()) < .05 && Math.abs(joystick.getLeftY()) < .05
+                    && Math.abs(joystick.getRightX()) < 0.05
                     && Math.abs(getCurrentRobotAngle() - targetHeading) < 1) {
                 if (!holdingDirections) {
                     Rotation2d directions[] = new Rotation2d[4];
@@ -357,9 +367,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public Command aimAtAmpDumpingGroundFactory(BooleanSupplier amp) {
-        return new RunCommand(() -> setTargetHeading(amp.getAsBoolean() ? m_aiming.getAmpAngleForDrivetrain() : m_aiming.getDumpingGroundAngle()));
+        return new RunCommand(() -> setTargetHeading(
+                amp.getAsBoolean() ? m_aiming.getAmpAngleForDrivetrain() : m_aiming.getDumpingGroundAngle()));
     }
-    
+
     private void sendROSPose() {
         /* Telemeterize the pose */
         Pose2d pose = m_aiming.getROSPose();
@@ -372,6 +383,14 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 pose.getY(),
                 pose.getRotation().getDegrees()
         });
+    }
+
+    public Command pathFindingCommand(Pose2d targetPose) {
+        PathConstraints constraints = new PathConstraints(p_maxVeloctiy.getValue(), p_maxAcceleration.getValue(),
+                Units.degreesToRadians(p_maxAngularVelocity.getValue()),
+                Units.degreesToRadians(p_maxAngularAcceleration.getValue()));
+
+        return AutoBuilder.pathfindToPose(targetPose, constraints, 0.0, 0.0);
     }
 
     private void sendOdomPose() {
