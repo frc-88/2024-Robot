@@ -70,7 +70,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Cleanside",
   "previewStartingState": {
     "rotation": -64.12,
     "velocity": 0
