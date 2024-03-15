@@ -78,7 +78,8 @@ public class RobotContainer {
     }
 
     private Command goblinModeFactory() {
-        return new ParallelCommandGroup(m_intake.goblinModeFactory(), m_shooter.runShuttlePassFactory(() -> false), drivetrain.aimAtAmpDumpingGroundFactory(() -> false));
+        return new ParallelCommandGroup(m_intake.goblinModeFactory(), m_shooter.runShuttlePassFactory(() -> false),
+                drivetrain.aimAtAmpDumpingGroundFactory(() -> false));
     }
 
     private final Telemetry logger = new Telemetry(TunerConstants.kSpeedAt12VoltsMps, drivetrain);
@@ -148,9 +149,6 @@ public class RobotContainer {
     }
 
     private void configureDriverController() {
-        m_aiming.isInWing().whileTrue(m_shooter.runShooterFactory());
-        drivetrain.tipping().whileTrue(m_climber.holdPositionFactory()).whileTrue(m_elevator.holdPositionFactory());
-        m_shooter.shooterAtSpeed().onTrue(setRumble());
         joystick.b().onTrue(drivetrain.setHeadingFactory(270));
         joystick.x().onTrue(drivetrain.setHeadingFactory(90));
         joystick.y().onTrue(drivetrain.setHeadingFactory(0));
@@ -171,8 +169,10 @@ public class RobotContainer {
                 .whileTrue(drivetrain.aimAtSpeakerFactory().unless(() -> drivetrain.tipping().getAsBoolean()))
                 .whileTrue(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
                         .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer()));
-        joystick.leftBumper().whileTrue(drivetrain.aimAtAmpDumpingGroundFactory(buttonBox.button(17)).alongWith(m_elevator.setFlatFactory())
-                .alongWith(m_shooter.runShuttlePassFactory(buttonBox.button(17))));
+        joystick.leftBumper()
+                .whileTrue(drivetrain.aimAtAmpDumpingGroundFactory(buttonBox.button(17))
+                        .alongWith(m_elevator.setFlatFactory())
+                        .alongWith(m_shooter.runShuttlePassFactory(buttonBox.button(17))));
         joystick.leftTrigger().whileTrue(m_shooter.runShooterFactory());
     }
 
@@ -214,7 +214,7 @@ public class RobotContainer {
         buttonBox.button(16).whileTrue(intakeFromSource())
                 .onFalse(new InstantCommand(m_intake::enableAutoMode).andThen(m_intake.intakeFactory()));
         buttonBox.button(13).whileTrue(new InstantCommand(m_intake::disableAutoMode).andThen(goblinModeFactory()))
-                                   .onFalse(new InstantCommand(m_intake::enableAutoMode));
+                .onFalse(new InstantCommand(m_intake::enableAutoMode));
         buttonBox.button(12).whileTrue(drivetrain.pathFindingCommand(Constants.RED_AMP_POSE));
         // buttonBox.button(16).whileTrue(m_elevator.goToAimingPosition(() ->
         // m_aiming.speakerAngleForShooter()));
@@ -268,6 +268,10 @@ public class RobotContainer {
                 .onTrue(setRumble().unless(() -> !m_intake.m_automaticMode));
         m_intake.hasNote().and(() -> !m_intake.m_automaticMode)
                 .onFalse(m_intake.intakeFactory().alongWith(m_shooter.stopShooterFactory())).debounce(0.25);
+
+        m_aiming.isInWing().whileTrue(m_shooter.runShooterFactory());
+        drivetrain.tipping().whileTrue(m_climber.holdPositionFactory()).whileTrue(m_elevator.holdPositionFactory());
+        m_shooter.shooterAtSpeed().onTrue(setRumble());
 
         drivetrain.setTargetHeading(drivetrain.getState().Pose.getRotation().getDegrees());
         drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)).schedule();
