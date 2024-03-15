@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.977570153338504,
-        "y": 4.030690583903691
+        "x": 6.134730107298052,
+        "y": 2.662474514138218
       },
       "isLocked": false,
       "linkedName": "Peekaboo"
     },
     {
       "anchor": {
-        "x": 7.938764761139975,
-        "y": 2.3886907631297456
+        "x": 7.983670742116258,
+        "y": 5.3989066536691634
       },
       "prevControl": {
-        "x": 8.636852516707089,
-        "y": 1.7494778785140754
+        "x": 8.30049746231355,
+        "y": 5.739644824447382
       },
       "nextControl": {
-        "x": 7.129534829140918,
-        "y": 3.1296723876108095
+        "x": 7.493701473889434,
+        "y": 4.871958572745974
       },
       "isLocked": false,
       "linkedName": null
@@ -36,15 +36,21 @@
         "y": 5.147872338500022
       },
       "prevControl": {
-        "x": 5.635516135897136,
-        "y": 4.206339944211421
+        "x": 5.801920793030774,
+        "y": 3.04150734427595
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Peekaboo"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 51.234480095541194,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
