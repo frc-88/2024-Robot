@@ -109,4 +109,7 @@ public final class Constants {
             Rotation2d.fromDegrees(0));
     public static final Pose2d RED_AMP_POSE = DriveUtils.redBlueTransform(new Pose2d(new Translation2d(14.7, 7.65),
             Rotation2d.fromDegrees(180)));
+    public static final Pose2d DUMPING_GROUND_BLUE = new Pose2d(new Translation2d(6.7, 0.55), Rotation2d.fromDegrees(0));
+    public static final Pose2d DUMPING_GROUND_RED = DriveUtils.redBlueTransform(new Pose2d(new Translation2d(10.00, 0.55), Rotation2d.fromDegrees(0)));
+
 }

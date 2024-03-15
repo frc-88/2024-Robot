@@ -77,6 +77,10 @@ public class RobotContainer {
                 m_intake.intakeFactory().deadlineWith(m_shooter.stopShooterFactory(), m_elevator.stowFactory()));
     }
 
+    private Command goblinModeFactory() {
+        return new ParallelCommandGroup(m_intake.goblinModeFactory(), m_shooter.runShuttlePassFactory(() -> false), drivetrain.aimAtAmpDumpingGroundFactory(() -> false));
+    }
+
     private final Telemetry logger = new Telemetry(TunerConstants.kSpeedAt12VoltsMps, drivetrain);
     private TFListenerCompact tfListenerCompact;
     private BagManager bagManager;
@@ -144,6 +148,7 @@ public class RobotContainer {
     }
 
     private void configureDriverController() {
+        m_aiming.isInWing().whileTrue(m_shooter.runShooterFactory());
         drivetrain.tipping().whileTrue(m_climber.holdPositionFactory()).whileTrue(m_elevator.holdPositionFactory());
         m_shooter.shooterAtSpeed().onTrue(setRumble());
         joystick.b().onTrue(drivetrain.setHeadingFactory(270));
@@ -166,7 +171,7 @@ public class RobotContainer {
                 .whileTrue(drivetrain.aimAtSpeakerFactory().unless(() -> drivetrain.tipping().getAsBoolean()))
                 .whileTrue(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
                         .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer()));
-        joystick.leftBumper().whileTrue(drivetrain.aimAtAmpFactory().alongWith(m_elevator.setFlatFactory())
+        joystick.leftBumper().whileTrue(drivetrain.aimAtAmpDumpingGroundFactory(buttonBox.button(17)).alongWith(m_elevator.setFlatFactory())
                 .alongWith(m_shooter.runShuttlePassFactory(buttonBox.button(17))));
         joystick.leftTrigger().whileTrue(m_shooter.runShooterFactory());
     }
@@ -207,6 +212,7 @@ public class RobotContainer {
                         .unless(() -> drivetrain.tipping().getAsBoolean()));
         buttonBox.button(16).whileTrue(intakeFromSource())
                 .onFalse(new InstantCommand(m_intake::enableAutoMode).andThen(m_intake.intakeFactory()));
+        buttonBox.button(13).whileTrue(goblinModeFactory());
         // buttonBox.button(16).whileTrue(m_elevator.goToAimingPosition(() ->
         // m_aiming.speakerAngleForShooter()));
     }

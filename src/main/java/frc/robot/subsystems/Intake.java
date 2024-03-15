@@ -120,6 +120,10 @@ public class Intake extends SubsystemBase {
         return new RunCommand(() -> intake(), this).until(() -> hasNoteInIndexer());
     }
 
+    public Command goblinModeFactory() {
+        return new RunCommand(() -> intake(), this);
+    }
+
     public Command rejectFactory() {
         return new RunCommand(() -> reject(), this);
     }
