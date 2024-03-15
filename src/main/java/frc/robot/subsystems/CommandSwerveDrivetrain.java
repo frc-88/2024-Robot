@@ -241,7 +241,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         AutoBuilder.configureHolonomic(this::getPoseBlue, this::resetPoseBlue,
                 this::getChassisSpeeds, this::setChassisSpeeds,
                 new HolonomicPathFollowerConfig(new PIDConstants(10.0, 0.0, 0.0), // Translational constant
-                        new PIDConstants(10.0, 0.0, 0.0), // Rotational constant
+                        new PIDConstants(9.0, 0.0, 0.3), // Rotational constant
                         TunerConstants.kSpeedAt12VoltsMps, // in m/s
                         driveBaseRadius, // in meters
                         new ReplanningConfig()),
@@ -387,7 +387,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public Command pathFindingCommand(Pose2d targetPose) {
-        Pose2d pose = (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) ? DriveUtils.redBlueTransform(targetPose) : targetPose;
+        Pose2d pose = (DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
+                ? DriveUtils.redBlueTransform(targetPose)
+                : targetPose;
         PathConstraints constraints = new PathConstraints(p_maxVeloctiy.getValue(), p_maxAcceleration.getValue(),
                 Units.degreesToRadians(p_maxAngularVelocity.getValue()),
                 Units.degreesToRadians(p_maxAngularAcceleration.getValue()));

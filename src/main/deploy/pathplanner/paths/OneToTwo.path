@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.8159166009543433,
-        "y": 5.5086133925236975
+        "x": 1.9231639413397603,
+        "y": 5.645110007559683
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.186407413194875,
-        "y": 5.537862667174267
+        "x": 2.2936547535802925,
+        "y": 5.674359282210252
       },
       "isLocked": false,
       "linkedName": "FourPieceOne"
@@ -20,24 +20,24 @@
         "y": 5.537862667174266
       },
       "prevControl": {
-        "x": 2.331904911216085,
-        "y": 5.537862667174266
+        "x": 2.4983996761342704,
+        "y": 5.372116777487712
       },
       "nextControl": {
-        "x": 2.946888554109651,
-        "y": 5.537862667174266
+        "x": 2.682917724925285,
+        "y": 5.7206508696485185
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.166907896761163,
-        "y": 6.659084862112717
+        "x": 1.9621629742071847,
+        "y": 6.80533123536556
       },
       "prevControl": {
-        "x": 2.3034045117971473,
-        "y": 6.556712400835729
+        "x": 2.059660556375746,
+        "y": 6.259344775221617
       },
       "nextControl": null,
       "isLocked": false,
@@ -55,13 +55,13 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 2.8,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 27.13,
+    "rotation": 30.27,
     "rotateFast": false
   },
   "reversed": false,
