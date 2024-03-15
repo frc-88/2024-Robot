@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.9316141340121176,
-        "y": 7.205071322256659
+        "x": 4.243606396951512,
+        "y": 7.1855718058229465
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.42885180307178,
-        "y": 7.224570838690371
+        "x": 4.740844066011174,
+        "y": 7.205071322256659
       },
       "isLocked": false,
       "linkedName": "FourPieceThree"
@@ -55,7 +55,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 2.8,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

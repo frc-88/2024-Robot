@@ -77,6 +77,11 @@ public class RobotContainer {
                 m_intake.intakeFactory().deadlineWith(m_shooter.stopShooterFactory(), m_elevator.stowFactory()));
     }
 
+    private Command goblinModeFactory() {
+        return new ParallelCommandGroup(m_intake.goblinModeFactory(), m_shooter.runShuttlePassFactory(() -> false),
+                drivetrain.aimAtAmpDumpingGroundFactory(() -> false));
+    }
+
     private final Telemetry logger = new Telemetry(TunerConstants.kSpeedAt12VoltsMps, drivetrain);
     private TFListenerCompact tfListenerCompact;
     private BagManager bagManager;
@@ -117,12 +122,15 @@ public class RobotContainer {
         configureSmartDashboardButtons();
 
         // set default commands
-        drivetrain.setDefaultCommand(drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)));
+        // set below in telop init
+        // drivetrain.setDefaultCommand(drivetrain.defaultDriveCommand(joystick));
+        drivetrain.register();
+        drivetrain.resetPose(new Pose2d());
+
         m_shooter.setDefaultCommand(
                 m_shooter.stopShooterFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         m_intake.setDefaultCommand(m_intake.stopMovingFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         m_elevator.setDefaultCommand(m_elevator.stowFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
-        drivetrain.resetPose(new Pose2d());
         m_climber.setDefaultCommand(m_climber.stowArmFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
     }
 
@@ -144,17 +152,13 @@ public class RobotContainer {
     }
 
     private void configureDriverController() {
-        drivetrain.tipping().whileTrue(m_climber.holdPositionFactory()).whileTrue(m_elevator.holdPositionFactory());
-        m_shooter.shooterAtSpeed().onTrue(setRumble());
         joystick.b().onTrue(drivetrain.setHeadingFactory(270));
         joystick.x().onTrue(drivetrain.setHeadingFactory(90));
         joystick.y().onTrue(drivetrain.setHeadingFactory(0));
         joystick.a().onTrue(drivetrain.setHeadingFactory(180));
-        isRightStickZero().debounce(0.25, DebounceType.kRising)
-                .onTrue(drivetrain.setHeadingFactory(() -> drivetrain.getState().Pose.getRotation().getDegrees()))
-                .whileFalse(drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick)));
-        joystick.rightTrigger()
-                .onTrue(drivetrain.localizeFactory().unless(m_elevator::isElevatorNotDown));
+
+        // joystick.rightTrigger()
+        // .onTrue(drivetrain.localizeFactory().unless(m_elevator::isElevatorNotDown)).debounce(0.25);
         joystick.rightTrigger().onTrue(m_intake.shootIndexerFactory()
                 .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer())
                 .until(() -> !m_intake.hasNoteInIndexer())
@@ -166,8 +170,10 @@ public class RobotContainer {
                 .whileTrue(drivetrain.aimAtSpeakerFactory().unless(() -> drivetrain.tipping().getAsBoolean()))
                 .whileTrue(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
                         .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer()));
-        joystick.leftBumper().whileTrue(drivetrain.aimAtAmpFactory().alongWith(m_elevator.setFlatFactory())
-                .alongWith(m_shooter.runShuttlePassFactory()));
+        joystick.leftBumper()
+                .whileTrue(drivetrain.aimAtAmpDumpingGroundFactory(buttonBox.button(17))
+                        .alongWith(m_elevator.setFlatFactory())
+                        .alongWith(m_shooter.runShuttlePassFactory(buttonBox.button(17))));
         joystick.leftTrigger().whileTrue(m_shooter.runShooterFactory());
     }
 
@@ -176,11 +182,11 @@ public class RobotContainer {
         buttonBox.button(20)
                 .whileTrue(m_intake.shootIndexerFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         buttonBox.button(18).whileTrue(m_intake.rejectFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
-        buttonBox.button(17).whileFalse(m_shooter.stopShooterFactory());
         buttonBox.button(5)
                 .whileTrue(m_elevator.setPodiumFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         buttonBox.button(6)
-                .whileTrue(m_elevator.setAmpFactory().alongWith(m_shooter.slowSpeedFactory())
+                .whileTrue(m_shooter.slowSpeedFactory().until(() -> m_shooter.isShooterAtSlowSpeed())
+                        .andThen(m_elevator.setAmpFactory())
                         .until(() -> m_elevator.pivotOnTargetForAmp() && m_elevator.elevatorOnTarget())
                         .andThen(m_shooter.runAmpTrapSpeedFactory()).unless(() -> drivetrain.tipping().getAsBoolean()))
                 .onFalse(m_elevator.elevatorDownFactory()
@@ -207,7 +213,10 @@ public class RobotContainer {
                                         .andThen(m_intake.shootIndexerFactory())))
                         .unless(() -> drivetrain.tipping().getAsBoolean()));
         buttonBox.button(16).whileTrue(intakeFromSource())
+                .onFalse(new InstantCommand(m_intake::enableAutoMode).andThen(m_intake.intakeFactory()));
+        buttonBox.button(13).whileTrue(new InstantCommand(m_intake::disableAutoMode).andThen(goblinModeFactory()))
                 .onFalse(new InstantCommand(m_intake::enableAutoMode));
+        buttonBox.button(12).whileTrue(drivetrain.pathFindingCommand(Constants.RED_AMP_POSE));
         // buttonBox.button(16).whileTrue(m_elevator.goToAimingPosition(() ->
         // m_aiming.speakerAngleForShooter()));
     }
@@ -261,8 +270,17 @@ public class RobotContainer {
         m_intake.hasNote().and(() -> !m_intake.m_automaticMode)
                 .onFalse(m_intake.intakeFactory().alongWith(m_shooter.stopShooterFactory())).debounce(0.25);
 
+        m_aiming.isInWing().whileTrue(m_shooter.runShooterFactory());
+        drivetrain.tipping().whileTrue(m_climber.holdPositionFactory()).whileTrue(m_elevator.holdPositionFactory());
+        m_shooter.shooterAtSpeed().onTrue(setRumble());
+
+        isRightStickZero().debounce(0.25, DebounceType.kRising)
+                .onTrue(drivetrain.setHeadingFactory(() -> drivetrain.getState().Pose.getRotation().getDegrees()))
+                .whileFalse(drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick)));
+
         drivetrain.setTargetHeading(drivetrain.getState().Pose.getRotation().getDegrees());
-        drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)).schedule();
+        drivetrain.setDefaultCommand(drivetrain.defaultDriveCommand(joystick));
+
         m_intake.intakeFactory().schedule();
     }
 

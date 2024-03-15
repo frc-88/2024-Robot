@@ -8,7 +8,9 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.ros.bridge.Frames;
 import frc.robot.ros.bridge.TagSubscriber;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
@@ -39,6 +41,9 @@ public class Aiming {
 
     // private final double[] pivotAngleBounds = { 42.0, 80.0 };
 
+
+    public Trigger isInWing = new Trigger(() -> RobotState.isTeleop() && getROSPose().getX() < Units.inchesToMeters(231.20))
+    ;
     public Aiming() {
 
     }
@@ -120,6 +125,14 @@ public class Aiming {
         return drivetrainAmpAngle;
     }
 
+    public double getDumpingGroundAngle() {
+        Pose2d robotPose = getROSPose();
+        robotPose = (getAlliance() == DriverStation.Alliance.Red) ? robotPose.relativeTo(Constants.DUMPING_GROUND_RED)
+                : robotPose.relativeTo(Constants.DUMPING_GROUND_BLUE);
+        double drivetrainAmpAngle = Math.atan2(robotPose.getY(), robotPose.getX()) * (180 / Math.PI);
+        return drivetrainAmpAngle;
+    }
+
     public boolean getDetections() {
         try {
             var header = tagSubscriber.receive().get().getHeader();
@@ -165,5 +178,9 @@ public class Aiming {
             alliance = DriverStation.getAlliance().get();
         }
         return alliance;
+    }
+
+    public Trigger isInWing() {
+        return isInWing;
     }
 }
