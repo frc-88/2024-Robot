@@ -73,7 +73,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private DoublePreferenceConstant p_maxVeloctiy = new DoublePreferenceConstant("drivetrain/PathFindingMaxVelocity",
             5.21);
     private DoublePreferenceConstant p_maxAcceleration = new DoublePreferenceConstant(
-            "drivetrain/PathFindingMaxAcceleration", 3.5);
+            "drivetrain/PathFindingMaxAcceleration", 3.0);
     private DoublePreferenceConstant p_maxAngularVelocity = new DoublePreferenceConstant(
             "drivetrain/PathFindingMaxAngularVelocity", 540.0);
     private DoublePreferenceConstant p_maxAngularAcceleration = new DoublePreferenceConstant(
