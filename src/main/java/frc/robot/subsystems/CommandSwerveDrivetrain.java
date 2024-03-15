@@ -29,6 +29,7 @@ import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -386,11 +387,12 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public Command pathFindingCommand(Pose2d targetPose) {
+        Pose2d pose = (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) ? DriveUtils.redBlueTransform(targetPose) : targetPose;
         PathConstraints constraints = new PathConstraints(p_maxVeloctiy.getValue(), p_maxAcceleration.getValue(),
                 Units.degreesToRadians(p_maxAngularVelocity.getValue()),
                 Units.degreesToRadians(p_maxAngularAcceleration.getValue()));
 
-        return AutoBuilder.pathfindToPose(targetPose, constraints, 0.0, 0.0);
+        return AutoBuilder.pathfindToPose(pose, constraints, 0.0, 0.0);
     }
 
     private void sendOdomPose() {
