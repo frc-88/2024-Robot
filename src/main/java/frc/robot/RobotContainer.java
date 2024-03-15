@@ -156,9 +156,7 @@ public class RobotContainer {
         joystick.x().onTrue(drivetrain.setHeadingFactory(90));
         joystick.y().onTrue(drivetrain.setHeadingFactory(0));
         joystick.a().onTrue(drivetrain.setHeadingFactory(180));
-        isRightStickZero().debounce(0.25, DebounceType.kRising)
-                .onTrue(drivetrain.setHeadingFactory(() -> drivetrain.getState().Pose.getRotation().getDegrees()))
-                .whileFalse(drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick)));
+
         // joystick.rightTrigger()
         // .onTrue(drivetrain.localizeFactory().unless(m_elevator::isElevatorNotDown)).debounce(0.25);
         joystick.rightTrigger().onTrue(m_intake.shootIndexerFactory()
@@ -275,6 +273,10 @@ public class RobotContainer {
         m_aiming.isInWing().whileTrue(m_shooter.runShooterFactory());
         drivetrain.tipping().whileTrue(m_climber.holdPositionFactory()).whileTrue(m_elevator.holdPositionFactory());
         m_shooter.shooterAtSpeed().onTrue(setRumble());
+
+        isRightStickZero().debounce(0.25, DebounceType.kRising)
+                .onTrue(drivetrain.setHeadingFactory(() -> drivetrain.getState().Pose.getRotation().getDegrees()))
+                .whileFalse(drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick)));
 
         drivetrain.setTargetHeading(drivetrain.getState().Pose.getRotation().getDegrees());
         drivetrain.setDefaultCommand(drivetrain.defaultDriveCommand(joystick));
