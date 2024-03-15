@@ -1,0 +1,90 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.262771534552078,
+        "y": 2.7086980300086734
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.9268181058884637,
+        "y": 2.662474514138218
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.9976316168848545,
+        "y": 3.808817707725506
+      },
+      "prevControl": {
+        "x": 3.5903725964221542,
+        "y": 2.837179641105126
+      },
+      "nextControl": {
+        "x": 5.902642306161782,
+        "y": 4.433679814568273
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.812017904320845,
+        "y": 4.094898451079563
+      },
+      "prevControl": {
+        "x": 8.152703673565428,
+        "y": 4.11436620932211
+      },
+      "nextControl": {
+        "x": 7.470776366730883,
+        "y": 4.07539893464585
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.0,
+        "y": 5.147872338500022
+      },
+      "prevControl": {
+        "x": 5.257581251504547,
+        "y": 3.3734163430322113
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Peekaboo"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 2,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -5.680000000000007,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Cleanside",
+  "previewStartingState": {
+    "rotation": -59.58891873287465,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}
