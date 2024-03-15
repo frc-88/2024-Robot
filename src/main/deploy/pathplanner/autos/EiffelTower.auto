@@ -20,35 +20,29 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "parallel",
+                      "type": "named",
+                      "data": {
+                        "name": "Pivot Aim"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
+                      }
+                    },
+                    {
+                      "type": "deadline",
                       "data": {
                         "commands": [
                           {
-                            "type": "path",
-                            "data": {
-                              "pathName": "SpeakerToCenter3"
-                            }
-                          },
-                          {
-                            "type": "sequential",
+                            "type": "parallel",
                             "data": {
                               "commands": [
                                 {
-                                  "type": "named",
+                                  "type": "path",
                                   "data": {
-                                    "name": "Pivot Aim"
-                                  }
-                                },
-                                {
-                                  "type": "named",
-                                  "data": {
-                                    "name": "Shoot"
-                                  }
-                                },
-                                {
-                                  "type": "named",
-                                  "data": {
-                                    "name": "Pivot Stow"
+                                    "pathName": "SpeakerToCenter3"
                                   }
                                 },
                                 {
@@ -58,6 +52,12 @@
                                   }
                                 }
                               ]
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Pivot Stow"
                             }
                           }
                         ]
