@@ -113,6 +113,12 @@ public class Shooter extends SubsystemBase {
                         m_RightShooter.getVelocity().getValueAsDouble() * 60 - p_ampTrapSpeed.getValue()) <= 500);
     }
 
+    public boolean isShooterAtSlowSpeed() {
+        return (Math.abs(m_LeftShooter.getVelocity().getValueAsDouble() * 60 - p_slowSpeed.getValue()) <= 200
+                && Math.abs(
+                        m_RightShooter.getVelocity().getValueAsDouble() * 60 - p_slowSpeed.getValue()) <= 200);
+    }
+
     public void startShooter() {
         m_LeftShooter.setControl(velocityRequest.withVelocity(leftShooterSpeed.getValue() / 60));
         m_RightShooter.setControl(velocityRequest.withVelocity(rightShooterSpeed.getValue() / 60));
