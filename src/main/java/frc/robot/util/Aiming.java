@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.ros.bridge.Frames;
@@ -41,7 +42,7 @@ public class Aiming {
     // private final double[] pivotAngleBounds = { 42.0, 80.0 };
 
 
-    public Trigger isInWing = new Trigger(() -> getROSPose().getX() < Units.inchesToMeters(231.20))
+    public Trigger isInWing = new Trigger(() -> RobotState.isTeleop() && getROSPose().getX() < Units.inchesToMeters(231.20))
     ;
     public Aiming() {
 
