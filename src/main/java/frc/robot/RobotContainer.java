@@ -122,7 +122,9 @@ public class RobotContainer {
         configureSmartDashboardButtons();
 
         // set default commands
-        drivetrain.setDefaultCommand(drivetrain.defaultDriveCommand(joystick));
+        // set below in telop init
+        // drivetrain.setDefaultCommand(drivetrain.defaultDriveCommand(joystick));
+
         m_shooter.setDefaultCommand(
                 m_shooter.stopShooterFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         m_intake.setDefaultCommand(m_intake.stopMovingFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
@@ -274,7 +276,8 @@ public class RobotContainer {
         m_shooter.shooterAtSpeed().onTrue(setRumble());
 
         drivetrain.setTargetHeading(drivetrain.getState().Pose.getRotation().getDegrees());
-        drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)).schedule();
+        drivetrain.setDefaultCommand(drivetrain.defaultDriveCommand(joystick));
+
         m_intake.intakeFactory().schedule();
     }
 
