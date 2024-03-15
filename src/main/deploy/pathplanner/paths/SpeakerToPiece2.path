@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4923170567061854,
-        "y": 6.804101536131
+        "x": 1.3771774811958186,
+        "y": 5.547612425391122
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.1424027532739744,
-        "y": 7.358783726576463
+        "x": 1.9621629742071847,
+        "y": 5.557362183607978
       },
       "isLocked": false,
-      "linkedName": "Close1"
+      "linkedName": "SpeakerFront"
     },
     {
       "anchor": {
-        "x": 7.845000194504893,
-        "y": 7.441986055143282
+        "x": 2.615396774736544,
+        "y": 5.537862667174266
       },
       "prevControl": {
-        "x": 6.948022438554131,
-        "y": 7.344488472974721
+        "x": 2.1279088638937385,
+        "y": 5.557362183607978
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Center1"
+      "linkedName": "Close2"
     }
   ],
   "rotationTargets": [],
@@ -39,13 +39,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -0.7725084615664833,
+    "rotation": 0.0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "SixPiece",
   "previewStartingState": {
-    "rotation": 24.443954780416547,
+    "rotation": 0.0,
     "velocity": 0
   },
   "useDefaultConstraints": true
