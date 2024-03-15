@@ -124,12 +124,13 @@ public class RobotContainer {
         // set default commands
         // set below in telop init
         // drivetrain.setDefaultCommand(drivetrain.defaultDriveCommand(joystick));
+        drivetrain.register();
+        drivetrain.resetPose(new Pose2d());
 
         m_shooter.setDefaultCommand(
                 m_shooter.stopShooterFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         m_intake.setDefaultCommand(m_intake.stopMovingFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         m_elevator.setDefaultCommand(m_elevator.stowFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
-        drivetrain.resetPose(new Pose2d());
         m_climber.setDefaultCommand(m_climber.stowArmFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
     }
 
