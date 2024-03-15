@@ -184,7 +184,8 @@ public class RobotContainer {
         buttonBox.button(5)
                 .whileTrue(m_elevator.setPodiumFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
         buttonBox.button(6)
-                .whileTrue(m_elevator.setAmpFactory().alongWith(m_shooter.slowSpeedFactory())
+                .whileTrue(m_shooter.slowSpeedFactory().until(() -> m_shooter.isShooterAtSlowSpeed())
+                        .andThen(m_elevator.setAmpFactory())
                         .until(() -> m_elevator.pivotOnTargetForAmp() && m_elevator.elevatorOnTarget())
                         .andThen(m_shooter.runAmpTrapSpeedFactory()).unless(() -> drivetrain.tipping().getAsBoolean()))
                 .onFalse(m_elevator.elevatorDownFactory()
@@ -212,7 +213,9 @@ public class RobotContainer {
                         .unless(() -> drivetrain.tipping().getAsBoolean()));
         buttonBox.button(16).whileTrue(intakeFromSource())
                 .onFalse(new InstantCommand(m_intake::enableAutoMode).andThen(m_intake.intakeFactory()));
-        buttonBox.button(13).whileTrue(goblinModeFactory());
+        buttonBox.button(13).whileTrue(new InstantCommand(m_intake::disableAutoMode).andThen(goblinModeFactory()))
+                                   .onFalse(new InstantCommand(m_intake::enableAutoMode));
+        buttonBox.button(12).onTrue(drivetrain.pathFindingCommand(Constants.RED_AMP_POSE));
         // buttonBox.button(16).whileTrue(m_elevator.goToAimingPosition(() ->
         // m_aiming.speakerAngleForShooter()));
     }
