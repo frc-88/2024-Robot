@@ -116,12 +116,21 @@ public class Intake extends SubsystemBase {
         m_indexMotor.setControl(m_intakeRequest.withOutput(-p_indexSourceSpeed.getValue()));
     }
 
+    public void goblinMode() {
+        m_indexMotor.getConfigurator().refresh(indexConfiguration);
+        indexConfiguration.HardwareLimitSwitch.ForwardLimitEnable = false;
+        m_indexMotor.getConfigurator().apply(indexConfiguration);
+        m_intakeMotor.setControl(m_intakeRequest.withOutput(intakeRollerSpeed.getValue()));
+        m_guideMotor.setControl(m_intakeRequest.withOutput(guideRollerSpeed.getValue()));
+        m_indexMotor.setControl(m_intakeRequest.withOutput(indexShootSpeed.getValue()));
+    }
+
     public Command intakeFactory() {
         return new RunCommand(() -> intake(), this).until(() -> hasNoteInIndexer());
     }
 
     public Command goblinModeFactory() {
-        return new RunCommand(() -> intake(), this);
+        return new RunCommand(() -> goblinMode(), this);
     }
 
     public Command rejectFactory() {

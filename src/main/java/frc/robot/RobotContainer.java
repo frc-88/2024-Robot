@@ -207,8 +207,11 @@ public class RobotContainer {
                 .onFalse(new InstantCommand(() -> m_intake.enableAutoMode()));
         buttonBox.button(8)
                 .onTrue(new InstantCommand(() -> m_intake.disableAutoMode()).andThen(new WaitCommand(0.1))
+                        .andThen(m_shooter.slowSpeedFactory().until(
+                                () -> m_shooter.isShooterAtSlowSpeed()))
                         .andThen(new ParallelCommandGroup(climb(true),
-                                m_shooter.slowSpeedFactory().until(m_elevator::pivotOnTargetForAmp)
+                                new WaitUntilCommand(
+                                        () -> m_elevator.pivotOnTargetForAmp() && m_elevator.isElevatorUp())
                                         .andThen(m_shooter.runAmpTrapSpeedFactory().withTimeout(1.5))
                                         .andThen(m_intake.shootIndexerFactory())))
                         .unless(() -> drivetrain.tipping().getAsBoolean()));
@@ -216,7 +219,7 @@ public class RobotContainer {
                 .onFalse(new InstantCommand(m_intake::enableAutoMode).andThen(m_intake.intakeFactory()));
         buttonBox.button(13).whileTrue(new InstantCommand(m_intake::disableAutoMode).andThen(goblinModeFactory()))
                 .onFalse(new InstantCommand(m_intake::enableAutoMode));
-        buttonBox.button(12).whileTrue(drivetrain.pathFindingCommand(Constants.RED_AMP_POSE));
+        // buttonBox.button(12).whileTrue(drivetrain.pathFindingCommand(Constants.RED_AMP_POSE));
         // buttonBox.button(16).whileTrue(m_elevator.goToAimingPosition(() ->
         // m_aiming.speakerAngleForShooter()));
     }
