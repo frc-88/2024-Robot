@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.243606396951512,
-        "y": 7.1855718058229465
+        "x": 4.194927246997351,
+        "y": 7.388366776733554
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.740844066011174,
-        "y": 7.205071322256659
+        "x": 4.692164916057013,
+        "y": 7.407866293167267
       },
       "isLocked": false,
       "linkedName": "FourPieceThree"
@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 4.497100110589771,
-        "y": 6.454339939558739
+        "x": 4.649370441598027,
+        "y": 6.948583040023223
       },
       "prevControl": {
-        "x": 4.906589955697726,
-        "y": 6.493338972426163
+        "x": 5.058860286705982,
+        "y": 6.987582072890647
       },
       "nextControl": null,
       "isLocked": false,
@@ -55,7 +55,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 2.8,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

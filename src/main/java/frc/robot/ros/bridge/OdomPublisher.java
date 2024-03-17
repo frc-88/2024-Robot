@@ -34,20 +34,20 @@ public class OdomPublisher implements Publisher {
     private final Odometry odomMsg = new Odometry(new RosHeader(0, new TimePrimitive(), Frames.ODOM_FRAME),
             Frames.BASE_FRAME,
             new PoseWithCovariance(new Pose(new Point(0, 0, 0), new Quaternion(0, 0, 0, 1)), new Double[] {
-                    5e-4, 0.0, 0.0, 0.0, 0.0, 0.0,
-                    0.0, 5e-4, 0.0, 0.0, 0.0, 0.0,
-                    0.0, 0.0, 5e-4, 0.0, 0.0, 0.0,
-                    0.0, 0.0, 0.0, 5e-4, 0.0, 0.0,
-                    0.0, 0.0, 0.0, 0.0, 5e-4, 0.0,
-                    0.0, 0.0, 0.0, 0.0, 0.0, 5e-4
+                    5e-1, 0.0, 0.0, 0.0, 0.0, 0.0,
+                    0.0, 5e-1, 0.0, 0.0, 0.0, 0.0,
+                    0.0, 0.0, 5e-1, 0.0, 0.0, 0.0,
+                    0.0, 0.0, 0.0, 5e-1, 0.0, 0.0,
+                    0.0, 0.0, 0.0, 0.0, 5e-1, 0.0,
+                    0.0, 0.0, 0.0, 0.0, 0.0, 5e-1
             }),
             new TwistWithCovariance(new Twist(new Vector3(0, 0, 0), new Vector3(0, 0, 0)), new Double[] {
-                    1e-4, 0.0, 0.0, 0.0, 0.0, 0.0,
-                    0.0, 1e-4, 0.0, 0.0, 0.0, 0.0,
-                    0.0, 0.0, 1e-4, 0.0, 0.0, 0.0,
-                    0.0, 0.0, 0.0, 1e-4, 0.0, 0.0,
-                    0.0, 0.0, 0.0, 0.0, 1e-4, 0.0,
-                    0.0, 0.0, 0.0, 0.0, 0.0, 1e-4
+                    1e-1, 0.0, 0.0, 0.0, 0.0, 0.0,
+                    0.0, 1e-1, 0.0, 0.0, 0.0, 0.0,
+                    0.0, 0.0, 1e-1, 0.0, 0.0, 0.0,
+                    0.0, 0.0, 0.0, 1e-1, 0.0, 0.0,
+                    0.0, 0.0, 0.0, 0.0, 1e-1, 0.0,
+                    0.0, 0.0, 0.0, 0.0, 0.0, 1e-1
             }));
 
     public void publish() {

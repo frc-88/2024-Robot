@@ -2,6 +2,7 @@ package frc.robot.util;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -41,11 +42,10 @@ public class Aiming {
 
     // private final double[] pivotAngleBounds = { 42.0, 80.0 };
 
+    public Trigger isInWing = new Trigger(
+            () -> RobotState.isTeleop() && getROSPose().getX() < Units.inchesToMeters(231.20));
 
-    public Trigger isInWing = new Trigger(() -> RobotState.isTeleop() && getROSPose().getX() < Units.inchesToMeters(231.20))
-    ;
     public Aiming() {
-
     }
 
     public void setTFListener(TFListenerCompact tfListener) {
@@ -99,6 +99,26 @@ public class Aiming {
 
     public double speakerAngleForShooter() {
         Pose2d robotPose = getROSPose();
+        double distance = (getAlliance() == DriverStation.Alliance.Red)
+                ? robotPose.relativeTo(Constants.RED_SPEAKER_POSE).getTranslation().getNorm()
+                : robotPose.relativeTo(Constants.BLUE_SPEAKER_POSE).getTranslation().getNorm();
+
+        double shootingAngle = Math.atan2(distance, speakerHeight) * (180 / Math.PI);
+        distance = Units.metersToFeet(distance);
+
+        shootingAngle -= distance * p_aimingOffset.getValue(); // aim higher based on distance
+        // double shootingAngle = 19.2 + (6.03 * distance) - (0.171 * distance *
+        // distance);
+
+        if (shootingAngle < 42) {
+            shootingAngle = 42;
+        }
+
+        return shootingAngle;
+    }
+
+    public double odomSpeakerAngle(Pose2d odomPose) {
+        Pose2d robotPose = odomPose;
         double distance = (getAlliance() == DriverStation.Alliance.Red)
                 ? robotPose.relativeTo(Constants.RED_SPEAKER_POSE).getTranslation().getNorm()
                 : robotPose.relativeTo(Constants.BLUE_SPEAKER_POSE).getTranslation().getNorm();
