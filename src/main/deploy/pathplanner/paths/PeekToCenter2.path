@@ -3,51 +3,51 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.194927246997351,
-        "y": 7.388366776733554
+        "x": 4.0,
+        "y": 5.147872338500022
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.708008273159404,
-        "y": 7.447004608294931
+        "x": 6.2857483628010735,
+        "y": 2.7982993009464288
       },
       "isLocked": false,
-      "linkedName": "FourPieceThree"
+      "linkedName": "Peekaboo"
     },
     {
       "anchor": {
-        "x": 8.006386298486884,
-        "y": 7.403026234623898
+        "x": 8.109002503719292,
+        "y": 5.3800210457563775
       },
       "prevControl": {
-        "x": 9.166607526292761,
-        "y": 7.997761485852118
+        "x": 7.472042455024422,
+        "y": 5.9328542955670205
       },
       "nextControl": {
-        "x": 6.846165070681003,
-        "y": 6.808290983395675
+        "x": 8.652415922187034,
+        "y": 4.908379210859846
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.649370441598027,
-        "y": 6.948583040023223
+        "x": 4.0,
+        "y": 5.147872338500022
       },
       "prevControl": {
-        "x": 5.118473094089046,
-        "y": 6.684712797997025
+        "x": 4.743828339830593,
+        "y": 3.2837185674371354
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "WingShot"
+      "linkedName": "Peekaboo"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.75,
-      "rotationDegrees": 0,
+      "waypointRelativePos": 1,
+      "rotationDegrees": 49.98066290970969,
       "rotateFast": false
     }
   ],
@@ -61,14 +61,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 17.81888891452282,
+    "rotation": -5.680000000000007,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "FourPiece",
-  "previewStartingState": {
-    "rotation": 18.79,
-    "velocity": 0
-  },
+  "folder": "Cleanside",
+  "previewStartingState": null,
   "useDefaultConstraints": true
 }

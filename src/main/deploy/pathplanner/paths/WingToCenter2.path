@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.497100110589771,
-        "y": 6.454339939558739
+        "x": 4.649370441598027,
+        "y": 6.948583040023223
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.876132940727503,
-        "y": 6.250956469728737
+        "x": 5.028403271735759,
+        "y": 6.745199570193221
       },
       "isLocked": false,
       "linkedName": "WingShot"
@@ -33,7 +33,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 2.8,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

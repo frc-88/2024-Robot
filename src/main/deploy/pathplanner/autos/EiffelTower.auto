@@ -42,7 +42,7 @@
                                 {
                                   "type": "path",
                                   "data": {
-                                    "pathName": "SpeakerToCenter5"
+                                    "pathName": "SpeakerToCenter3"
                                   }
                                 },
                                 {
@@ -86,7 +86,51 @@
                                 {
                                   "type": "path",
                                   "data": {
-                                    "pathName": "SnipeToCenter4"
+                                    "pathName": "PeekToCenter4"
+                                  }
+                                },
+                                {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "Intake"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Pivot Stow"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Pivot Aim"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
+                      }
+                    },
+                    {
+                      "type": "deadline",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "parallel",
+                            "data": {
+                              "commands": [
+                                {
+                                  "type": "path",
+                                  "data": {
+                                    "pathName": "PeekToCenter5"
                                   }
                                 },
                                 {
