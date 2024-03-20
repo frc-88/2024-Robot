@@ -65,7 +65,7 @@ public class RobotContainer {
         return new SequentialCommandGroup(m_elevator.climbFactory().alongWith(m_climber.prepArmsFactory())
                 .until(m_elevator::isElevatorUp),
                 m_climber.climbFactory().alongWith(trap ? m_elevator.trapFactory() : m_elevator.climbFactory()))
-                .unless(() -> drivetrain.tipping().getAsBoolean());
+                .unless(drivetrain.tipping());
     }
 
     private Command intakeFromSource() {
@@ -128,10 +128,10 @@ public class RobotContainer {
         drivetrain.resetPose(new Pose2d());
 
         m_shooter.setDefaultCommand(
-                m_shooter.stopShooterFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
-        m_intake.setDefaultCommand(m_intake.stopMovingFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
-        m_elevator.setDefaultCommand(m_elevator.stowFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
-        m_climber.setDefaultCommand(m_climber.stowArmFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
+                m_shooter.stopShooterFactory().unless(drivetrain.tipping()));
+        m_intake.setDefaultCommand(m_intake.stopMovingFactory().unless(drivetrain.tipping()));
+        m_elevator.setDefaultCommand(m_elevator.stowFactory().unless(drivetrain.tipping()));
+        m_climber.setDefaultCommand(m_climber.stowArmFactory().unless(drivetrain.tipping()));
     }
 
     private void configureRosNetworkTablesBridge() {
@@ -166,8 +166,8 @@ public class RobotContainer {
         joystick.rightBumper()
                 .whileTrue(
                         m_shooter.runShooterFactory().alongWith(new WaitUntilCommand(m_shooter::isShooterAtFullSpeed))
-                                .andThen(setRumble()).unless(() -> drivetrain.tipping().getAsBoolean()))
-                .whileTrue(drivetrain.aimAtSpeakerFactory().unless(() -> drivetrain.tipping().getAsBoolean()))
+                                .andThen(setRumble()).unless(drivetrain.tipping()))
+                .whileTrue(drivetrain.aimAtSpeakerFactory().unless(drivetrain.tipping()))
                 .whileTrue(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
                         .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer()));
         joystick.leftBumper()
@@ -178,32 +178,32 @@ public class RobotContainer {
     }
 
     private void configureButtonBox() {
-        buttonBox.button(10).whileTrue(m_intake.intakeFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
+        buttonBox.button(10).whileTrue(m_intake.intakeFactory().unless(drivetrain.tipping()));
         buttonBox.button(20)
-                .whileTrue(m_intake.shootIndexerFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
-        buttonBox.button(18).whileTrue(m_intake.rejectFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
+                .whileTrue(m_intake.shootIndexerFactory().unless(drivetrain.tipping()));
+        buttonBox.button(18).whileTrue(m_intake.rejectFactory().unless(drivetrain.tipping()));
         buttonBox.button(5)
-                .whileTrue(m_elevator.setPodiumFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
+                .whileTrue(m_elevator.setPodiumFactory().unless(drivetrain.tipping()));
         buttonBox.button(6)
                 .whileTrue(m_shooter.slowSpeedFactory().until(() -> m_shooter.isShooterAtSlowSpeed())
                         .andThen(m_elevator.setAmpFactory())
                         .until(() -> m_elevator.pivotOnTargetForAmp() && m_elevator.elevatorOnTarget())
-                        .andThen(m_shooter.runAmpTrapSpeedFactory()).unless(() -> drivetrain.tipping().getAsBoolean()))
+                        .andThen(m_shooter.runAmpTrapSpeedFactory()).unless(drivetrain.tipping()))
                 .onFalse(m_elevator.elevatorDownFactory()
                         .until(() -> m_elevator.elevatorOnTarget() && m_elevator.pivotOnTarget(42.0, 2.0))
-                        .unless(() -> drivetrain.tipping().getAsBoolean()))
-                .onFalse(m_shooter.stopShooterFactory().unless(() -> drivetrain.tipping().getAsBoolean()));
+                        .unless(drivetrain.tipping()))
+                .onFalse(m_shooter.stopShooterFactory().unless(drivetrain.tipping()));
         buttonBox.button(11)
                 .onTrue(m_elevator.stowFactory()
                         .until(() -> m_elevator.areElevatorAndPivotDown())
                         .andThen(m_climber.stowArmFactory())
-                        .unless(() -> drivetrain.tipping().getAsBoolean()));
+                        .unless(drivetrain.tipping()));
         buttonBox.button(2).onTrue(m_climber.prepArmsFactory().alongWith(m_elevator.elevatorPrepFactory())
-                .unless(() -> drivetrain.tipping().getAsBoolean()));
+                .unless(drivetrain.tipping()));
         buttonBox.button(15)
                 .onTrue(climb(false));
         buttonBox.button(19).onTrue(m_climber.softLandingFactory().alongWith(m_elevator.climbFactory())
-                .unless(() -> drivetrain.tipping().getAsBoolean()))
+                .unless(drivetrain.tipping()))
                 .onFalse(new InstantCommand(() -> m_intake.enableAutoMode()));
         buttonBox.button(8)
                 .onTrue(new InstantCommand(() -> m_intake.disableAutoMode()).andThen(new WaitCommand(0.1))
@@ -211,7 +211,7 @@ public class RobotContainer {
                                 m_shooter.slowSpeedFactory().until(m_elevator::pivotOnTargetForAmp)
                                         .andThen(m_shooter.runAmpTrapSpeedFactory().withTimeout(1.5))
                                         .andThen(m_intake.shootIndexerFactory())))
-                        .unless(() -> drivetrain.tipping().getAsBoolean()));
+                        .unless(drivetrain.tipping()));
         buttonBox.button(16).whileTrue(intakeFromSource())
                 .onFalse(new InstantCommand(m_intake::enableAutoMode).andThen(m_intake.intakeFactory()));
         buttonBox.button(13).whileTrue(new InstantCommand(m_intake::disableAutoMode).andThen(goblinModeFactory()))

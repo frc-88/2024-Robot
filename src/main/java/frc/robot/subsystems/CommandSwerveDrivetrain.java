@@ -96,6 +96,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private final DoubleArrayPublisher poseFieldPub = odomTable.getDoubleArrayTopic("robotPose").publish();
     private final StringPublisher poseFieldTypePub = odomTable.getStringTopic(".type").publish();
 
+    private Trigger m_tipping = new Trigger(() -> tippingPitch() || tippingRoll());
+
     public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     private final SwerveRequest.Idle idle = new SwerveRequest.Idle();
@@ -428,7 +430,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public Trigger tipping() {
-        return new Trigger(() -> tippingPitch() || tippingRoll());
+        return m_tipping;
     }
 
     @Override
