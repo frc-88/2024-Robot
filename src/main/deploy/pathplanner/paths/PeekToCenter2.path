@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.134730107298052,
-        "y": 2.662474514138218
+        "x": 6.2857483628010735,
+        "y": 2.7982993009464288
       },
       "isLocked": false,
       "linkedName": "Peekaboo"
     },
     {
       "anchor": {
-        "x": 7.983670742116258,
-        "y": 5.3989066536691634
+        "x": 8.109002503719292,
+        "y": 5.3800210457563775
       },
       "prevControl": {
-        "x": 8.30049746231355,
-        "y": 5.739644824447382
+        "x": 7.472042455024422,
+        "y": 5.9328542955670205
       },
       "nextControl": {
-        "x": 7.493701473889434,
-        "y": 4.871958572745974
+        "x": 8.652415922187034,
+        "y": 4.908379210859846
       },
       "isLocked": false,
       "linkedName": null
@@ -36,8 +36,8 @@
         "y": 5.147872338500022
       },
       "prevControl": {
-        "x": 5.801920793030774,
-        "y": 3.04150734427595
+        "x": 4.743828339830593,
+        "y": 3.2837185674371354
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,7 +47,7 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 1,
-      "rotationDegrees": 51.234480095541194,
+      "rotationDegrees": 49.98066290970969,
       "rotateFast": false
     }
   ],
@@ -55,7 +55,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 2.8,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

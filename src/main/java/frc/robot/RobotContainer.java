@@ -23,6 +23,7 @@ import frc.team88.ros.conversions.TFListenerCompact;
 import frc.team88.ros.messages.visualization_msgs.MarkerArray;
 
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
@@ -98,7 +99,7 @@ public class RobotContainer {
         // PathPlanner Named Commands
         NamedCommands.registerCommand("Prep Shooter", m_shooter.runShooterFactory());
         NamedCommands.registerCommand("Shoot", new WaitUntilCommand(m_shooter::isShooterAtFullSpeed)
-                .andThen(m_intake.shootIndexerFactory().withTimeout(0.5)));
+                .andThen(m_intake.shootIndexerFactory().withTimeout(0.3)));
         NamedCommands.registerCommand("Wait For Shooter", new WaitUntilCommand(m_shooter::isShooterAtFullSpeed));
         NamedCommands.registerCommand("Localize", drivetrain.localizeFactory());
         NamedCommands.registerCommand("Intake", m_intake.intakeFactory().withTimeout(4.0));
@@ -107,8 +108,12 @@ public class RobotContainer {
         // m_elevator.goToAnlgeFactory(p_autoCloseAim.getValue())
         // .until(() -> m_elevator.pivotOnTarget(p_autoCloseAim.getValue(), 2)));
         NamedCommands.registerCommand("Pivot Aim",
-                m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
-                        .until(() -> m_elevator.pivotOnTarget(m_aiming.speakerAngleForShooter(),
+                m_elevator.goToAimingPosition(() -> m_aiming.odomSpeakerAngle(drivetrain.getPose()))
+                        .until(() -> m_elevator.pivotOnTarget(m_aiming.odomSpeakerAngle(drivetrain.getPose()),
+                                2.0)));
+        NamedCommands.registerCommand("Pivot Aim Minus 4",
+                m_elevator.goToAimingPosition(() -> m_aiming.odomSpeakerAngle(drivetrain.getPose()) - 4)
+                        .until(() -> m_elevator.pivotOnTarget(m_aiming.odomSpeakerAngle(drivetrain.getPose()) - 4,
                                 2.0)));
         NamedCommands.registerCommand("Aim",
                 new ParallelCommandGroup(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
@@ -207,8 +212,11 @@ public class RobotContainer {
                 .onFalse(new InstantCommand(() -> m_intake.enableAutoMode()));
         buttonBox.button(8)
                 .onTrue(new InstantCommand(() -> m_intake.disableAutoMode()).andThen(new WaitCommand(0.1))
+                        .andThen(m_shooter.slowSpeedFactory().until(
+                                () -> m_shooter.isShooterAtSlowSpeed()))
                         .andThen(new ParallelCommandGroup(climb(true),
-                                m_shooter.slowSpeedFactory().until(m_elevator::pivotOnTargetForAmp)
+                                new WaitUntilCommand(
+                                        () -> m_elevator.pivotOnTargetForAmp() && m_elevator.isElevatorUp())
                                         .andThen(m_shooter.runAmpTrapSpeedFactory().withTimeout(1.5))
                                         .andThen(m_intake.shootIndexerFactory())))
                         .unless(drivetrain.tipping()));
@@ -216,7 +224,7 @@ public class RobotContainer {
                 .onFalse(new InstantCommand(m_intake::enableAutoMode).andThen(m_intake.intakeFactory()));
         buttonBox.button(13).whileTrue(new InstantCommand(m_intake::disableAutoMode).andThen(goblinModeFactory()))
                 .onFalse(new InstantCommand(m_intake::enableAutoMode));
-        buttonBox.button(12).whileTrue(drivetrain.pathFindingCommand(Constants.RED_AMP_POSE));
+        // buttonBox.button(12).whileTrue(drivetrain.pathFindingCommand(Constants.RED_AMP_POSE));
         // buttonBox.button(16).whileTrue(m_elevator.goToAimingPosition(() ->
         // m_aiming.speakerAngleForShooter()));
     }

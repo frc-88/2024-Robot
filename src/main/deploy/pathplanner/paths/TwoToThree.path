@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5666479836522624,
-        "y": 6.932078092184689
+        "x": 2.509089589607751,
+        "y": 7.036539787365289
       },
       "isLocked": false,
       "linkedName": "FourPieceTwo"
     },
     {
       "anchor": {
-        "x": 4.243606396951512,
-        "y": 7.1855718058229465
+        "x": 4.194927246997351,
+        "y": 7.388366776733554
       },
       "prevControl": {
-        "x": 3.87311558471098,
-        "y": 7.097823981871242
+        "x": 3.824436434756819,
+        "y": 7.30061895278185
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 2.8,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
