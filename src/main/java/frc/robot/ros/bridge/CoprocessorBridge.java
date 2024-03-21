@@ -17,6 +17,7 @@ public class CoprocessorBridge extends SubsystemBase {
     private final PowerModePublisher powerModePublisher;
     private final PreferenceBackupPublisher preferenceBackupPublisher;
     private final OdomPublisher odomPublisher;
+    private final AprilTagPoseSubscriber tagPoseSubscriber;
 
     private final Publisher[] periodicPublishers;
 
@@ -34,6 +35,7 @@ public class CoprocessorBridge extends SubsystemBase {
         this.preferenceBackupPublisher = new PreferenceBackupPublisher(bridge);
         odomPublisher = new OdomPublisher(drive, bridge);
         periodicPublishers = new Publisher[] { pingPublisher, odomPublisher };
+        tagPoseSubscriber = new AprilTagPoseSubscriber(bridge, drive);
     }
 
     public void onCoprocessorAlive() {
@@ -58,6 +60,9 @@ public class CoprocessorBridge extends SubsystemBase {
         for (Publisher publisher : periodicPublishers) {
             publisher.publish();
         }
+        
+        tagPoseSubscriber.receive();
+
         if (coprocessorAlive) {
             SmartDashboard.putNumber("ROS avg cycle time", timer.get() / ++counter);
         }
