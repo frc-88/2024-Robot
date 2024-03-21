@@ -33,7 +33,7 @@ public class AprilTagPoseSubscriber implements Subscriber<PoseWithCovarianceStam
 
     public Optional<PoseWithCovarianceStamped> receive() {
         Optional<PoseWithCovarianceStamped> msg;
-        if ((msg = tagSub.receive()) != null) {
+        if ((msg = tagSub.receive()).isPresent()) {
             lastPose = toPose2d(msg.get());
             m_nsecs = msg.get().getHeader().getStamp().getNsecs();
             m_visionCovariance = msg.get().getPose().getCovariance();
@@ -45,7 +45,7 @@ public class AprilTagPoseSubscriber implements Subscriber<PoseWithCovarianceStam
             m_drivetrain.setVisionMeasurementStdDevs(m_visionMatrix);
             m_drivetrain.addVisionMeasurement(lastPose, m_nsecs / 1.0e6);
         }
-        return msg;
+        return null;
     }
 
     public Pose2d getLastTag() {
