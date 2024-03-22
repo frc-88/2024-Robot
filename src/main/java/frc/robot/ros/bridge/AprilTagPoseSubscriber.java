@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import frc.robot.ros.bridge.AprilTagDetectionArray;
+import frc.robot.util.DriveUtils;
 import frc.team88.ros.bridge.BridgeSubscriber;
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
 import frc.team88.ros.messages.geometry_msgs.Pose2D;
@@ -34,7 +35,7 @@ public class AprilTagPoseSubscriber implements Subscriber<PoseWithCovarianceStam
     public Optional<PoseWithCovarianceStamped> receive() {
         Optional<PoseWithCovarianceStamped> msg;
         if ((msg = tagSub.receive()).isPresent()) {
-            lastPose = toPose2d(msg.get());
+            lastPose = DriveUtils.redAlliance() ? DriveUtils.redBlueTransform(toPose2d(msg.get())) : toPose2d(msg.get());
             m_nsecs = msg.get().getHeader().getStamp().getNsecs();
             m_visionCovariance = msg.get().getPose().getCovariance();
             Matrix<N3, N1> m_visionMatrix = new Matrix<N3, N1>(N3.instance, N1.instance);
