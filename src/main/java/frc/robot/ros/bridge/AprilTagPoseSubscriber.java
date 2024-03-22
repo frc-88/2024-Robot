@@ -54,9 +54,9 @@ public class AprilTagPoseSubscriber implements Subscriber<PoseWithCovarianceStam
 
             m_visionCovariance = msg.get().getPose().getCovariance();
             Matrix<N3, N1> m_visionMatrix = new Matrix<N3, N1>(N3.instance, N1.instance);
-            m_visionMatrix.set(0, 0, .1 /* m_visionCovariance[0] */);
-            m_visionMatrix.set(1, 0, .1 /* m_visionCovariance[7] */);
-            m_visionMatrix.set(2, 0, 1e9 /* m_visionCovariance[35] */);
+            m_visionMatrix.set(0, 0,  m_visionCovariance[0]);
+            m_visionMatrix.set(1, 0, m_visionCovariance[7]);
+            m_visionMatrix.set(2, 0,  m_visionCovariance[35] * 1000);
 
             SmartDashboard.setDefaultNumberArray("Vision Co-variance", m_visionCovariance);
 
