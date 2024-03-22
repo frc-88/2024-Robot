@@ -12,6 +12,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.DoubleArrayPublisher;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StringPublisher;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.ros.bridge.AprilTagDetectionArray;
 import frc.robot.util.DriveUtils;
 import frc.team88.ros.bridge.BridgeSubscriber;
@@ -27,24 +33,35 @@ public class AprilTagPoseSubscriber implements Subscriber<PoseWithCovarianceStam
     private Double[] m_visionCovariance;
     private SwerveDrivetrain m_drivetrain;
 
+    private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
+    private final NetworkTable tagPoseTable = inst.getTable("AprilTagPose");
+    private final DoubleArrayPublisher tagFieldPub = tagPoseTable.getDoubleArrayTopic("robotPose")
+            .publish();
+    private final StringPublisher tagFieldTypePub = tagPoseTable.getStringTopic(".type").publish();
+
     public AprilTagPoseSubscriber(ROSNetworkTablesBridge bridge, SwerveDrivetrain drivetrain) {
-        tagSub = new BridgeSubscriber<>(bridge, "/northstar/landmark/forwarded", PoseWithCovarianceStamped.class);
+        tagSub = new BridgeSubscriber<>(bridge, "/northstar/landmark", PoseWithCovarianceStamped.class);
         m_drivetrain = drivetrain;
     }
 
     public Optional<PoseWithCovarianceStamped> receive() {
         Optional<PoseWithCovarianceStamped> msg;
         if ((msg = tagSub.receive()).isPresent()) {
-            lastPose = DriveUtils.redAlliance() ? DriveUtils.redBlueTransform(toPose2d(msg.get())) : toPose2d(msg.get());
+            lastPose = DriveUtils.redAlliance() ? DriveUtils.redBlueTransform(toPose2d(msg.get()))
+                    : toPose2d(msg.get());
+            sendPose(lastPose);
             m_nsecs = msg.get().getHeader().getStamp().getNsecs();
+
             m_visionCovariance = msg.get().getPose().getCovariance();
             Matrix<N3, N1> m_visionMatrix = new Matrix<N3, N1>(N3.instance, N1.instance);
-            m_visionMatrix.set(0, 0, m_visionCovariance[0]);
-            m_visionMatrix.set(1, 0, m_visionCovariance[7]);
-            m_visionMatrix.set(2, 0, m_visionCovariance[35]);
+            m_visionMatrix.set(0, 0, .1 /* m_visionCovariance[0] */);
+            m_visionMatrix.set(1, 0, .1 /* m_visionCovariance[7] */);
+            m_visionMatrix.set(2, 0, 1e9 /* m_visionCovariance[35] */);
+
+            SmartDashboard.setDefaultNumberArray("Vision Co-variance", m_visionCovariance);
 
             m_drivetrain.setVisionMeasurementStdDevs(m_visionMatrix);
-            m_drivetrain.addVisionMeasurement(lastPose, m_nsecs / 1.0e6);
+            m_drivetrain.addVisionMeasurement(lastPose, Timer.getFPGATimestamp());
         }
         return null;
     }
@@ -54,8 +71,21 @@ public class AprilTagPoseSubscriber implements Subscriber<PoseWithCovarianceStam
         return lastPose;
     }
 
-    private Pose2d toPose2d(PoseWithCovarianceStamped pose) {
-        return new Pose2d(pose.getPose().getPose().getPosition().getX(), pose.getPose().getPose().getPosition().getY(), Rotation2d.fromDegrees(pose.getPose().getPose().getOrientation().getZ()));
+    private void sendPose(Pose2d pose) {
+        if (DriveUtils.redAlliance()) {
+            pose = DriveUtils.redBlueTransform(pose);
+        }
+        tagFieldTypePub.set("Field2d");
+        tagFieldPub.set(new double[] {
+                pose.getX(),
+                pose.getY(),
+                pose.getRotation().getDegrees()
+        });
     }
-    
+
+    private Pose2d toPose2d(PoseWithCovarianceStamped pose) {
+        return new Pose2d(pose.getPose().getPose().getPosition().getX(), pose.getPose().getPose().getPosition().getY(),
+                Rotation2d.fromRotations(pose.getPose().getPose().getOrientation().getZ()));
+    }
+
 }

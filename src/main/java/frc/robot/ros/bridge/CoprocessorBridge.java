@@ -60,7 +60,7 @@ public class CoprocessorBridge extends SubsystemBase {
         for (Publisher publisher : periodicPublishers) {
             publisher.publish();
         }
-        
+
         tagPoseSubscriber.receive();
 
         if (coprocessorAlive) {
