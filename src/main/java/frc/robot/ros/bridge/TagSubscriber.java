@@ -2,7 +2,7 @@ package frc.robot.ros.bridge;
 
 import java.util.Optional;
 
-import frc.robot.ros.bridge.AprilTagDetectionArray;
+import frc.robot.ros.messages.apriltag_ros.AprilTagDetectionArray;
 import frc.team88.ros.bridge.BridgeSubscriber;
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
 
