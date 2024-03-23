@@ -253,9 +253,7 @@ public class RobotContainer {
         SmartDashboard.putData("ElevatorCoastMode", m_elevator.enableCoastModeFactory().ignoringDisable(true));
         SmartDashboard.putData("ElevatorBrakeMode", m_elevator.enableBrakeModeFactory().ignoringDisable(true));
 
-        // Auto Test
-        SmartDashboard.putData("Red Line Auto", drivetrain.getAutoPath("TwoPieceAuto"));
-        SmartDashboard.putData("Four Piece", drivetrain.getAutoPath("FourPiece"));
+        // Test
         SmartDashboard.putData("Rumble", setRumble().ignoringDisable(true));
     }
 
