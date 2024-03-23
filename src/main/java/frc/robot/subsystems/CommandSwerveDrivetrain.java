@@ -15,6 +15,7 @@ import com.ctre.phoenix6.mechanisms.swerve.utility.PhoenixPIDController;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -392,11 +393,12 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         Pose2d pose = DriveUtils.redAlliance()
                 ? DriveUtils.redBlueTransform(targetPose.get())
                 : targetPose.get();
+        PathPlannerPath path = PathPlannerPath.fromPathFile("Amp");
         PathConstraints constraints = new PathConstraints(p_maxVeloctiy.getValue(), p_maxAcceleration.getValue(),
                 Units.degreesToRadians(p_maxAngularVelocity.getValue()),
                 Units.degreesToRadians(p_maxAngularAcceleration.getValue()));
 
-        return AutoBuilder.pathfindToPose(pose, constraints, 0.0, 0.0);
+        return AutoBuilder.pathfindThenFollowPath(path, constraints, 0.0);
     }
 
     private void sendOdomPose() {
