@@ -366,7 +366,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public Command aimAtSpeakerFactory() {
-        return new RunCommand(() -> setTargetHeading(m_aiming.getSpeakerAngleForDrivetrian()));
+        return new RunCommand(() -> setTargetHeading(m_aiming.getOdomSpeakerAngleForDrivetrian(getPose())));
     }
 
     public Command aimAtAmpDumpingGroundFactory(BooleanSupplier amp) {
