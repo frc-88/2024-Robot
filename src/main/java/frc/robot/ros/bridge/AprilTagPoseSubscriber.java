@@ -63,8 +63,8 @@ public class AprilTagPoseSubscriber implements Subscriber<PoseWithCovarianceStam
 
             SmartDashboard.setDefaultNumberArray("Vision Co-variance", m_visionCovariance);
 
-            m_drivetrain.addVisionMeasurement(lastPose, Timer.getFPGATimestamp(),
-                    m_visionMatrix);
+            // m_drivetrain.addVisionMeasurement(lastPose, Timer.getFPGATimestamp(),
+            // m_visionMatrix);
         }
         return null;
     }
