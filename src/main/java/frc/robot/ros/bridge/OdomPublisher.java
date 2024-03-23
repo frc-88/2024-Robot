@@ -5,6 +5,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.util.DriveUtils;
@@ -51,6 +52,7 @@ public class OdomPublisher implements Publisher {
             }));
 
     public void publish() {
+        double angularVelocity = Units.degreesToRadians(-1 * commandDriveTrain.getPigeon2().getRate());
         Pose2d pose = commandDriveTrain.getState().Pose;
         if (DriveUtils.redAlliance()) {
             pose = DriveUtils.redBlueTransform(pose);
@@ -61,7 +63,7 @@ public class OdomPublisher implements Publisher {
         odomMsg.getPose().setPose(ROSConversions.wpiToRosPose(new Pose3d(pose)));
         odomMsg.getTwist().getTwist()
                 .setLinear(new Vector3(velocity.vxMetersPerSecond, velocity.vyMetersPerSecond, 0.0));
-        odomMsg.getTwist().getTwist().setAngular(new Vector3(0.0, 0.0, velocity.omegaRadiansPerSecond));
+        odomMsg.getTwist().getTwist().setAngular(new Vector3(0.0, 0.0, angularVelocity));
 
         odomPub.send(odomMsg);
     }
