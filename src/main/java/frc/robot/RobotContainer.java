@@ -173,7 +173,7 @@ public class RobotContainer {
                         m_shooter.runShooterFactory().alongWith(new WaitUntilCommand(m_shooter::isShooterAtFullSpeed))
                                 .andThen(setRumble()).unless(drivetrain.tipping()))
                 .whileTrue(drivetrain.aimAtSpeakerFactory().unless(drivetrain.tipping()))
-                .whileTrue(m_elevator.goToAimingPosition(() -> m_aiming.odomSpeakerAngle(drivetrain.getPose()))
+                .whileTrue(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
                         .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer()));
         joystick.leftBumper()
                 .whileTrue(drivetrain.aimAtAmpDumpingGroundFactory(buttonBox.button(17))
