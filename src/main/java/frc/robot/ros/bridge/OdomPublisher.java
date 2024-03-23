@@ -52,7 +52,7 @@ public class OdomPublisher implements Publisher {
             }));
 
     public void publish() {
-        double angularVelocity = Units.degreesToRadians(-1 * commandDriveTrain.getPigeon2().getRate());
+        double angularVelocity = Units.degreesToRadians(commandDriveTrain.getPigeon2().getRate());
         Pose2d pose = commandDriveTrain.getState().Pose;
         if (DriveUtils.redAlliance()) {
             pose = DriveUtils.redBlueTransform(pose);

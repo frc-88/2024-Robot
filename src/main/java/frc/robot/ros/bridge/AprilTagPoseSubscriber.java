@@ -47,21 +47,24 @@ public class AprilTagPoseSubscriber implements Subscriber<PoseWithCovarianceStam
     public Optional<PoseWithCovarianceStamped> receive() {
         Optional<PoseWithCovarianceStamped> msg;
         if ((msg = tagSub.receive()).isPresent()) {
-            lastPose = DriveUtils.redAlliance() ? DriveUtils.redBlueTransform(toPose2d(msg.get()))
-                    : toPose2d(msg.get());
+            lastPose = toPose2d(msg.get());
+            lastPose = new Pose2d(lastPose.getX(), lastPose.getY(),
+                    lastPose.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
+            lastPose = DriveUtils.redAlliance() ? DriveUtils.redBlueTransform(lastPose)
+                    : lastPose;
             sendPose(lastPose);
             m_nsecs = msg.get().getHeader().getStamp().getNsecs();
 
             m_visionCovariance = msg.get().getPose().getCovariance();
             Matrix<N3, N1> m_visionMatrix = new Matrix<N3, N1>(N3.instance, N1.instance);
-            m_visionMatrix.set(0, 0,  m_visionCovariance[0]);
-            m_visionMatrix.set(1, 0, m_visionCovariance[7]);
-            m_visionMatrix.set(2, 0,  m_visionCovariance[35] * 1000);
+            m_visionMatrix.set(0, 0, m_visionCovariance[0] * 10);
+            m_visionMatrix.set(1, 0, m_visionCovariance[7] * 10);
+            m_visionMatrix.set(2, 0, m_visionCovariance[35] * 1000);
 
             SmartDashboard.setDefaultNumberArray("Vision Co-variance", m_visionCovariance);
 
-            m_drivetrain.setVisionMeasurementStdDevs(m_visionMatrix);
-            m_drivetrain.addVisionMeasurement(lastPose, Timer.getFPGATimestamp());
+            m_drivetrain.addVisionMeasurement(lastPose, Timer.getFPGATimestamp(),
+                    m_visionMatrix);
         }
         return null;
     }
