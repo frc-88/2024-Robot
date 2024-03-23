@@ -1,5 +1,5 @@
 // Auto generated!! Do not modify.
-package frc.robot.ros.bridge;
+package frc.robot.ros.messages.apriltag_ros;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
