@@ -389,7 +389,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public Command pathFindingCommand(Pose2d targetPose) {
-        Pose2d pose = (DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
+        Pose2d pose = DriveUtils.redAlliance()
                 ? DriveUtils.redBlueTransform(targetPose)
                 : targetPose;
         PathConstraints constraints = new PathConstraints(p_maxVeloctiy.getValue(), p_maxAcceleration.getValue(),
