@@ -389,11 +389,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         });
     }
 
-    public Command pathFindingCommand(Supplier<Pose2d> targetPose) {
-        Pose2d pose = DriveUtils.redAlliance()
-                ? DriveUtils.redBlueTransform(targetPose.get())
-                : targetPose.get();
-        PathPlannerPath path = PathPlannerPath.fromPathFile("Amp");
+    public Command pathFindingCommand(String pathName) {
+        PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
         PathConstraints constraints = new PathConstraints(p_maxVeloctiy.getValue(), p_maxAcceleration.getValue(),
                 Units.degreesToRadians(p_maxAngularVelocity.getValue()),
                 Units.degreesToRadians(p_maxAngularAcceleration.getValue()));
