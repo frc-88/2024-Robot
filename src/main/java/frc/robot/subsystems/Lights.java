@@ -1,11 +1,13 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdleConfiguration;
 import com.ctre.phoenix.led.ColorFlowAnimation;
+import com.ctre.phoenix.led.FireAnimation;
 import com.ctre.phoenix.led.LarsonAnimation;
 import com.ctre.phoenix.led.RainbowAnimation;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
@@ -20,22 +22,23 @@ import frc.robot.Constants;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import frc.robot.util.preferenceconstants.IntPreferenceConstant;
 
-public class Lights extends SubsystemBase{
+public class Lights extends SubsystemBase {
     private IntPreferenceConstant numLEDs = new IntPreferenceConstant("Number Of LEDs", 60);
     private int m_state = 0;
     private int counter = 0;
     private final CANdle m_candle = new CANdle(Constants.CANDLE_ID);
     private boolean m_setAnim = false;
-    
+
     private Animation m_toAnimate = null;
     private Animation m_lastAnimation = null;
 
-    // private SwerveDrive m_swerve;
-    // private Intake m_intake;
-    // private Elevator m_elevator;
-    // private Shooter m_shooter;
-    // private Indexer m_indexer; 
-    // private Coprocessor m_coprocessor;
+    private BooleanSupplier m_swerve;
+    private BooleanSupplier m_intake;
+    private BooleanSupplier m_elevator;
+    private BooleanSupplier m_shooter;
+    private BooleanSupplier m_indexer;
+    private BooleanSupplier m_climber;
+    private BooleanSupplier m_coprocessor;
     private Supplier<String> m_autoName;
 
     public enum AnimationTypes {
@@ -52,13 +55,15 @@ public class Lights extends SubsystemBase{
         Empty
     }
 
-    public Lights(/*SwerveDrive swerve, Intake intake, Elevator elevator, Indexer indexer, Shooter shooter, Coprocessor coprocessor,*/ Supplier<String> autoName) {
-        // m_swerve = swerve;
-        // m_intake = intake;
-        // m_elevator = elevator;
-        // m_indexer = indexer;
-        // m_shooter = shooter;
-        // m_coprocessor = coprocessor;
+    public Lights(BooleanSupplier swerve, BooleanSupplier intake, BooleanSupplier elevator, BooleanSupplier indexer,
+            BooleanSupplier shooter, BooleanSupplier climber, BooleanSupplier coprocessor, Supplier<String> autoName) {
+        m_swerve = swerve;
+        m_intake = intake;
+        m_elevator = elevator;
+        m_indexer = indexer;
+        m_shooter = shooter;
+        m_climber = climber;
+        m_coprocessor = coprocessor;
         m_autoName = autoName;
         CANdleConfiguration configAll = new CANdleConfiguration();
         configAll.statusLedOffWhenActive = true;
@@ -71,7 +76,7 @@ public class Lights extends SubsystemBase{
 
     public void noteSpinLeft() {
         m_toAnimate = new ColorFlowAnimation(255, 165, 0, 0, 0.2, numLEDs.getValue(), Direction.Forward);
-        m_setAnim = true; 
+        m_setAnim = true;
     }
 
     public void noteSpinRight() {
@@ -81,6 +86,11 @@ public class Lights extends SubsystemBase{
 
     public void holdingNote() {
         m_toAnimate = new LarsonAnimation(255, 165, 0, 0, 0.2, numLEDs.getValue(), BounceMode.Center, 8);
+        m_setAnim = true;
+    }
+
+    public void setFire() {
+        m_toAnimate = new FireAnimation(1, 0.5, numLEDs.getValue(), 0.5, 0.5);
         m_setAnim = true;
     }
 
@@ -94,100 +104,100 @@ public class Lights extends SubsystemBase{
         m_setAnim = true;
     }
 
-    //TODO: test this animation to see if it truly works
+    // TODO: test this animation to see if it truly works
     public void tiedye() {
         m_candle.animate(new ColorFlowAnimation(255, 0, 0, 0, 0.2, numLEDs.getValue(), Direction.Forward, 0), 0);
-        m_candle.animate(new ColorFlowAnimation(255,165,0, 0, 0.2, numLEDs.getValue(), Direction.Forward, 10), 1);
+        m_candle.animate(new ColorFlowAnimation(255, 165, 0, 0, 0.2, numLEDs.getValue(), Direction.Forward, 10), 1);
         m_candle.animate(new ColorFlowAnimation(255, 255, 0, 0, 0.2, numLEDs.getValue(), Direction.Forward, 20), 2);
         m_candle.animate(new ColorFlowAnimation(0, 0, 255, 0, 0.2, numLEDs.getValue(), Direction.Forward, 30), 3);
     }
 
-
     @Override
     public void periodic() {
-        if(DriverStation.isDisabled()) {
+        if (DriverStation.isDisabled()) {
             switch (m_state) {
-                //TODO:put in subsystem stuff when integrated
-                case 0:
-                    {
-                        larsonColor(255, 0, 0);
-                        //swerve goes here
-                        if(true && counter++ > 75) {
-                            m_state++;
-                            counter = 0;
-                        }
+                // TODO:put in subsystem stuff when integrated
+                case 0: {
+                    larsonColor(255, 0, 0);
+                    // swerve goes here
+                    if (m_swerve.getAsBoolean() && counter++ > 75) {
+                        m_state++;
+                        counter = 0;
+                    }
+                    break;
+                }
+                case 1: {
+                    larsonColor(255, 165, 0);
+                    // elevator goes here
+                    if (m_elevator.getAsBoolean() && counter++ > 75) {
+                        m_state++;
+                        counter = 0;
+                    }
+                    break;
+                }
+                case 2: {
+                    larsonColor(255, 255, 0);
+                    // intake goes here
+                    if (m_intake.getAsBoolean() && counter++ > 75) {
+                        m_state++;
+                        counter = 0;
+                    }
+                    break;
+                }
+                case 3: {
+                    larsonColor(0, 255, 0);
+                    // indexer goes here
+                    if (m_indexer.getAsBoolean() && counter++ > 75) {
+                        m_state++;
+                        counter = 0;
+                    }
+                    break;
+                }
+                case 4: {
+                    larsonColor(0, 0, 255);
+                    // shooter goes here
+                    if (m_shooter.getAsBoolean() && counter++ > 75) {
+                        m_state++;
+                        counter = 0;
+                    }
+                    break;
+                }
+                case 5: {
+                    larsonColor(0, 255, 255);
+                    // climber goes here
+                    if (m_climber.getAsBoolean() && counter++ > 75) {
+                        m_state++;
+                        counter = 0;
+                    }
+                    break;
+                }
+                case 6: {
+                    larsonColor(143, 0, 255);
+                    // ROS goes here
+                    if (m_coprocessor.getAsBoolean() && counter++ > 75) {
+                        m_state++;
+                        counter = 0;
+                    }
+                    break;
+                }
+                case 7: {
+                    larsonColor(255, 255, 255);
+                    if (!m_autoName.get().equals("Wait") && counter++ > 75) {
+                        m_state++;
                         break;
                     }
-                case 1:
-                    {
-                        larsonColor(255, 165, 0);
-                        //elevator goes here
-                        if(true && counter++ > 75) {
-                            m_state++;
-                            counter = 0;
-                        }
-                        break;
+                }
+                case 8: {
+                    rainbow();
+                    if (counter++ > 100) {
+                        m_state++;
+                        counter = 0;
                     }
-                case 2:
-                    {
-                        larsonColor(255, 255, 0);
-                        //intake goes here
-                        if(true && counter++ > 75) {
-                            m_state++;
-                            counter = 0;
-                        }
-                        break;
-                    }
-                case 3:
-                    {
-                        larsonColor(0, 255, 0);
-                        //indexer goes here
-                        if(true && counter++ > 75) {
-                            m_state++;
-                            counter = 0;
-                        }
-                        break;
-                    }
-                case 4:
-                    {
-                        larsonColor(0, 0, 255);
-                        //shooter goes here
-                        if(true && counter++ > 75) {
-                            m_state++;
-                            counter = 0;
-                        }
-                        break;
-                    }
-                case 5:
-                    {
-                        larsonColor(143, 0, 255);
-                        //ROS goes here
-                        if(true && counter++ > 75) {
-                            m_state++;
-                            counter = 0;
-                        }
-                        break;
-                    }
-                case 6: 
-                    {
-                        larsonColor(255, 255, 255);
-                        if(!m_autoName.get().equals("Wait") && counter++ > 75) {
-                            m_state++;
-                            break;
-                        }
-                    }
-                case 7:
-                    {
-                        rainbow();
-                        if(counter++ > 100) {
-                            m_state++;
-                            counter = 0;
-                        }
-                        break;
-                    }
+                    break;
+                }
             }
         }
-        if (!m_toAnimate.equals(m_lastAnimation)  && m_lastAnimation != null) {
+        if (!m_toAnimate.equals(m_lastAnimation) && m_lastAnimation != null) {
             m_toAnimate = m_lastAnimation;
             m_setAnim = true;
             m_lastAnimation = null;
@@ -204,16 +214,22 @@ public class Lights extends SubsystemBase{
             noteSpinLeft();
         });
     }
-    
+
     public InstantCommand spinRightFactory() {
         return new InstantCommand(() -> {
             noteSpinRight();
         });
     }
-    
+
     public InstantCommand holdNoteFactory() {
         return new InstantCommand(() -> {
             holdingNote();
+        });
+    }
+
+    public InstantCommand setFireFactory() {
+        return new InstantCommand(() -> {
+            setFire();
         });
     }
 }

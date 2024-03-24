@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.863489600853075,
+        "y": 4.29878697595233
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.72481905324171,
+        "y": 4.613106883871426
+      },
+      "isLocked": false,
+      "linkedName": "Center3Ampside"
+    },
+    {
+      "anchor": {
+        "x": 4.649370441598027,
+        "y": 6.948583040023223
+      },
+      "prevControl": {
+        "x": 5.019158568561669,
+        "y": 6.643507835278219
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "WingShot"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 15.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "SixPiece",
+  "previewStartingState": {
+    "rotation": -24.623564786163573,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

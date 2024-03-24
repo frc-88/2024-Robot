@@ -1,0 +1,74 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.194927246997351,
+        "y": 7.388366776733554
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.692164916057013,
+        "y": 7.407866293167267
+      },
+      "isLocked": false,
+      "linkedName": "FourPieceThree"
+    },
+    {
+      "anchor": {
+        "x": 8.25075702407937,
+        "y": 6.015600819800215
+      },
+      "prevControl": {
+        "x": 8.046012101525392,
+        "y": 5.411115810355138
+      },
+      "nextControl": {
+        "x": 8.701332662561644,
+        "y": 7.345871752462165
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.649370441598027,
+        "y": 6.948583040023223
+      },
+      "prevControl": {
+        "x": 5.058860286705982,
+        "y": 6.987582072890647
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "WingShot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.75,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 11.34,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "FourPiece",
+  "previewStartingState": {
+    "rotation": 18.79,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}
