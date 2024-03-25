@@ -189,6 +189,5 @@ public class Intake extends SubsystemBase {
         SmartDashboard.putNumber("Intake/Guide Current", m_guideMotor.getStatorCurrent().getValueAsDouble());
         SmartDashboard.putNumber("Intake/Index Current", m_indexMotor.getStatorCurrent().getValueAsDouble());
         SmartDashboard.putBoolean("Intake/HasNoteDebounced", hasNoteDebounced().getAsBoolean());
-        SmartDashboard.putNumber("Intake/FaultFields", m_intakeMotor.getFaultField().getValue());
     }
 }

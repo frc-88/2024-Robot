@@ -16,6 +16,7 @@ import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 import com.ctre.phoenix.led.LarsonAnimation.BounceMode;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -68,9 +69,9 @@ public class Lights extends SubsystemBase {
         CANdleConfiguration configAll = new CANdleConfiguration();
         configAll.statusLedOffWhenActive = true;
         configAll.disableWhenLOS = false;
-        configAll.stripType = LEDStripType.GRB;
+        configAll.stripType = LEDStripType.RGB;
         configAll.brightnessScalar = 1.0;
-        configAll.vBatOutputMode = VBatOutputMode.Modulated;
+        configAll.vBatOutputMode = VBatOutputMode.On;
         m_candle.configAllSettings(configAll, 100);
     }
 
@@ -90,7 +91,7 @@ public class Lights extends SubsystemBase {
     }
 
     public void setFire() {
-        m_toAnimate = new FireAnimation(1, 0.5, numLEDs.getValue(), 0.5, 0.5);
+        m_toAnimate = new FireAnimation(1, 0.6, numLEDs.getValue(), 0.2, 0.2);
         m_setAnim = true;
     }
 
@@ -184,8 +185,9 @@ public class Lights extends SubsystemBase {
                     larsonColor(255, 255, 255);
                     if (!m_autoName.get().equals("Wait") && counter++ > 75) {
                         m_state++;
-                        break;
+                        counter = 0;
                     }
+                    break;
                 }
                 case 8: {
                     rainbow();
@@ -206,7 +208,7 @@ public class Lights extends SubsystemBase {
             m_candle.clearAnimation(0);
             m_setAnim = false;
         }
-        m_candle.animate(m_toAnimate, 0);
+        m_candle.animate(m_toAnimate);
     }
 
     public InstantCommand spinLeftFactory() {
@@ -230,6 +232,12 @@ public class Lights extends SubsystemBase {
     public InstantCommand setFireFactory() {
         return new InstantCommand(() -> {
             setFire();
+        });
+    }
+
+    public InstantCommand tieDyeFactory() {
+        return new InstantCommand(() -> {
+            tiedye();
         });
     }
 }
