@@ -31,7 +31,7 @@ public class Aiming {
     private TFListenerCompact tf_compact;
     private TagSubscriber tagSubscriber;
     private final int[] speakerTagsRed = { 3, 4 };
-    private final double speakerHeight = Units.inchesToMeters(60.265913);
+    private final double speakerHeight = Units.inchesToMeters((60.265913 - 2.5));
     private BridgePublisher<MarkerArray> aimPub;
 
     private DoublePreferenceConstant p_aimingOffset = new DoublePreferenceConstant("Aiming Offset",

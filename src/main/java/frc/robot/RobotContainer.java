@@ -158,10 +158,10 @@ public class RobotContainer {
         m_aiming.setTagListener(tagsub);
         m_aiming.setAimPub(aimPub);
 
-        m_lights = new Lights(drivetrain::isSwerveReady, m_intake::isIntakeReady,
-                m_elevator::isElevatorReady,
-                m_intake::isIndexerReady, m_shooter::isShooterReady, m_climber::isClimberReady,
-                coprocessorBridge::isCoprocessorReady, () -> m_autoCommandName);
+        m_lights = new Lights(drivetrain, m_intake,
+                m_elevator,
+                m_shooter, m_climber,
+                coprocessorBridge, () -> m_autoCommandName);
 
     }
 

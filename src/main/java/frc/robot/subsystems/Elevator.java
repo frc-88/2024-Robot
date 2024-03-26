@@ -245,8 +245,8 @@ public class Elevator extends SubsystemBase {
                         - Constants.PIVOT_BOTTOM < 1.0;
     }
 
-    public boolean isElevatorReady() {
-        return m_elevatorMotor.getMotorVoltage().getValueAsDouble() > 6.0
+    public BooleanSupplier isElevatorReady() {
+        return () -> m_elevatorMotor.getMotorVoltage().getValueAsDouble() > 6.0
                 && m_pivotMotor.getMotorVoltage().getValueAsDouble() > 6.0;
     }
 

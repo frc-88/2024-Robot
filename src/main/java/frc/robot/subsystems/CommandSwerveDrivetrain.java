@@ -107,7 +107,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private final SwerveRequest.FieldCentricFacingAngle snapToAngle = new SwerveRequest.FieldCentricFacingAngle()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     private final SwerveRequest.PointWheelsAt pointWheelsAt = new SwerveRequest.PointWheelsAt();
-    private final PhoenixPIDController headingController = new PhoenixPIDController(12.0, 0, 1.0) {
+    private final PhoenixPIDController headingController = new PhoenixPIDController(20.0, 0.0, 1.0) {
         @Override
         public double calculate(double measurement, double setpoint, double currentTimestamp) {
             double output = super.calculate(measurement, setpoint, currentTimestamp);
@@ -459,6 +459,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         SmartDashboard.putNumber("Pigeon Pitch", getPigeon2().getPitch().getValueAsDouble());
         SmartDashboard.putString("PowerMode", lowPowerMode ? "LowPowerMode" : "HighPowerMode");
         SmartDashboard.putNumber("AmpShuttle", m_aiming.getAmpAngleForDrivetrain());
+        SmartDashboard.putNumber("Pigeon Rate", getPigeon2().getAngularVelocityZDevice().getValueAsDouble());
+        SmartDashboard.putNumber("Robot Heading", getCurrentRobotAngle());
         m_aiming.sendTarget();
     }
 }
