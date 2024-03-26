@@ -105,13 +105,18 @@ public final class Constants {
                     Rotation2d.fromDegrees(180)));
     public static final Pose2d BLUE_SPEAKER_POSE = new Pose2d(new Translation2d(0, 5.547868),
             Rotation2d.fromDegrees(0));
-    public static final Pose2d BLUE_AMP_POSE = new Pose2d(new Translation2d(1.83, 7.65),
+    public static final Pose2d BLUE_AMP_AIM_POSE = new Pose2d(new Translation2d(1.83, 7.65),
             Rotation2d.fromDegrees(0));
-    public static final Pose2d RED_AMP_POSE = DriveUtils.redBlueTransform(new Pose2d(new Translation2d(14.7, 7.65),
+    public static final Pose2d RED_AMP_AIM_POSE = DriveUtils.redBlueTransform(new Pose2d(new Translation2d(14.7, 7.65),
             Rotation2d.fromDegrees(180)));
     public static final Pose2d DUMPING_GROUND_BLUE = new Pose2d(new Translation2d(6.7, 7.55),
             Rotation2d.fromDegrees(0));
     public static final Pose2d DUMPING_GROUND_RED = DriveUtils
             .redBlueTransform(new Pose2d(new Translation2d(10.00, 7.55), Rotation2d.fromDegrees(180)));
+    public static final Pose2d BLUE_AMP_PATH_POSE = new Pose2d(new Translation2d(1.83, 7.65),
+            Rotation2d.fromDegrees(-90));
+    public static final Pose2d RED_AMP_PATH_POSE = DriveUtils
+            .redBlueTransform(new Pose2d(new Translation2d(15.25, 8.05),
+                    Rotation2d.fromDegrees(-90)));
 
 }

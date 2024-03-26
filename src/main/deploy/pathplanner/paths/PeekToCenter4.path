@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.977570153338504,
-        "y": 4.030690583903691
+        "x": 4.3726253713376995,
+        "y": 4.882746739406523
       },
       "isLocked": false,
       "linkedName": "Peekaboo"
     },
     {
       "anchor": {
-        "x": 7.938764761139975,
-        "y": 2.3886907631297456
+        "x": 8.05610098176718,
+        "y": 2.6126978166999826
       },
       "prevControl": {
-        "x": 8.636852516707089,
-        "y": 1.7494778785140754
+        "x": 7.880187487083046,
+        "y": 2.260870827331719
       },
       "nextControl": {
-        "x": 7.129534829140918,
-        "y": 3.1296723876108095
+        "x": 8.268839972099295,
+        "y": 3.038175797364208
       },
       "isLocked": false,
       "linkedName": null
@@ -36,8 +36,8 @@
         "y": 5.147872338500022
       },
       "prevControl": {
-        "x": 5.635516135897136,
-        "y": 4.206339944211421
+        "x": 4.3155172223387925,
+        "y": 4.540097845413082
       },
       "nextControl": null,
       "isLocked": false,
@@ -49,7 +49,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 2.8,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
