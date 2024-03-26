@@ -134,12 +134,12 @@ public class Intake extends SubsystemBase {
     }
 
     public BooleanSupplier isIntakeReady() {
-        return () -> m_intakeMotor.getMotorVoltage().getValueAsDouble() > 6.0
-                && m_guideMotor.getMotorVoltage().getValueAsDouble() > 6.0;
+        return () -> m_intakeMotor.getIsProLicensed().getValue()
+                && m_guideMotor.getIsProLicensed().getValue();
     }
 
     public BooleanSupplier isIndexerReady() {
-        return () -> m_indexMotor.getMotorVoltage().getValueAsDouble() > 6.0;
+        return () -> m_indexMotor.getIsProLicensed().getValue();
     }
 
     public boolean isIntakingNote() {
@@ -203,5 +203,6 @@ public class Intake extends SubsystemBase {
         SmartDashboard.putBoolean("Intake/HasNoteDebounced", hasNoteDebounced().getAsBoolean());
         SmartDashboard.putNumber("Intake/Intake Acceleration", m_intakeMotor.getAcceleration().getValueAsDouble());
         SmartDashboard.putBoolean("Intake/Intaking Note", isIntakingNote());
+        SmartDashboard.putNumber("Intake/fault fields", m_indexMotor.getFaultField().getValue());
     }
 }
