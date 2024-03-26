@@ -32,6 +32,7 @@ public class Intake extends SubsystemBase {
     private DoublePreferenceConstant p_intakingNoteAcceleration = new DoublePreferenceConstant(
             "Intake/IntakingNoteCurrent",
             100);
+    private boolean m_isIntakingRunning = false;
 
     private final DutyCycleOut m_intakeRequest = new DutyCycleOut(0.0);
     private final TalonFX m_intakeMotor = new TalonFX(Constants.INTAKE_MOTOR_ID, Constants.RIO_CANBUS);
@@ -43,9 +44,9 @@ public class Intake extends SubsystemBase {
 
     private Trigger m_hasNoteDebounced = new Trigger(this::hasNoteInIndexer).debounce(p_debounceTime.getValue(),
             DebounceType.kBoth);
-    private Trigger intakingNoteTrigger = new Trigger(
+    private Trigger m_intakingNoteTrigger = new Trigger(
             () -> m_intakeMotor.getAcceleration().getValueAsDouble() < -p_intakingNoteAcceleration.getValue())
-            .debounce(2, DebounceType.kFalling);
+            .debounce(1, DebounceType.kFalling).and(() -> m_isIntakingRunning);
 
     public boolean m_automaticMode = true;
     public boolean lastMode = true;
@@ -91,8 +92,11 @@ public class Intake extends SubsystemBase {
             m_intakeMotor.setControl(m_intakeRequest.withOutput(intakeRollerSpeed.getValue()));
             m_guideMotor.setControl(m_intakeRequest.withOutput(guideRollerSpeed.getValue()));
             m_indexMotor.setControl(m_intakeRequest.withOutput(indexRollerSpeed.getValue()));
+
+            m_isIntakingRunning = true;
         } else {
             stopMoving();
+            m_isIntakingRunning = false;
         }
     }
 
@@ -143,11 +147,12 @@ public class Intake extends SubsystemBase {
     }
 
     public boolean isIntakingNote() {
-        return intakingNoteTrigger.getAsBoolean();
+        return m_intakingNoteTrigger.getAsBoolean();
     }
 
     public Command intakeFactory() {
-        return new RunCommand(() -> intake(), this).until(() -> hasNoteInIndexer());
+        return new RunCommand(() -> intake(), this).until(() -> hasNoteInIndexer())
+                .finallyDo(() -> m_isIntakingRunning = false);
     }
 
     public Command goblinModeFactory() {
