@@ -8,6 +8,7 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
@@ -323,6 +324,18 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 .setValue(getModule(2).getCANcoder().getAbsolutePosition().getValueAsDouble());
         TunerConstants.p_backRightEncoderOffset
                 .setValue(getModule(3).getCANcoder().getAbsolutePosition().getValueAsDouble());
+    }
+
+    public boolean isSwerveReady() {
+        int isModuleGood = 0;
+        for (int i = 0; i < 4; i++) {
+            SwerveModule module = getModule(i);
+            if (module.getDriveMotor().getMotorVoltage().getValueAsDouble() > 6.0
+                    && module.getSteerMotor().getMotorVoltage().getValueAsDouble() > 6.0) {
+                isModuleGood += 1;
+            }
+        }
+        return isModuleGood == 4;
     }
 
     public void localize() {

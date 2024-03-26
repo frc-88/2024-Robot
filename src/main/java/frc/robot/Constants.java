@@ -85,6 +85,7 @@ public final class Constants {
     public static final int CLIMBER_RIGHT_MOTOR = 0;
 
     // Lights
+    public static final int CANDLE_ID = 6;
 
     // Controllers
     public static final int DRIVER_CONTROLLER_ID = 0;

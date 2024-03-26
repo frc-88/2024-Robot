@@ -170,6 +170,11 @@ public class Climber extends SubsystemBase {
         m_armLeft.setControl(new DutyCycleOut(0.0));
     }
 
+    public boolean isClimberReady() {
+        return m_armLeft.getMotorVoltage().getValueAsDouble() > 6.0
+                && m_armRight.getMotorVoltage().getValueAsDouble() > 6.0;
+    }
+
     public Command softLandingFactory() {
         return new RunCommand(() -> softLanding(), this)
                 .until(() -> climberOnTarget(10.0, 2.0)).andThen(() -> {

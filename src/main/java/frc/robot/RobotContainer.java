@@ -44,6 +44,7 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.util.Aiming;
 import frc.robot.util.DriveUtils;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Lights;
 
 public class RobotContainer {
     private final Aiming m_aiming = new Aiming();
@@ -55,6 +56,7 @@ public class RobotContainer {
     private final Elevator m_elevator = new Elevator();
     private final Intake m_intake = new Intake(m_elevator::areElevatorAndPivotDown);
     private Climber m_climber = new Climber();
+    private Lights m_lights;
 
     private Command m_autoCommand = new SequentialCommandGroup(
             new WaitCommand(4),
@@ -157,6 +159,12 @@ public class RobotContainer {
         m_aiming.setTFListener(tfListenerCompact);
         m_aiming.setTagListener(tagsub);
         m_aiming.setAimPub(aimPub);
+
+        m_lights = new Lights(drivetrain::isSwerveReady, m_intake::isIntakeReady,
+                m_elevator::isElevatorReady,
+                m_intake::isIndexerReady, m_shooter::isShooterReady, m_climber::isClimberReady,
+                coprocessorBridge::isCoprocessorReady, () -> m_autoCommandName);
+
     }
 
     private void configureDriverController() {
@@ -178,6 +186,7 @@ public class RobotContainer {
                 .whileTrue(drivetrain.aimAtSpeakerFactory().unless(drivetrain.tipping()))
                 .whileTrue(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
                         .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer()));
+        // .whileTrue(m_lights.setFireFactory());
         joystick.leftBumper()
                 .whileTrue(drivetrain.aimAtAmpDumpingGroundFactory(buttonBox.button(17))
                         .alongWith(m_elevator.setFlatFactory())
@@ -248,6 +257,11 @@ public class RobotContainer {
         // SmartDashboard.putData("Run Shooter", m_shooter.runShooterCommand());
         // SmartDashboard.putData("Stop Shooter", m_shooter.stopShooterCommand());
 
+        // Lights
+        SmartDashboard.putData("TieDye",
+                m_lights.tieDyeFactory().ignoringDisable(true));
+        SmartDashboard.putData("fire",
+                m_lights.setFireFactory().ignoringDisable(true));
         // Elevator
         SmartDashboard.putData("Calibrate Pivot", m_elevator.calibratePivotFactory());
         SmartDashboard.putData("Calibrate Elevator", m_elevator.calibrateElevatorFactory());
@@ -280,7 +294,7 @@ public class RobotContainer {
     public void teleopInit() {
         // enable triggers
         m_intake.hasNote().onTrue((m_shooter.runIdleSpeedFactory()).unless(() -> !m_intake.m_automaticMode))
-                .onTrue(setRumble().unless(() -> !m_intake.m_automaticMode));
+                .onTrue(setRumble().unless(() -> !m_intake.m_automaticMode));// .alongWith(m_lights.holdNoteFactory()));
         m_intake.hasNote().and(() -> !m_intake.m_automaticMode)
                 .onFalse(m_intake.intakeFactory().alongWith(m_shooter.stopShooterFactory())).debounce(0.25);
 

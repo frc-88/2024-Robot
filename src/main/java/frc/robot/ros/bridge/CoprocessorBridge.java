@@ -45,6 +45,10 @@ public class CoprocessorBridge extends SubsystemBase {
         counter = 0;
     }
 
+    public boolean isCoprocessorReady() {
+        return coprocessorAlive && bridge.isAlive();
+    }
+
     // ---
     // Periodics
     // ---

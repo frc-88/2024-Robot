@@ -40,7 +40,8 @@ public class Shooter extends SubsystemBase {
             "shooter/shooter/ShuttlePassSpeed", 2750);
     private DoublePreferenceConstant p_sourceIntakeSpeed = new DoublePreferenceConstant(
             "shooter/shooter/SourceIntakeSpeed", 2800);
-    private DoublePreferenceConstant p_shuttlePassSlowSpeed = new DoublePreferenceConstant("shooter/shooter/ShuttlePassSlowSpeed", 2500);
+    private DoublePreferenceConstant p_shuttlePassSlowSpeed = new DoublePreferenceConstant(
+            "shooter/shooter/ShuttlePassSlowSpeed", 2500);
 
     private final TalonFX m_LeftShooter = new TalonFX(Constants.SHOOTER_LEFT_MOTOR, Constants.RIO_CANBUS);
     private final TalonFX m_RightShooter = new TalonFX(Constants.SHOOTER_RIGHT_MOTOR, Constants.RIO_CANBUS);
@@ -145,13 +146,20 @@ public class Shooter extends SubsystemBase {
     }
 
     public void runShuttlePassSpeed(boolean highSpeed) {
-        m_LeftShooter.setControl(velocityRequest.withVelocity(highSpeed ? ((p_shuttlePassSpeed.getValue() + 500) / 60) : ((p_shuttlePassSlowSpeed.getValue() + 500) / 60)));
-        m_RightShooter.setControl(velocityRequest.withVelocity(highSpeed ? ((p_shuttlePassSpeed.getValue() - 500) / 60) : ((p_shuttlePassSlowSpeed.getValue() - 500) / 60)));
+        m_LeftShooter.setControl(velocityRequest.withVelocity(highSpeed ? ((p_shuttlePassSpeed.getValue() + 500) / 60)
+                : ((p_shuttlePassSlowSpeed.getValue() + 500) / 60)));
+        m_RightShooter.setControl(velocityRequest.withVelocity(highSpeed ? ((p_shuttlePassSpeed.getValue() - 500) / 60)
+                : ((p_shuttlePassSlowSpeed.getValue() - 500) / 60)));
     }
 
     public void runSourceIntake() {
         m_LeftShooter.setControl(velocityRequest.withVelocity(-p_sourceIntakeSpeed.getValue() / 60));
         m_RightShooter.setControl(velocityRequest.withVelocity(-p_sourceIntakeSpeed.getValue() / 60));
+    }
+
+    public boolean isShooterReady() {
+        return m_LeftShooter.getMotorVoltage().getValueAsDouble() > 6.0
+                && m_LeftShooter.getMotorVoltage().getValueAsDouble() > 6.0;
     }
 
     public Trigger shooterAtSpeed() {

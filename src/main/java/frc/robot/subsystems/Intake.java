@@ -125,6 +125,15 @@ public class Intake extends SubsystemBase {
         m_indexMotor.setControl(m_intakeRequest.withOutput(indexShootSpeed.getValue()));
     }
 
+    public boolean isIntakeReady() {
+        return m_intakeMotor.getMotorVoltage().getValueAsDouble() > 6.0
+                && m_guideMotor.getMotorVoltage().getValueAsDouble() > 6.0;
+    }
+
+    public boolean isIndexerReady() {
+        return m_indexMotor.getMotorVoltage().getValueAsDouble() > 6.0;
+    }
+
     public Command intakeFactory() {
         return new RunCommand(() -> intake(), this).until(() -> hasNoteInIndexer());
     }
