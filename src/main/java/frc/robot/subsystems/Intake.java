@@ -29,6 +29,10 @@ public class Intake extends SubsystemBase {
 
     private DoublePreferenceConstant p_debounceTime = new DoublePreferenceConstant("Intake/IndexDebounceTime", 0.25);
 
+    private DoublePreferenceConstant p_intakingNoteAcceleration = new DoublePreferenceConstant(
+            "Intake/IntakingNoteCurrent",
+            100);
+
     private final DutyCycleOut m_intakeRequest = new DutyCycleOut(0.0);
     private final TalonFX m_intakeMotor = new TalonFX(Constants.INTAKE_MOTOR_ID, Constants.RIO_CANBUS);
     private final TalonFX m_guideMotor = new TalonFX(Constants.INTAKE_GUIDE_MOTOR_ID, Constants.RIO_CANBUS);
@@ -39,6 +43,9 @@ public class Intake extends SubsystemBase {
 
     private Trigger m_hasNoteDebounced = new Trigger(this::hasNoteInIndexer).debounce(p_debounceTime.getValue(),
             DebounceType.kBoth);
+    private Trigger intakingNoteTrigger = new Trigger(
+            () -> m_intakeMotor.getAcceleration().getValueAsDouble() < -p_intakingNoteAcceleration.getValue())
+            .debounce(2, DebounceType.kFalling);
 
     public boolean m_automaticMode = true;
     public boolean lastMode = true;
@@ -80,6 +87,7 @@ public class Intake extends SubsystemBase {
             indexConfiguration.HardwareLimitSwitch.ForwardLimitEnable = true;
             m_indexMotor.getConfigurator().apply(indexConfiguration);
             m_indexMotor.setInverted(true);
+
             m_intakeMotor.setControl(m_intakeRequest.withOutput(intakeRollerSpeed.getValue()));
             m_guideMotor.setControl(m_intakeRequest.withOutput(guideRollerSpeed.getValue()));
             m_indexMotor.setControl(m_intakeRequest.withOutput(indexRollerSpeed.getValue()));
@@ -132,6 +140,10 @@ public class Intake extends SubsystemBase {
 
     public BooleanSupplier isIndexerReady() {
         return () -> m_indexMotor.getMotorVoltage().getValueAsDouble() > 6.0;
+    }
+
+    public boolean isIntakingNote() {
+        return intakingNoteTrigger.getAsBoolean();
     }
 
     public Command intakeFactory() {
@@ -189,5 +201,7 @@ public class Intake extends SubsystemBase {
         SmartDashboard.putNumber("Intake/Guide Current", m_guideMotor.getStatorCurrent().getValueAsDouble());
         SmartDashboard.putNumber("Intake/Index Current", m_indexMotor.getStatorCurrent().getValueAsDouble());
         SmartDashboard.putBoolean("Intake/HasNoteDebounced", hasNoteDebounced().getAsBoolean());
+        SmartDashboard.putNumber("Intake/Intake Acceleration", m_intakeMotor.getAcceleration().getValueAsDouble());
+        SmartDashboard.putBoolean("Intake/Intaking Note", isIntakingNote());
     }
 }
