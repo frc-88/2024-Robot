@@ -17,9 +17,11 @@ import com.ctre.phoenix.led.LarsonAnimation.BounceMode;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.ros.bridge.CoprocessorBridge;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import frc.robot.util.preferenceconstants.IntPreferenceConstant;
 
@@ -33,13 +35,12 @@ public class Lights extends SubsystemBase {
     private Animation m_toAnimate = null;
     private Animation m_lastAnimation = null;
 
-    private BooleanSupplier m_swerve;
-    private BooleanSupplier m_intake;
-    private BooleanSupplier m_elevator;
-    private BooleanSupplier m_shooter;
-    private BooleanSupplier m_indexer;
-    private BooleanSupplier m_climber;
-    private BooleanSupplier m_coprocessor;
+    private CommandSwerveDrivetrain m_swerve;
+    private Intake m_intake;
+    private Elevator m_elevator;
+    private Shooter m_shooter;
+    private Climber m_climber;
+    private CoprocessorBridge m_coprocessor;
     private Supplier<String> m_autoName;
 
     public enum AnimationTypes {
@@ -56,12 +57,11 @@ public class Lights extends SubsystemBase {
         Empty
     }
 
-    public Lights(BooleanSupplier swerve, BooleanSupplier intake, BooleanSupplier elevator, BooleanSupplier indexer,
-            BooleanSupplier shooter, BooleanSupplier climber, BooleanSupplier coprocessor, Supplier<String> autoName) {
+    public Lights(CommandSwerveDrivetrain swerve, Intake intake, Elevator elevator,
+            Shooter shooter, Climber climber, CoprocessorBridge coprocessor, Supplier<String> autoName) {
         m_swerve = swerve;
         m_intake = intake;
         m_elevator = elevator;
-        m_indexer = indexer;
         m_shooter = shooter;
         m_climber = climber;
         m_coprocessor = coprocessor;
@@ -69,7 +69,7 @@ public class Lights extends SubsystemBase {
         CANdleConfiguration configAll = new CANdleConfiguration();
         configAll.statusLedOffWhenActive = true;
         configAll.disableWhenLOS = false;
-        configAll.stripType = LEDStripType.RGB;
+        configAll.stripType = LEDStripType.GRB;
         configAll.brightnessScalar = 1.0;
         configAll.vBatOutputMode = VBatOutputMode.On;
         m_candle.configAllSettings(configAll, 100);
@@ -77,32 +77,26 @@ public class Lights extends SubsystemBase {
 
     public void noteSpinLeft() {
         m_toAnimate = new ColorFlowAnimation(255, 165, 0, 0, 0.2, numLEDs.getValue(), Direction.Forward);
-        m_setAnim = true;
     }
 
     public void noteSpinRight() {
         m_toAnimate = new ColorFlowAnimation(255, 165, 0, 0, 0.2, numLEDs.getValue(), Direction.Backward);
-        m_setAnim = true;
     }
 
     public void holdingNote() {
         m_toAnimate = new LarsonAnimation(255, 165, 0, 0, 0.2, numLEDs.getValue(), BounceMode.Center, 8);
-        m_setAnim = true;
     }
 
     public void setFire() {
         m_toAnimate = new FireAnimation(1, 0.6, numLEDs.getValue(), 0.2, 0.2);
-        m_setAnim = true;
     }
 
     public void larsonColor(int r, int g, int b) {
         m_toAnimate = new LarsonAnimation(r, g, b, 0, 0.2, numLEDs.getValue(), BounceMode.Front, 5);
-        m_setAnim = true;
     }
 
     public void rainbow() {
         m_toAnimate = new RainbowAnimation(1, 0.7, numLEDs.getValue());
-        m_setAnim = true;
     }
 
     // TODO: test this animation to see if it truly works
@@ -121,7 +115,7 @@ public class Lights extends SubsystemBase {
                 case 0: {
                     larsonColor(255, 0, 0);
                     // swerve goes here
-                    if (m_swerve.getAsBoolean() && counter++ > 75) {
+                    if (true && counter++ > 200) {
                         m_state++;
                         counter = 0;
                     }
@@ -130,7 +124,7 @@ public class Lights extends SubsystemBase {
                 case 1: {
                     larsonColor(255, 165, 0);
                     // elevator goes here
-                    if (m_elevator.getAsBoolean() && counter++ > 75) {
+                    if (m_elevator.isElevatorReady().getAsBoolean() && counter++ > 200) {
                         m_state++;
                         counter = 0;
                     }
@@ -139,7 +133,7 @@ public class Lights extends SubsystemBase {
                 case 2: {
                     larsonColor(255, 255, 0);
                     // intake goes here
-                    if (m_intake.getAsBoolean() && counter++ > 75) {
+                    if (m_intake.isIntakeReady().getAsBoolean() && counter++ > 200) {
                         m_state++;
                         counter = 0;
                     }
@@ -148,7 +142,7 @@ public class Lights extends SubsystemBase {
                 case 3: {
                     larsonColor(0, 255, 0);
                     // indexer goes here
-                    if (m_indexer.getAsBoolean() && counter++ > 75) {
+                    if (m_intake.isIndexerReady().getAsBoolean() && counter++ > 200) {
                         m_state++;
                         counter = 0;
                     }
@@ -157,7 +151,7 @@ public class Lights extends SubsystemBase {
                 case 4: {
                     larsonColor(0, 0, 255);
                     // shooter goes here
-                    if (m_shooter.getAsBoolean() && counter++ > 75) {
+                    if (m_shooter.isShooterReady().getAsBoolean() && counter++ > 200) {
                         m_state++;
                         counter = 0;
                     }
@@ -166,7 +160,7 @@ public class Lights extends SubsystemBase {
                 case 5: {
                     larsonColor(0, 255, 255);
                     // climber goes here
-                    if (m_climber.getAsBoolean() && counter++ > 75) {
+                    if (m_climber.isClimberReady().getAsBoolean() && counter++ > 200) {
                         m_state++;
                         counter = 0;
                     }
@@ -175,7 +169,7 @@ public class Lights extends SubsystemBase {
                 case 6: {
                     larsonColor(143, 0, 255);
                     // ROS goes here
-                    if (m_coprocessor.getAsBoolean() && counter++ > 75) {
+                    if (m_coprocessor.isCoprocessorReady().getAsBoolean() && counter++ > 200) {
                         m_state++;
                         counter = 0;
                     }
@@ -183,7 +177,7 @@ public class Lights extends SubsystemBase {
                 }
                 case 7: {
                     larsonColor(255, 255, 255);
-                    if (!m_autoName.get().equals("Wait") && counter++ > 75) {
+                    if (true && counter++ > 200) {
                         m_state++;
                         counter = 0;
                     }
@@ -191,7 +185,7 @@ public class Lights extends SubsystemBase {
                 }
                 case 8: {
                     rainbow();
-                    if (counter++ > 100) {
+                    if (counter++ > 200) {
                         m_state++;
                         counter = 0;
                     }
@@ -199,15 +193,22 @@ public class Lights extends SubsystemBase {
                 }
             }
         }
-        if (!m_toAnimate.equals(m_lastAnimation) && m_lastAnimation != null) {
-            m_toAnimate = m_lastAnimation;
+        // if animation is equal to last one, don't clear
+        if (m_toAnimate.equals(m_lastAnimation)) {
+            m_setAnim = false;
+            // if animation if not equal to last one, clear animation
+        } else if (!m_toAnimate.equals(m_lastAnimation) && m_lastAnimation != null) {
+            m_lastAnimation = m_toAnimate;
             m_setAnim = true;
-            m_lastAnimation = null;
-        }
-        if (m_setAnim) {
-            m_candle.clearAnimation(0);
+            // for the very first time when m_lastAnimation is null, don't clear.
+        } else {
+            m_lastAnimation = m_toAnimate;
             m_setAnim = false;
         }
+        // if (m_setAnim) {
+        // m_candle.clearAnimation(0);
+        // m_setAnim = false;
+        // }
         m_candle.animate(m_toAnimate);
     }
 

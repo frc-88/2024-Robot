@@ -29,6 +29,11 @@ public class Intake extends SubsystemBase {
 
     private DoublePreferenceConstant p_debounceTime = new DoublePreferenceConstant("Intake/IndexDebounceTime", 0.25);
 
+    private DoublePreferenceConstant p_intakingNoteAcceleration = new DoublePreferenceConstant(
+            "Intake/IntakingNoteCurrent",
+            100);
+    private boolean m_isIntakingRunning = false;
+
     private final DutyCycleOut m_intakeRequest = new DutyCycleOut(0.0);
     private final TalonFX m_intakeMotor = new TalonFX(Constants.INTAKE_MOTOR_ID, Constants.RIO_CANBUS);
     private final TalonFX m_guideMotor = new TalonFX(Constants.INTAKE_GUIDE_MOTOR_ID, Constants.RIO_CANBUS);
@@ -39,6 +44,9 @@ public class Intake extends SubsystemBase {
 
     private Trigger m_hasNoteDebounced = new Trigger(this::hasNoteInIndexer).debounce(p_debounceTime.getValue(),
             DebounceType.kBoth);
+    private Trigger m_intakingNoteTrigger = new Trigger(
+            () -> m_intakeMotor.getAcceleration().getValueAsDouble() < -p_intakingNoteAcceleration.getValue())
+            .debounce(1, DebounceType.kFalling).and(() -> m_isIntakingRunning);
 
     public boolean m_automaticMode = true;
     public boolean lastMode = true;
@@ -80,11 +88,15 @@ public class Intake extends SubsystemBase {
             indexConfiguration.HardwareLimitSwitch.ForwardLimitEnable = true;
             m_indexMotor.getConfigurator().apply(indexConfiguration);
             m_indexMotor.setInverted(true);
+
             m_intakeMotor.setControl(m_intakeRequest.withOutput(intakeRollerSpeed.getValue()));
             m_guideMotor.setControl(m_intakeRequest.withOutput(guideRollerSpeed.getValue()));
             m_indexMotor.setControl(m_intakeRequest.withOutput(indexRollerSpeed.getValue()));
+
+            m_isIntakingRunning = true;
         } else {
             stopMoving();
+            m_isIntakingRunning = false;
         }
     }
 
@@ -125,17 +137,22 @@ public class Intake extends SubsystemBase {
         m_indexMotor.setControl(m_intakeRequest.withOutput(indexShootSpeed.getValue()));
     }
 
-    public boolean isIntakeReady() {
-        return m_intakeMotor.getMotorVoltage().getValueAsDouble() > 6.0
+    public BooleanSupplier isIntakeReady() {
+        return () -> m_intakeMotor.getMotorVoltage().getValueAsDouble() > 6.0
                 && m_guideMotor.getMotorVoltage().getValueAsDouble() > 6.0;
     }
 
-    public boolean isIndexerReady() {
-        return m_indexMotor.getMotorVoltage().getValueAsDouble() > 6.0;
+    public BooleanSupplier isIndexerReady() {
+        return () -> m_indexMotor.getMotorVoltage().getValueAsDouble() > 6.0;
+    }
+
+    public boolean isIntakingNote() {
+        return m_intakingNoteTrigger.getAsBoolean();
     }
 
     public Command intakeFactory() {
-        return new RunCommand(() -> intake(), this).until(() -> hasNoteInIndexer());
+        return new RunCommand(() -> intake(), this).until(() -> hasNoteInIndexer())
+                .finallyDo(() -> m_isIntakingRunning = false);
     }
 
     public Command goblinModeFactory() {
@@ -189,5 +206,7 @@ public class Intake extends SubsystemBase {
         SmartDashboard.putNumber("Intake/Guide Current", m_guideMotor.getStatorCurrent().getValueAsDouble());
         SmartDashboard.putNumber("Intake/Index Current", m_indexMotor.getStatorCurrent().getValueAsDouble());
         SmartDashboard.putBoolean("Intake/HasNoteDebounced", hasNoteDebounced().getAsBoolean());
+        SmartDashboard.putNumber("Intake/Intake Acceleration", m_intakeMotor.getAcceleration().getValueAsDouble());
+        SmartDashboard.putBoolean("Intake/Intaking Note", isIntakingNote());
     }
 }

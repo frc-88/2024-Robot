@@ -4,6 +4,8 @@
 
 package frc.robot.ros.bridge;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -45,8 +47,8 @@ public class CoprocessorBridge extends SubsystemBase {
         counter = 0;
     }
 
-    public boolean isCoprocessorReady() {
-        return coprocessorAlive && bridge.isAlive();
+    public BooleanSupplier isCoprocessorReady() {
+        return () -> coprocessorAlive && bridge.isAlive();
     }
 
     // ---
