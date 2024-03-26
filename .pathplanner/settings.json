@@ -4,8 +4,9 @@
   "holonomicMode": true,
   "pathFolders": [
     "Cleanside",
-    "FourPiece",
     "Climb",
+    "FourPiece",
+    "AmpSide",
     "SixPiece"
   ],
   "autoFolders": [],
