@@ -40,7 +40,7 @@
                                       {
                                         "type": "named",
                                         "data": {
-                                          "name": "Shoot"
+                                          "name": "Shoot Soon"
                                         }
                                       },
                                       {
@@ -59,13 +59,13 @@
                                       {
                                         "type": "named",
                                         "data": {
-                                          "name": "Pivot Stow"
+                                          "name": "Intake"
                                         }
                                       },
                                       {
                                         "type": "named",
                                         "data": {
-                                          "name": "Intake"
+                                          "name": "Pivot Stow"
                                         }
                                       }
                                     ]
