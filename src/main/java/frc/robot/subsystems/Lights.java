@@ -10,6 +10,7 @@ import com.ctre.phoenix.led.ColorFlowAnimation;
 import com.ctre.phoenix.led.FireAnimation;
 import com.ctre.phoenix.led.LarsonAnimation;
 import com.ctre.phoenix.led.RainbowAnimation;
+import com.ctre.phoenix.led.StrobeAnimation;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdle.VBatOutputMode;
 import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
@@ -85,6 +86,10 @@ public class Lights extends SubsystemBase {
 
     public void holdingNote() {
         m_toAnimate = new LarsonAnimation(255, 165, 0, 0, 0.2, numLEDs.getValue(), BounceMode.Center, 8);
+    }
+
+    public void intakingNote() {
+        m_toAnimate = new StrobeAnimation(255, 165, 0, 0, 0.2, numLEDs.getValue());
     }
 
     public void setFire() {
@@ -192,9 +197,20 @@ public class Lights extends SubsystemBase {
                     break;
                 }
             }
+        } else {
+            if (m_intake.hasNoteInIndexer()) {
+                holdingNote();
+            } else if (m_intake.isIntakingNote()) {
+                intakingNote();
+            } else {
+                tiedye();
+            }
         }
+
         // if animation is equal to last one, don't clear
-        if (m_toAnimate.equals(m_lastAnimation)) {
+        if (m_toAnimate.equals(m_lastAnimation))
+
+        {
             m_setAnim = false;
             // if animation if not equal to last one, clear animation
         } else if (!m_toAnimate.equals(m_lastAnimation) && m_lastAnimation != null) {
