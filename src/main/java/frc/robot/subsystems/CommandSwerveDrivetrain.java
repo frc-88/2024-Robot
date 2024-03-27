@@ -331,16 +331,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 .setValue(getModule(3).getCANcoder().getAbsolutePosition().getValueAsDouble());
     }
 
-    public boolean isSwerveReady() {
-        int isModuleGood = 0;
-        for (int i = 0; i < 4; i++) {
-            SwerveModule module = getModule(i);
-            if (module.getDriveMotor().getMotorVoltage().getValueAsDouble() > 6.0
-                    && module.getSteerMotor().getMotorVoltage().getValueAsDouble() > 6.0) {
-                isModuleGood += 1;
-            }
-        }
-        return isModuleGood == 4;
+    public BooleanSupplier isSwerveReady() {
+        return () -> getModule(0).getSteerMotor().getIsProLicensed().getValue();
     }
 
     public void localize() {

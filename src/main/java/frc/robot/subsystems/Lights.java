@@ -120,7 +120,7 @@ public class Lights extends SubsystemBase {
                 case 0: {
                     larsonColor(255, 0, 0);
                     // swerve goes here
-                    if (true && counter++ > 200) {
+                    if (m_swerve.isSwerveReady().getAsBoolean() && counter++ > 200) {
                         m_state++;
                         counter = 0;
                     }
@@ -182,7 +182,7 @@ public class Lights extends SubsystemBase {
                 }
                 case 7: {
                     larsonColor(255, 255, 255);
-                    if (true && counter++ > 200) {
+                    if (!m_autoName.get().equals("Wait") && counter++ > 200) {
                         m_state++;
                         counter = 0;
                     }
