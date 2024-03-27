@@ -203,7 +203,7 @@ public class Lights extends SubsystemBase {
             } else if (m_intake.isIntakingNote()) {
                 intakingNote();
             } else {
-                tiedye();
+                setFire();
             }
         }
 
