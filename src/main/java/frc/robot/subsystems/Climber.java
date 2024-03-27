@@ -170,8 +170,8 @@ public class Climber extends SubsystemBase {
         m_armLeft.setControl(new DutyCycleOut(0.0));
     }
 
-    public BooleanSupplier isClimberReady() {
-        return () -> m_armLeft.getIsProLicensed().getValue() &&
+    public boolean isClimberReady() {
+        return m_armLeft.getIsProLicensed().getValue() &&
                 m_armRight.getIsProLicensed().getValue();
     }
 
@@ -226,6 +226,6 @@ public class Climber extends SubsystemBase {
                 m_armLeft.getPosition().getValueAsDouble() * kMotorRotationsToClimberPosition);
         SmartDashboard.putNumber("Climber:StartLeft", leftStartPosition);
         SmartDashboard.putNumber("Climber:StartRight", rightStartPosition);
-        SmartDashboard.putBoolean("isclimberready", isClimberReady().getAsBoolean());
+        SmartDashboard.putBoolean("isclimberready", isClimberReady());
     }
 }
