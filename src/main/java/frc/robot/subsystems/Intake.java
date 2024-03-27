@@ -45,7 +45,8 @@ public class Intake extends SubsystemBase {
     private Trigger m_hasNoteDebounced = new Trigger(this::hasNoteInIndexer).debounce(p_debounceTime.getValue(),
             DebounceType.kBoth);
     private Trigger m_intakingNoteTrigger = new Trigger(
-            () -> m_intakeMotor.getAcceleration().getValueAsDouble() < -p_intakingNoteAcceleration.getValue())
+            () -> m_isIntakingRunning
+                    && m_intakeMotor.getAcceleration().getValueAsDouble() < -p_intakingNoteAcceleration.getValue())
             .debounce(1.5, DebounceType.kFalling);
 
     public boolean m_automaticMode = true;
