@@ -108,6 +108,14 @@ public class Shooter extends SubsystemBase {
                         m_RightShooter.getVelocity().getValueAsDouble() * 60 - rightShooterSpeed.getValue()) <= 500);
     }
 
+    public boolean isShooterAtAlmostFullSpeed() {
+        return (Math
+                .abs(m_LeftShooter.getVelocity().getValueAsDouble() * 60 - leftShooterSpeed.getValue() - 1500) <= 500
+                && Math.abs(
+                        m_RightShooter.getVelocity().getValueAsDouble() * 60 - rightShooterSpeed.getValue()
+                                - 1500) <= 500);
+    }
+
     public boolean isShooterAtAmpTrapSpeed() {
         return (Math.abs(m_LeftShooter.getVelocity().getValueAsDouble() * 60 - p_ampTrapSpeed.getValue()) <= 500
                 && Math.abs(
