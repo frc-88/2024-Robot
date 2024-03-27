@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.983288455888077,
-        "y": 7.244070355124084
+        "x": 6.515300061478983,
+        "y": 7.263569871557796
       },
       "isLocked": false,
       "linkedName": "AmpShoot"
     },
     {
       "anchor": {
-        "x": 8.328755089814218,
-        "y": 4.055899418212139
+        "x": 8.319005331597362,
+        "y": 3.880403770308729
       },
       "prevControl": {
-        "x": 7.2562816859600465,
-        "y": 4.055899418212139
+        "x": 8.309255573380506,
+        "y": 5.381866535704569
       },
       "nextControl": {
-        "x": 8.787097435102767,
-        "y": 4.055899418212139
+        "x": 8.32445577299262,
+        "y": 3.0410357954389613
       },
       "isLocked": false,
       "linkedName": null
@@ -36,8 +36,8 @@
         "y": 6.45
       },
       "prevControl": {
-        "x": 6.798043049767811,
-        "y": 7.166072289389235
+        "x": 7.685271047501716,
+        "y": 7.624310925581471
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,7 +47,12 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 1,
-      "rotationDegrees": -20.565746652179833,
+      "rotationDegrees": -71.14684123558085,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 1.6,
+      "rotationDegrees": 11.54,
       "rotateFast": false
     }
   ],
