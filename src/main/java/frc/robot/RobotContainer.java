@@ -103,6 +103,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("Prep Shooter", m_shooter.runShooterFactory());
         NamedCommands.registerCommand("Shoot", new WaitUntilCommand(m_shooter::isShooterAtFullSpeed)
                 .andThen(m_intake.shootIndexerFactory().withTimeout(0.3)));
+        NamedCommands.registerCommand("Shoot Soon", new WaitUntilCommand(m_shooter::isShooterAtAmpTrapSpeed)
+                .andThen(m_intake.shootIndexerFactory().withTimeout(0.3)));
         NamedCommands.registerCommand("Wait For Shooter", new WaitUntilCommand(m_shooter::isShooterAtFullSpeed));
         NamedCommands.registerCommand("Localize", drivetrain.localizeFactory());
         NamedCommands.registerCommand("Intake", m_intake.intakeFactory().withTimeout(4.0));
