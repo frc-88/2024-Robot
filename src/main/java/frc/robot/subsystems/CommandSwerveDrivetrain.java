@@ -8,6 +8,7 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
@@ -15,6 +16,7 @@ import com.ctre.phoenix6.mechanisms.swerve.utility.PhoenixPIDController;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -96,6 +98,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private final DoubleArrayPublisher poseFieldPub = odomTable.getDoubleArrayTopic("robotPose").publish();
     private final StringPublisher poseFieldTypePub = odomTable.getStringTopic(".type").publish();
 
+    private Trigger m_tipping = new Trigger(() -> tippingPitch() || tippingRoll());
+
     public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     private final SwerveRequest.Idle idle = new SwerveRequest.Idle();
@@ -103,7 +107,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private final SwerveRequest.FieldCentricFacingAngle snapToAngle = new SwerveRequest.FieldCentricFacingAngle()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     private final SwerveRequest.PointWheelsAt pointWheelsAt = new SwerveRequest.PointWheelsAt();
-    private final PhoenixPIDController headingController = new PhoenixPIDController(12.0, 0, 1.0) {
+    private final PhoenixPIDController headingController = new PhoenixPIDController(20.0, 0.0, 1.0) {
         @Override
         public double calculate(double measurement, double setpoint, double currentTimestamp) {
             double output = super.calculate(measurement, setpoint, currentTimestamp);
@@ -286,6 +290,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         };
     }
 
+    // public Supplier<SwerveRequest> driveAtTargetHeading(CommandXboxController
+    // controller) {
+    // return
+    // }
+
     public Supplier<SwerveRequest> autoSnapToAngleRequest() {
         return () -> {
             return snapToAngle.withVelocityX(0.0)
@@ -320,6 +329,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 .setValue(getModule(2).getCANcoder().getAbsolutePosition().getValueAsDouble());
         TunerConstants.p_backRightEncoderOffset
                 .setValue(getModule(3).getCANcoder().getAbsolutePosition().getValueAsDouble());
+    }
+
+    public BooleanSupplier isSwerveReady() {
+        return () -> getModule(0).getSteerMotor().getIsProLicensed().getValue();
     }
 
     public void localize() {
@@ -386,15 +399,13 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         });
     }
 
-    public Command pathFindingCommand(Pose2d targetPose) {
-        Pose2d pose = (DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
-                ? DriveUtils.redBlueTransform(targetPose)
-                : targetPose;
+    public Command pathFindingCommand(String pathName) {
+        PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
         PathConstraints constraints = new PathConstraints(p_maxVeloctiy.getValue(), p_maxAcceleration.getValue(),
                 Units.degreesToRadians(p_maxAngularVelocity.getValue()),
                 Units.degreesToRadians(p_maxAngularAcceleration.getValue()));
 
-        return AutoBuilder.pathfindToPose(pose, constraints, 0.0, 0.0);
+        return AutoBuilder.pathfindThenFollowPath(path, constraints, 0.0);
     }
 
     private void sendOdomPose() {
@@ -428,7 +439,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public Trigger tipping() {
-        return new Trigger(() -> tippingPitch() || tippingRoll());
+        return m_tipping;
     }
 
     @Override
@@ -445,6 +456,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         SmartDashboard.putNumber("Pigeon Pitch", getPigeon2().getPitch().getValueAsDouble());
         SmartDashboard.putString("PowerMode", lowPowerMode ? "LowPowerMode" : "HighPowerMode");
         SmartDashboard.putNumber("AmpShuttle", m_aiming.getAmpAngleForDrivetrain());
+        SmartDashboard.putNumber("Pigeon Rate", getPigeon2().getAngularVelocityZDevice().getValueAsDouble());
+        SmartDashboard.putNumber("Robot Heading", getCurrentRobotAngle());
         m_aiming.sendTarget();
     }
 }

@@ -170,6 +170,11 @@ public class Climber extends SubsystemBase {
         m_armLeft.setControl(new DutyCycleOut(0.0));
     }
 
+    public BooleanSupplier isClimberReady() {
+        return () -> m_armLeft.getIsProLicensed().getValue() &&
+                m_armRight.getIsProLicensed().getValue();
+    }
+
     public Command softLandingFactory() {
         return new RunCommand(() -> softLanding(), this)
                 .until(() -> climberOnTarget(10.0, 2.0)).andThen(() -> {
@@ -221,5 +226,6 @@ public class Climber extends SubsystemBase {
                 m_armLeft.getPosition().getValueAsDouble() * kMotorRotationsToClimberPosition);
         SmartDashboard.putNumber("Climber:StartLeft", leftStartPosition);
         SmartDashboard.putNumber("Climber:StartRight", rightStartPosition);
+        SmartDashboard.putBoolean("isclimberready", isClimberReady().getAsBoolean());
     }
 }

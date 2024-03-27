@@ -4,6 +4,8 @@
 
 package frc.robot.ros.bridge;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -17,6 +19,7 @@ public class CoprocessorBridge extends SubsystemBase {
     private final PowerModePublisher powerModePublisher;
     private final PreferenceBackupPublisher preferenceBackupPublisher;
     private final OdomPublisher odomPublisher;
+    private final AprilTagPoseSubscriber tagPoseSubscriber;
 
     private final Publisher[] periodicPublishers;
 
@@ -34,6 +37,7 @@ public class CoprocessorBridge extends SubsystemBase {
         this.preferenceBackupPublisher = new PreferenceBackupPublisher(bridge);
         odomPublisher = new OdomPublisher(drive, bridge);
         periodicPublishers = new Publisher[] { pingPublisher, odomPublisher };
+        tagPoseSubscriber = new AprilTagPoseSubscriber(bridge, drive);
     }
 
     public void onCoprocessorAlive() {
@@ -41,6 +45,10 @@ public class CoprocessorBridge extends SubsystemBase {
         powerModePublisher.publish();
         timer.start();
         counter = 0;
+    }
+
+    public BooleanSupplier isCoprocessorReady() {
+        return () -> coprocessorAlive;
     }
 
     // ---
@@ -58,8 +66,13 @@ public class CoprocessorBridge extends SubsystemBase {
         for (Publisher publisher : periodicPublishers) {
             publisher.publish();
         }
+
+        tagPoseSubscriber.receive();
+
         if (coprocessorAlive) {
             SmartDashboard.putNumber("ROS avg cycle time", timer.get() / ++counter);
         }
+        SmartDashboard.putBoolean("is coprocessor alive", coprocessorAlive);
+        SmartDashboard.putBoolean("is bridge alive", bridge.isAlive());
     }
 }

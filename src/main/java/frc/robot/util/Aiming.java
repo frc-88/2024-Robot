@@ -31,7 +31,7 @@ public class Aiming {
     private TFListenerCompact tf_compact;
     private TagSubscriber tagSubscriber;
     private final int[] speakerTagsRed = { 3, 4 };
-    private final double speakerHeight = Units.inchesToMeters(60.265913);
+    private final double speakerHeight = Units.inchesToMeters((60.265913 - 2.5));
     private BridgePublisher<MarkerArray> aimPub;
 
     private DoublePreferenceConstant p_aimingOffset = new DoublePreferenceConstant("Aiming Offset",
@@ -139,8 +139,8 @@ public class Aiming {
 
     public double getAmpAngleForDrivetrain() {
         Pose2d robotPose = getROSPose();
-        robotPose = (getAlliance() == DriverStation.Alliance.Red) ? robotPose.relativeTo(Constants.RED_AMP_POSE)
-                : robotPose.relativeTo(Constants.BLUE_AMP_POSE);
+        robotPose = (getAlliance() == DriverStation.Alliance.Red) ? robotPose.relativeTo(Constants.RED_AMP_AIM_POSE)
+                : robotPose.relativeTo(Constants.BLUE_AMP_AIM_POSE);
         double drivetrainAmpAngle = Math.atan2(robotPose.getY(), robotPose.getX()) * (180 / Math.PI);
         return drivetrainAmpAngle;
     }
