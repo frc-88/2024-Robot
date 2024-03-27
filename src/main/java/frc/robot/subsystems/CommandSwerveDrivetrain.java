@@ -290,6 +290,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         };
     }
 
+    // public Supplier<SwerveRequest> driveAtTargetHeading(CommandXboxController
+    // controller) {
+    // return
+    // }
+
     public Supplier<SwerveRequest> autoSnapToAngleRequest() {
         return () -> {
             return snapToAngle.withVelocityX(0.0)

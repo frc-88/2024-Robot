@@ -171,8 +171,8 @@ public class Climber extends SubsystemBase {
     }
 
     public BooleanSupplier isClimberReady() {
-        return () -> m_armLeft.getMotorVoltage().getValueAsDouble() > 6.0
-                && m_armRight.getMotorVoltage().getValueAsDouble() > 6.0;
+        return () -> m_armLeft.getIsProLicensed().getValue() &&
+                m_armRight.getIsProLicensed().getValue();
     }
 
     public Command softLandingFactory() {
