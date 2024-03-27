@@ -46,7 +46,7 @@ public class Intake extends SubsystemBase {
             DebounceType.kBoth);
     private Trigger m_intakingNoteTrigger = new Trigger(
             () -> m_intakeMotor.getAcceleration().getValueAsDouble() < -p_intakingNoteAcceleration.getValue())
-            .debounce(1, DebounceType.kFalling).and(() -> m_isIntakingRunning);
+            .debounce(1.5, DebounceType.kFalling);
 
     public boolean m_automaticMode = true;
     public boolean lastMode = true;
@@ -147,7 +147,7 @@ public class Intake extends SubsystemBase {
     }
 
     public boolean isIntakingNote() {
-        return m_intakingNoteTrigger.getAsBoolean();
+        return m_intakingNoteTrigger.getAsBoolean() && m_isIntakingRunning;
     }
 
     public Command intakeFactory() {
