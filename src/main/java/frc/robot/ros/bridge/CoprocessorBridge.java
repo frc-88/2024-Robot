@@ -72,5 +72,7 @@ public class CoprocessorBridge extends SubsystemBase {
         if (coprocessorAlive) {
             SmartDashboard.putNumber("ROS avg cycle time", timer.get() / ++counter);
         }
+        SmartDashboard.putBoolean("is coprocessor alive", coprocessorAlive);
+        SmartDashboard.putBoolean("is bridge alive", bridge.isAlive());
     }
 }
