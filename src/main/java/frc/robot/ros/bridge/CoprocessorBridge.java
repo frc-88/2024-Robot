@@ -48,7 +48,7 @@ public class CoprocessorBridge extends SubsystemBase {
     }
 
     public BooleanSupplier isCoprocessorReady() {
-        return () -> coprocessorAlive && bridge.isAlive();
+        return () -> coprocessorAlive;
     }
 
     // ---
