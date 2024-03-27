@@ -114,6 +114,8 @@ public class RobotContainer {
                 m_elevator.goToAimingPosition(() -> m_aiming.odomSpeakerAngle(drivetrain.getPose()))
                         .until(() -> m_elevator.pivotOnTarget(m_aiming.odomSpeakerAngle(drivetrain.getPose()),
                                 2.0)));
+        NamedCommands.registerCommand("Pivot Active Aim",
+                m_elevator.goToAimingPosition(() -> m_aiming.odomSpeakerAngle(drivetrain.getPose())));
         NamedCommands.registerCommand("Pivot Aim Minus 4",
                 m_elevator.goToAimingPosition(() -> m_aiming.odomSpeakerAngle(drivetrain.getPose()) - 4)
                         .until(() -> m_elevator.pivotOnTarget(m_aiming.odomSpeakerAngle(drivetrain.getPose()) - 4,
@@ -312,9 +314,9 @@ public class RobotContainer {
 
     public void disabledPeriodic() {
         String nextAuto = m_autoCommandName;
-        if (buttonBox.button(12).getAsBoolean() && !nextAuto.equals("FourPiece")) {
-            m_autoCommand = drivetrain.getAutoPath("FourPiece");
-            nextAuto = "FourPiece";
+        if (buttonBox.button(12).getAsBoolean() && !nextAuto.equals("AmpSide")) {
+            m_autoCommand = drivetrain.getAutoPath("AmpSide");
+            nextAuto = "AmpSide";
         }
 
         if (buttonBox.button(6).getAsBoolean() && !m_autoCommandName.equals("FivePiece")) {
@@ -330,6 +332,11 @@ public class RobotContainer {
         if (buttonBox.button(11).getAsBoolean() && !nextAuto.equals("Cleanside")) {
             m_autoCommand = drivetrain.getAutoPath("Cleanside");
             nextAuto = "Cleanside";
+        }
+
+        if (buttonBox.button(19).getAsBoolean() && !nextAuto.equals("Cleanside2")) {
+            m_autoCommand = drivetrain.getAutoPath("Cleanside2");
+            nextAuto = "Cleanside2";
         }
 
         if ((buttonBox.button(8)).getAsBoolean() && !m_autoCommandName.equals("SixPiece")) {

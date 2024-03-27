@@ -158,8 +158,8 @@ public class Shooter extends SubsystemBase {
     }
 
     public BooleanSupplier isShooterReady() {
-        return () -> m_LeftShooter.getMotorVoltage().getValueAsDouble() > 6.0
-                && m_LeftShooter.getMotorVoltage().getValueAsDouble() > 6.0;
+        return () -> m_LeftShooter.getIsProLicensed().getValue()
+                && m_LeftShooter.getIsProLicensed().getValue();
     }
 
     public Trigger shooterAtSpeed() {
