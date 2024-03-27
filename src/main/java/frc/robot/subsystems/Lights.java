@@ -36,12 +36,12 @@ public class Lights extends SubsystemBase {
     private Animation m_toAnimate = null;
     private Animation m_lastAnimation = null;
 
-    private BooleanSupplier m_swerve;
-    private BooleanSupplier m_intake;
-    private BooleanSupplier m_elevator;
-    private BooleanSupplier m_shooter;
-    private BooleanSupplier m_climber;
-    private BooleanSupplier m_coprocessor;
+    private CommandSwerveDrivetrain m_swerve;
+    private Intake m_intake;
+    private Elevator m_elevator;
+    private Shooter m_shooter;
+    private Climber m_climber;
+    private CoprocessorBridge m_coprocessor;
     private Supplier<String> m_autoName;
 
     public enum AnimationTypes {
@@ -58,8 +58,8 @@ public class Lights extends SubsystemBase {
         Empty
     }
 
-    public Lights(BooleanSupplier swerve, BooleanSupplier intake, BooleanSupplier elevator,
-            BooleanSupplier shooter, BooleanSupplier climber, BooleanSupplier coprocessor, Supplier<String> autoName) {
+    public Lights(CommandSwerveDrivetrain swerve, Intake intake, Elevator elevator,
+            Shooter shooter, Climber climber, CoprocessorBridge coprocessor, Supplier<String> autoName) {
         m_swerve = swerve;
         m_intake = intake;
         m_elevator = elevator;
@@ -120,7 +120,7 @@ public class Lights extends SubsystemBase {
                 case 0: {
                     larsonColor(255, 0, 0);
                     // swerve goes here
-                    if (m_swerve.getAsBoolean() && counter++ > 200) {
+                    if (m_swerve.isSwerveReady().getAsBoolean() && counter++ > 200) {
                         m_state++;
                         counter = 0;
                     }
@@ -129,7 +129,7 @@ public class Lights extends SubsystemBase {
                 case 1: {
                     larsonColor(255, 165, 0);
                     // elevator goes here
-                    if (m_elevator.getAsBoolean() && counter++ > 200) {
+                    if (m_elevator.isElevatorReady().getAsBoolean() && counter++ > 200) {
                         m_state++;
                         counter = 0;
                     }
@@ -138,7 +138,7 @@ public class Lights extends SubsystemBase {
                 case 2: {
                     larsonColor(255, 255, 0);
                     // intake goes here
-                    if (m_intake.getAsBoolean() && counter++ > 200) {
+                    if (m_intake.isIntakeReady().getAsBoolean() && counter++ > 200) {
                         m_state++;
                         counter = 0;
                     }
@@ -147,7 +147,7 @@ public class Lights extends SubsystemBase {
                 case 3: {
                     larsonColor(0, 255, 0);
                     // indexer goes here
-                    if (m_intake.getAsBoolean() && counter++ > 200) {
+                    if (m_intake.isIndexerReady().getAsBoolean() && counter++ > 200) {
                         m_state++;
                         counter = 0;
                     }
@@ -156,7 +156,7 @@ public class Lights extends SubsystemBase {
                 case 4: {
                     larsonColor(0, 0, 255);
                     // shooter goes here
-                    if (m_shooter.getAsBoolean() && counter++ > 200) {
+                    if (m_shooter.isShooterReady().getAsBoolean() && counter++ > 200) {
                         m_state++;
                         counter = 0;
                     }
@@ -165,7 +165,7 @@ public class Lights extends SubsystemBase {
                 case 5: {
                     larsonColor(0, 255, 255);
                     // climber goes here
-                    if (m_climber.getAsBoolean() && counter++ > 200) {
+                    if (m_climber.isClimberReady().getAsBoolean() && counter++ > 200) {
                         m_state++;
                         counter = 0;
                     }
@@ -174,7 +174,7 @@ public class Lights extends SubsystemBase {
                 case 6: {
                     larsonColor(143, 0, 255);
                     // ROS goes here
-                    if (m_coprocessor.getAsBoolean() && counter++ > 200) {
+                    if (m_coprocessor.isCoprocessorReady().getAsBoolean() && counter++ > 200) {
                         m_state++;
                         counter = 0;
                     }

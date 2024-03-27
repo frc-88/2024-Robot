@@ -245,8 +245,8 @@ public class Elevator extends SubsystemBase {
                         - Constants.PIVOT_BOTTOM < 1.0;
     }
 
-    public boolean isElevatorReady() {
-        return m_elevatorMotor.getIsProLicensed().getValue()
+    public BooleanSupplier isElevatorReady() {
+        return () -> m_elevatorMotor.getIsProLicensed().getValue()
                 && m_pivotMotor.getIsProLicensed().getValue();
     }
 
