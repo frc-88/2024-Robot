@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.0222216120107905,
-        "y": 7.3033155075319165
+        "x": 7.077689831055338,
+        "y": 6.674675691693726
       },
       "isLocked": false,
       "linkedName": "AmpShoot"
@@ -36,8 +36,8 @@
         "y": 6.45
       },
       "prevControl": {
-        "x": 7.179381565970338,
-        "y": 7.34029432022828
+        "x": 7.068445127881247,
+        "y": 6.683920394867817
       },
       "nextControl": null,
       "isLocked": false,
