@@ -44,6 +44,8 @@ public class Lights extends SubsystemBase {
     private CoprocessorBridge m_coprocessor;
     private Supplier<String> m_autoName;
 
+    private boolean m_colorSet = false;
+
     public enum AnimationTypes {
         ColorFlow,
         Fire,
@@ -70,38 +72,46 @@ public class Lights extends SubsystemBase {
         CANdleConfiguration configAll = new CANdleConfiguration();
         configAll.statusLedOffWhenActive = true;
         configAll.disableWhenLOS = false;
-        configAll.stripType = LEDStripType.RGB;
+        configAll.stripType = LEDStripType.RGBW;
         configAll.brightnessScalar = 1.0;
         configAll.vBatOutputMode = VBatOutputMode.On;
         m_candle.configAllSettings(configAll, 100);
     }
 
+    private Animation noteSpinLeft = new ColorFlowAnimation(255, 165, 0, 0, 0.2, numLEDs.getValue(), Direction.Forward);
+    private Animation noteSpinRight = new ColorFlowAnimation(255, 165, 0, 0, 0.2, numLEDs.getValue(),
+            Direction.Backward);
+    private Animation holdingNote = new LarsonAnimation(255, 165, 0, 0, 0.2, numLEDs.getValue(), BounceMode.Center, 8);
+    private Animation intakingNote = new StrobeAnimation(255, 165, 0, 0, 0.2, numLEDs.getValue());
+    private Animation setFire = new FireAnimation(1, 0.6, numLEDs.getValue(), 0.2, 0.2);
+    private Animation rainBow = new RainbowAnimation(1, 0.7, numLEDs.getValue());
+
     public void noteSpinLeft() {
-        m_toAnimate = new ColorFlowAnimation(255, 165, 0, 0, 0.2, numLEDs.getValue(), Direction.Forward);
+        m_toAnimate = noteSpinLeft;
     }
 
     public void noteSpinRight() {
-        m_toAnimate = new ColorFlowAnimation(255, 165, 0, 0, 0.2, numLEDs.getValue(), Direction.Backward);
+        m_toAnimate = noteSpinRight;
     }
 
     public void holdingNote() {
-        m_toAnimate = new LarsonAnimation(255, 165, 0, 0, 0.2, numLEDs.getValue(), BounceMode.Center, 8);
+        m_toAnimate = holdingNote;
     }
 
     public void intakingNote() {
-        m_toAnimate = new StrobeAnimation(255, 165, 0, 0, 0.2, numLEDs.getValue());
+        m_toAnimate = intakingNote;
     }
 
     public void setFire() {
-        m_toAnimate = new FireAnimation(1, 0.6, numLEDs.getValue(), 0.2, 0.2);
+        m_toAnimate = setFire;
     }
 
     public void larsonColor(int r, int g, int b) {
-        m_toAnimate = new LarsonAnimation(r, g, b, 0, 0.2, numLEDs.getValue(), BounceMode.Front, 5);
+        m_toAnimate = new LarsonAnimation(r, g, b, 0, 0.2, numLEDs.getValue(), BounceMode.Front, 8);
     }
 
     public void rainbow() {
-        m_toAnimate = new RainbowAnimation(1, 0.7, numLEDs.getValue());
+        m_toAnimate = rainBow;
     }
 
     // TODO: test this animation to see if it truly works
@@ -118,73 +128,105 @@ public class Lights extends SubsystemBase {
             switch (m_state) {
                 // TODO:put in subsystem stuff when integrated
                 case 0: {
-                    larsonColor(255, 0, 0);
+                    if (!m_colorSet) {
+                        larsonColor(255, 0, 0);
+                        m_colorSet = true;
+                    }
                     // swerve goes here
                     if (m_swerve.isSwerveReady().getAsBoolean() && counter++ > 200) {
                         m_state++;
                         counter = 0;
+                        m_colorSet = false;
                     }
                     break;
                 }
                 case 1: {
-                    larsonColor(255, 165, 0);
+                    if (!m_colorSet) {
+                        larsonColor(255, 165, 0);
+                        m_colorSet = true;
+                    }
                     // elevator goes here
                     if (m_elevator.isElevatorReady().getAsBoolean() && counter++ > 200) {
                         m_state++;
                         counter = 0;
+                        m_colorSet = false;
                     }
                     break;
                 }
                 case 2: {
-                    larsonColor(255, 255, 0);
+                    if (!m_colorSet) {
+                        larsonColor(255, 255, 0);
+                        m_colorSet = true;
+                    }
                     // intake goes here
                     if (m_intake.isIntakeReady().getAsBoolean() && counter++ > 200) {
                         m_state++;
                         counter = 0;
+                        m_colorSet = false;
                     }
                     break;
                 }
                 case 3: {
-                    larsonColor(0, 255, 0);
+                    if (!m_colorSet) {
+                        larsonColor(0, 255, 0);
+                        m_colorSet = false;
+                    }
                     // indexer goes here
                     if (m_intake.isIndexerReady().getAsBoolean() && counter++ > 200) {
                         m_state++;
                         counter = 0;
+                        m_colorSet = false;
                     }
                     break;
                 }
                 case 4: {
-                    larsonColor(0, 0, 255);
+                    if (!m_colorSet) {
+                        larsonColor(0, 0, 255);
+                        m_colorSet = true;
+                    }
                     // shooter goes here
                     if (m_shooter.isShooterReady().getAsBoolean() && counter++ > 200) {
                         m_state++;
                         counter = 0;
+                        m_colorSet = false;
                     }
                     break;
                 }
                 case 5: {
-                    larsonColor(0, 255, 255);
+                    if (!m_colorSet) {
+                        larsonColor(0, 255, 255);
+                        m_colorSet = true;
+                    }
                     // climber goes here
                     if (m_climber.isClimberReady().getAsBoolean() && counter++ > 200) {
                         m_state++;
                         counter = 0;
+                        m_colorSet = false;
                     }
                     break;
                 }
                 case 6: {
-                    larsonColor(143, 0, 255);
+                    if (!m_colorSet) {
+                        larsonColor(143, 0, 255);
+                        m_colorSet = true;
+                    }
                     // ROS goes here
                     if (m_coprocessor.isCoprocessorReady().getAsBoolean() && counter++ > 200) {
                         m_state++;
                         counter = 0;
+                        m_colorSet = false;
                     }
                     break;
                 }
                 case 7: {
-                    larsonColor(255, 255, 255);
+                    if (!m_colorSet) {
+                        larsonColor(255, 255, 255);
+                        m_colorSet = true;
+                    }
                     if (!m_autoName.get().equals("Wait") && counter++ > 200) {
                         m_state++;
                         counter = 0;
+                        m_colorSet = false;
                     }
                     break;
                 }
@@ -221,10 +263,10 @@ public class Lights extends SubsystemBase {
             m_lastAnimation = m_toAnimate;
             m_setAnim = false;
         }
-        // if (m_setAnim) {
-        // m_candle.clearAnimation(0);
-        // m_setAnim = false;
-        // }
+        if (m_setAnim) {
+            m_candle.clearAnimation(0);
+            m_setAnim = false;
+        }
         m_candle.animate(m_toAnimate);
     }
 
