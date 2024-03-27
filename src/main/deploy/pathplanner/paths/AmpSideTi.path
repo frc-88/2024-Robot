@@ -1,0 +1,105 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.3940937283583965,
+        "y": 7.273764063197643
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.872921944042086,
+        "y": 7.645369524973284
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.8805945900180085,
+        "y": 7.6638589313214665
+      },
+      "prevControl": {
+        "x": 2.277920813866178,
+        "y": 7.660926212216105
+      },
+      "nextControl": {
+        "x": 6.680167594569423,
+        "y": 7.682348337669648
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.872734304027166,
+        "y": 5.99981235998508
+      },
+      "prevControl": {
+        "x": 7.490359270086557,
+        "y": 6.163687374531055
+      },
+      "nextControl": {
+        "x": 8.131585992901716,
+        "y": 5.888875921895988
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.5,
+        "y": 6.45
+      },
+      "prevControl": {
+        "x": 6.005304262860778,
+        "y": 6.794856832956909
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "AmpShoot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.1500000000000001,
+      "rotationDegrees": 23.85,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 2,
+      "rotationDegrees": -22.61986494804058,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 1.4,
+      "rotationDegrees": 23.85,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 11.34,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "AmpSide",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}
