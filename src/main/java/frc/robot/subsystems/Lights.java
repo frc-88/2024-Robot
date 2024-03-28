@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.ros.bridge.CoprocessorBridge;
@@ -72,7 +73,7 @@ public class Lights extends SubsystemBase {
         CANdleConfiguration configAll = new CANdleConfiguration();
         configAll.statusLedOffWhenActive = true;
         configAll.disableWhenLOS = false;
-        configAll.stripType = LEDStripType.RGB;
+        configAll.stripType = LEDStripType.BRG;
         configAll.brightnessScalar = 1.0;
         configAll.vBatOutputMode = VBatOutputMode.On;
         m_candle.configAllSettings(configAll, 100);
@@ -112,7 +113,7 @@ public class Lights extends SubsystemBase {
     }
 
     public void larsonColor(int r, int g, int b) {
-        m_toAnimate = new LarsonAnimation(r, g, b, 0, 0.5, numLEDs.getValue(), BounceMode.Front, 8);
+        m_toAnimate = new LarsonAnimation(r, g, b, 0, 0.2, numLEDs.getValue(), BounceMode.Front, 8);
         m_setAnim = true;
     }
 
@@ -285,34 +286,34 @@ public class Lights extends SubsystemBase {
         }
     }
 
-    public InstantCommand spinLeftFactory() {
+    public SequentialCommandGroup spinLeftFactory() {
         return new InstantCommand(() -> {
             noteSpinLeft();
-        });
+        }).beforeStarting(new InstantCommand(() -> m_candle.clearAnimation(0)));
     }
 
-    public InstantCommand spinRightFactory() {
+    public SequentialCommandGroup spinRightFactory() {
         return new InstantCommand(() -> {
             noteSpinRight();
-        });
+        }).beforeStarting(new InstantCommand(() -> m_candle.clearAnimation(0)));
     }
 
-    public InstantCommand holdNoteFactory() {
+    public SequentialCommandGroup holdNoteFactory() {
         return new InstantCommand(() -> {
             holdingNote();
-        });
+        }).beforeStarting(new InstantCommand(() -> m_candle.clearAnimation(0)));
     }
 
-    public InstantCommand setFireFactory() {
+    public SequentialCommandGroup setFireFactory() {
         return new InstantCommand(() -> {
             setFire();
-        });
+        }).beforeStarting(new InstantCommand(() -> m_candle.clearAnimation(0)));
     }
 
-    public InstantCommand tieDyeFactory() {
+    public SequentialCommandGroup tieDyeFactory() {
         return new InstantCommand(() -> {
             tiedye();
-        });
+        }).beforeStarting(new InstantCommand(() -> m_candle.clearAnimation(0)));
     }
 
     public InstantCommand setLEDFactory(int r, int b, int g) {
