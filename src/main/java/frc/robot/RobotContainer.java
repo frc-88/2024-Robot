@@ -322,9 +322,9 @@ public class RobotContainer {
 
     public void disabledPeriodic() {
         String nextAuto = m_autoCommandName;
-        if (buttonBox.button(12).getAsBoolean() && !nextAuto.equals("AmpSide")) {
-            m_autoCommand = drivetrain.getAutoPath("AmpSide");
-            nextAuto = "AmpSide";
+        if (buttonBox.button(12).getAsBoolean() && !nextAuto.equals("Nutrons")) {
+            m_autoCommand = drivetrain.getAutoPath("Nutrons");
+            nextAuto = "Nutrons";
         }
 
         if (buttonBox.button(6).getAsBoolean() && !m_autoCommandName.equals("FivePiece")) {
