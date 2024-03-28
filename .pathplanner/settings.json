@@ -3,10 +3,10 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
+    "Nutrons",
     "Cleanside",
     "Climb",
     "FourPiece",
-    "AmpSide",
     "SixPiece"
   ],
   "autoFolders": [],
