@@ -88,30 +88,43 @@ public class Lights extends SubsystemBase {
 
     public void noteSpinLeft() {
         m_toAnimate = noteSpinLeft;
+        m_setAnim = true;
     }
 
     public void noteSpinRight() {
         m_toAnimate = noteSpinRight;
+        m_setAnim = true;
     }
 
     public void holdingNote() {
         m_toAnimate = holdingNote;
+        m_setAnim = true;
     }
 
     public void intakingNote() {
         m_toAnimate = intakingNote;
+        m_setAnim = true;
     }
 
     public void setFire() {
         m_toAnimate = setFire;
+        m_setAnim = true;
     }
 
     public void larsonColor(int r, int g, int b) {
         m_toAnimate = new LarsonAnimation(r, g, b, 0, 0.2, numLEDs.getValue(), BounceMode.Front, 8);
+        m_setAnim = true;
+    }
+
+    public void setLED(int r, int b, int g) {
+        m_setAnim = false;
+        m_candle.clearAnimation(g);
+        m_candle.setLEDs(r, g, b);
     }
 
     public void rainbow() {
         m_toAnimate = rainBow;
+        m_setAnim = true;
     }
 
     // TODO: test this animation to see if it truly works
@@ -253,7 +266,7 @@ public class Lights extends SubsystemBase {
         if (m_toAnimate.equals(m_lastAnimation))
 
         {
-            m_setAnim = false;
+            m_setAnim = true;
             // if animation if not equal to last one, clear animation
         } else if (!m_toAnimate.equals(m_lastAnimation) && m_lastAnimation != null) {
             m_lastAnimation = m_toAnimate;
@@ -261,13 +274,15 @@ public class Lights extends SubsystemBase {
             // for the very first time when m_lastAnimation is null, don't clear.
         } else {
             m_lastAnimation = m_toAnimate;
-            m_setAnim = false;
+            m_setAnim = true;
         }
+        // if (m_setAnim) {
+        // m_candle.clearAnimation(0);
+        // m_setAnim = false;
+        // }
         if (m_setAnim) {
-            m_candle.clearAnimation(0);
-            m_setAnim = false;
+            m_candle.animate(m_toAnimate);
         }
-        m_candle.animate(m_toAnimate);
     }
 
     public InstantCommand spinLeftFactory() {
@@ -298,5 +313,9 @@ public class Lights extends SubsystemBase {
         return new InstantCommand(() -> {
             tiedye();
         });
+    }
+
+    public InstantCommand setLEDFactory(int r, int b, int g) {
+        return new InstantCommand(() -> setLED(r, g, b), this);
     }
 }

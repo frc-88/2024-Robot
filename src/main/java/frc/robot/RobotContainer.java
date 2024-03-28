@@ -170,7 +170,7 @@ public class RobotContainer {
     }
 
     private void configureDriverController() {
-        joystick.b().onTrue(drivetrain.setHeadingFactory(270));
+        joystick.b().onTrue(drivetrain.setHeadingFactory(() -> Math.atan2(joystick.getLeftY(), joystick.getLeftX())));
         joystick.x().onTrue(drivetrain.setHeadingFactory(90));
         joystick.y().onTrue(drivetrain.setHeadingFactory(0));
         joystick.a().onTrue(drivetrain.setHeadingFactory(180));
@@ -296,7 +296,8 @@ public class RobotContainer {
     public void teleopInit() {
         // enable triggers
         m_intake.hasNote().onTrue((m_shooter.runIdleSpeedFactory()).unless(() -> !m_intake.m_automaticMode))
-                .onTrue(setRumble().unless(() -> !m_intake.m_automaticMode));// .alongWith(m_lights.holdNoteFactory()));
+                .onTrue(setRumble().unless(() -> !m_intake.m_automaticMode)
+                        .alongWith(m_lights.setLEDFactory(0, 255, 0)));
         m_intake.hasNote().and(() -> !m_intake.m_automaticMode)
                 .onFalse(m_intake.intakeFactory().alongWith(m_shooter.stopShooterFactory())).debounce(0.25);
 
