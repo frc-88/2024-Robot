@@ -290,6 +290,17 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         };
     }
 
+    public Supplier<SwerveRequest> aimAtTargetHeading(CommandXboxController controller) {
+        return () -> {
+            double leftY = lowPowerMode ? (-controller.getLeftY() / 2) : -controller.getLeftY();
+            double leftX = lowPowerMode ? (-controller.getLeftX() / 2) : -controller.getLeftX();
+            return snapToAngle.withVelocityX(filterX.calculate(DriveUtils.signedPow(leftY, 2) * MaxSpeed))
+                    .withVelocityY(filterY.calculate(DriveUtils.signedPow(leftX, 2) * MaxSpeed))
+                    .withTargetDirection(Rotation2d.fromDegrees(Math.atan2(leftY, leftX)));
+
+        };
+    }
+
     // public Supplier<SwerveRequest> driveAtTargetHeading(CommandXboxController
     // controller) {
     // return
@@ -343,6 +354,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return getState().Pose.getRotation().getDegrees();
     }
 
+    public DoubleSupplier getSupplierCurrentRobotAngle() {
+        return () -> getState().Pose.getRotation().getDegrees();
+    }
+
     public boolean onTarget() {
         return getCurrentRobotAngle() - targetHeading < 2.0;
     }
@@ -374,6 +389,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public Command setHeadingFactory(DoubleSupplier target) {
         return new InstantCommand(() -> setTargetHeading(target));
+    }
+
+    public Command aimAtHeadingFactory(DoubleSupplier target) {
+        return new RunCommand(() -> setTargetHeading(target));
     }
 
     public Command aimAtSpeakerFactory() {

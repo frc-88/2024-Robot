@@ -22,6 +22,8 @@ import frc.team88.ros.bridge.ROSNetworkTablesBridge;
 import frc.team88.ros.conversions.TFListenerCompact;
 import frc.team88.ros.messages.visualization_msgs.MarkerArray;
 
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -31,6 +33,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -84,6 +87,12 @@ public class RobotContainer {
     private Command goblinModeFactory() {
         return new ParallelCommandGroup(m_intake.goblinModeFactory(), m_shooter.runShuttlePassFactory(() -> false),
                 drivetrain.aimAtAmpDumpingGroundFactory(() -> false));
+    }
+
+    private DoubleSupplier joystickAimAtHeading() {
+        return () -> joystick.getLeftX() < 0.1 && joystick.getLeftY() < 0.1
+                ? drivetrain.getSupplierCurrentRobotAngle().getAsDouble()
+                : Units.radiansToDegrees(Math.atan2(joystick.getLeftX(), joystick.getLeftY())) + 180;
     }
 
     private final Telemetry logger = new Telemetry(TunerConstants.kSpeedAt12VoltsMps, drivetrain);
@@ -170,10 +179,10 @@ public class RobotContainer {
     }
 
     private void configureDriverController() {
-        joystick.b().onTrue(drivetrain.setHeadingFactory(() -> Math.atan2(joystick.getLeftY(), joystick.getLeftX())));
+        joystick.b().onTrue(drivetrain.setHeadingFactory(270));
         joystick.x().onTrue(drivetrain.setHeadingFactory(90));
         joystick.y().onTrue(drivetrain.setHeadingFactory(0));
-        joystick.a().onTrue(drivetrain.setHeadingFactory(180));
+        joystick.a().whileTrue(drivetrain.aimAtHeadingFactory(joystickAimAtHeading()));
 
         // joystick.rightTrigger()
         // .onTrue(drivetrain.localizeFactory().unless(m_elevator::isElevatorNotDown)).debounce(0.25);
@@ -296,8 +305,7 @@ public class RobotContainer {
     public void teleopInit() {
         // enable triggers
         m_intake.hasNote().onTrue((m_shooter.runIdleSpeedFactory()).unless(() -> !m_intake.m_automaticMode))
-                .onTrue(setRumble().unless(() -> !m_intake.m_automaticMode)
-                        .alongWith(m_lights.spinLeftFactory()));
+                .onTrue(setRumble().unless(() -> !m_intake.m_automaticMode)).onTrue(m_lights.spinLeftFactory());
         m_intake.hasNote().and(() -> !m_intake.m_automaticMode)
                 .onFalse(m_intake.intakeFactory().alongWith(m_shooter.stopShooterFactory())).debounce(0.25);
 
