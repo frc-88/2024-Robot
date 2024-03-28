@@ -245,7 +245,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         AutoBuilder.configureHolonomic(this::getPoseBlue, this::resetPoseBlue,
                 this::getChassisSpeeds, this::setChassisSpeeds,
                 new HolonomicPathFollowerConfig(new PIDConstants(10.0, 0.0, 0.0), // Translational constant
-                        new PIDConstants(11.0, 0.0, 0.0), // Rotational constant
+                        new PIDConstants(10.0, 0.0, 0.5), // Rotational constant
                         TunerConstants.kSpeedAt12VoltsMps, // in m/s
                         driveBaseRadius, // in meters
                         new ReplanningConfig()),
