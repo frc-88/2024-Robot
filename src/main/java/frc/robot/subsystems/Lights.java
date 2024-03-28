@@ -31,7 +31,7 @@ public class Lights extends SubsystemBase {
     private int m_state = 0;
     private int counter = 0;
     private final CANdle m_candle = new CANdle(Constants.CANDLE_ID);
-    private boolean m_setAnim = false;
+    private boolean m_setAnim = true;
 
     private Animation m_toAnimate = null;
     private Animation m_lastAnimation = null;
@@ -112,7 +112,7 @@ public class Lights extends SubsystemBase {
     }
 
     public void larsonColor(int r, int g, int b) {
-        m_toAnimate = new LarsonAnimation(r, g, b, 0, 0.2, numLEDs.getValue(), BounceMode.Front, 8);
+        m_toAnimate = new LarsonAnimation(r, g, b, 0, 0.5, numLEDs.getValue(), BounceMode.Front, 8);
         m_setAnim = true;
     }
 
@@ -146,7 +146,7 @@ public class Lights extends SubsystemBase {
                         m_colorSet = true;
                     }
                     // swerve goes here
-                    if (m_swerve.isSwerveReady().getAsBoolean() && counter++ > 200) {
+                    if (m_swerve.isSwerveReady().getAsBoolean() && counter++ > 100) {
                         m_state++;
                         counter = 0;
                         m_colorSet = false;
@@ -159,7 +159,7 @@ public class Lights extends SubsystemBase {
                         m_colorSet = true;
                     }
                     // elevator goes here
-                    if (m_elevator.isElevatorReady().getAsBoolean() && counter++ > 200) {
+                    if (m_elevator.isElevatorReady().getAsBoolean() && counter++ > 100) {
                         m_state++;
                         counter = 0;
                         m_colorSet = false;
@@ -172,7 +172,7 @@ public class Lights extends SubsystemBase {
                         m_colorSet = true;
                     }
                     // intake goes here
-                    if (m_intake.isIntakeReady().getAsBoolean() && counter++ > 200) {
+                    if (m_intake.isIntakeReady().getAsBoolean() && counter++ > 100) {
                         m_state++;
                         counter = 0;
                         m_colorSet = false;
@@ -185,7 +185,7 @@ public class Lights extends SubsystemBase {
                         m_colorSet = false;
                     }
                     // indexer goes here
-                    if (m_intake.isIndexerReady().getAsBoolean() && counter++ > 200) {
+                    if (m_intake.isIndexerReady().getAsBoolean() && counter++ > 100) {
                         m_state++;
                         counter = 0;
                         m_colorSet = false;
@@ -198,7 +198,7 @@ public class Lights extends SubsystemBase {
                         m_colorSet = true;
                     }
                     // shooter goes here
-                    if (m_shooter.isShooterReady().getAsBoolean() && counter++ > 200) {
+                    if (m_shooter.isShooterReady().getAsBoolean() && counter++ > 100) {
                         m_state++;
                         counter = 0;
                         m_colorSet = false;
@@ -211,7 +211,7 @@ public class Lights extends SubsystemBase {
                         m_colorSet = true;
                     }
                     // climber goes here
-                    if (m_climber.isClimberReady().getAsBoolean() && counter++ > 200) {
+                    if (m_climber.isClimberReady().getAsBoolean() && counter++ > 100) {
                         m_state++;
                         counter = 0;
                         m_colorSet = false;
@@ -224,7 +224,7 @@ public class Lights extends SubsystemBase {
                         m_colorSet = true;
                     }
                     // ROS goes here
-                    if (m_coprocessor.isCoprocessorReady().getAsBoolean() && counter++ > 200) {
+                    if (m_coprocessor.isCoprocessorReady().getAsBoolean() && counter++ > 100) {
                         m_state++;
                         counter = 0;
                         m_colorSet = false;
@@ -236,7 +236,7 @@ public class Lights extends SubsystemBase {
                         larsonColor(255, 255, 255);
                         m_colorSet = true;
                     }
-                    if (!m_autoName.get().equals("Wait") && counter++ > 200) {
+                    if (!m_autoName.get().equals("Wait") && counter++ > 100) {
                         m_state++;
                         counter = 0;
                         m_colorSet = false;
@@ -245,7 +245,7 @@ public class Lights extends SubsystemBase {
                 }
                 case 8: {
                     rainbow();
-                    if (counter++ > 200) {
+                    if (counter++ > 100) {
                         m_state++;
                         counter = 0;
                     }
