@@ -308,6 +308,11 @@ public class RobotContainer {
                 .onTrue(drivetrain.setHeadingFactory(() -> drivetrain.getState().Pose.getRotation().getDegrees()))
                 .whileFalse(drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick)));
 
+        if (!isRightStickZero().getAsBoolean()) {
+            drivetrain.applyRequest(drivetrain.fieldCentricRequest(joystick))
+                    .until(isRightStickZero().debounce(0.25, DebounceType.kRising)).schedule();
+        }
+
         drivetrain.setTargetHeading(drivetrain.getState().Pose.getRotation().getDegrees());
         drivetrain.setDefaultCommand(drivetrain.defaultDriveCommand(joystick));
 
