@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 8.319005331597362,
-        "y": 3.880403770308729
+        "x": 8.2215077494288,
+        "y": 4.3386424065009646
       },
       "prevControl": {
-        "x": 8.309255573380506,
-        "y": 5.381866535704569
+        "x": 8.036262343308534,
+        "y": 4.679883944090928
       },
       "nextControl": {
-        "x": 8.32445577299262,
-        "y": 3.0410357954389613
+        "x": 8.517017240565687,
+        "y": 3.7942828175645964
       },
       "isLocked": false,
       "linkedName": null
@@ -36,8 +36,8 @@
         "y": 6.45
       },
       "prevControl": {
-        "x": 7.685271047501716,
-        "y": 7.624310925581471
+        "x": 7.353779268128609,
+        "y": 7.312318662642077
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,11 +47,11 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 1,
-      "rotationDegrees": -71.14684123558085,
+      "rotationDegrees": -64.44003482817627,
       "rotateFast": false
     },
     {
-      "waypointRelativePos": 1.6,
+      "waypointRelativePos": 1.8,
       "rotationDegrees": 11.54,
       "rotateFast": false
     }
@@ -70,7 +70,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "AmpSide",
+  "folder": "Nutrons",
   "previewStartingState": {
     "rotation": 11.34,
     "velocity": 0
