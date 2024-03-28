@@ -297,7 +297,7 @@ public class RobotContainer {
         // enable triggers
         m_intake.hasNote().onTrue((m_shooter.runIdleSpeedFactory()).unless(() -> !m_intake.m_automaticMode))
                 .onTrue(setRumble().unless(() -> !m_intake.m_automaticMode)
-                        .alongWith(m_lights.setLEDFactory(0, 255, 0)));
+                        .alongWith(m_lights.spinLeftFactory()));
         m_intake.hasNote().and(() -> !m_intake.m_automaticMode)
                 .onFalse(m_intake.intakeFactory().alongWith(m_shooter.stopShooterFactory())).debounce(0.25);
 
