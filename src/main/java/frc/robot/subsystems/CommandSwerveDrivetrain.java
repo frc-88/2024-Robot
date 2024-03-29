@@ -242,7 +242,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             driveBaseRadius = Math.max(driveBaseRadius, moduleLocation.getNorm());
         }
 
-        AutoBuilder.configureHolonomic(this::getROSPoseBlue, this::resetPoseBlue,
+        AutoBuilder.configureHolonomic(this::getPoseBlue, this::resetPoseBlue,
                 this::getChassisSpeeds, this::setChassisSpeeds,
                 new HolonomicPathFollowerConfig(new PIDConstants(10.0, 0.0, 0.0), // Translational constant
                         new PIDConstants(10.0, 0.0, 0.0), // Rotational constant
@@ -333,13 +333,13 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public void setOffsets() {
         TunerConstants.p_frontLeftEncoderOffset
-                .setValue(getModule(0).getCANcoder().getAbsolutePosition().getValueAsDouble());
+                .setValue(-getModule(0).getCANcoder().getAbsolutePosition().getValueAsDouble());
         TunerConstants.p_frontRightEncoderOffset
-                .setValue(getModule(1).getCANcoder().getAbsolutePosition().getValueAsDouble());
+                .setValue(-getModule(1).getCANcoder().getAbsolutePosition().getValueAsDouble());
         TunerConstants.p_backLeftEncoderOffset
-                .setValue(getModule(2).getCANcoder().getAbsolutePosition().getValueAsDouble());
+                .setValue(-getModule(2).getCANcoder().getAbsolutePosition().getValueAsDouble());
         TunerConstants.p_backRightEncoderOffset
-                .setValue(getModule(3).getCANcoder().getAbsolutePosition().getValueAsDouble());
+                .setValue(-getModule(3).getCANcoder().getAbsolutePosition().getValueAsDouble());
     }
 
     public BooleanSupplier isSwerveReady() {
