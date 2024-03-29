@@ -242,7 +242,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             driveBaseRadius = Math.max(driveBaseRadius, moduleLocation.getNorm());
         }
 
-        AutoBuilder.configureHolonomic(this::getROSPoseBlue, this::resetPoseBlue,
+        AutoBuilder.configureHolonomic(this::getPoseBlue, this::resetPoseBlue,
                 this::getChassisSpeeds, this::setChassisSpeeds,
                 new HolonomicPathFollowerConfig(new PIDConstants(10.0, 0.0, 0.0), // Translational constant
                         new PIDConstants(10.0, 0.0, 0.0), // Rotational constant
