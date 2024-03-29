@@ -157,6 +157,10 @@ public class Intake extends SubsystemBase {
         return m_intakingNoteTrigger.getAsBoolean() && m_isIntakingRunning;
     }
 
+    public double getIndexerPosition() {
+        return m_indexMotor.getPosition().getValueAsDouble();
+    }
+
     public Command intakeFactory() {
         return new RunCommand(() -> intake(), this).until(() -> hasNoteInIndexer())
                 .finallyDo(() -> m_isIntakingRunning = false);

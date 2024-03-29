@@ -100,6 +100,9 @@ public class RobotContainer {
     private BagManager bagManager;
     @SuppressWarnings("unused")
     private CoprocessorBridge coprocessorBridge;
+    private double indexerStart = m_intake.getIndexerPosition();
+    private boolean readyToCoast = false;
+    private boolean coasting = false;
 
     public RobotContainer() {
         DataLogManager.start();
@@ -303,6 +306,11 @@ public class RobotContainer {
     }
 
     public void teleopInit() {
+        if (coasting) {
+            // brake
+            m_climber.enableBrakeMode();
+            m_elevator.enableBrakeMode();
+        }
         // enable triggers
         m_intake.hasNote().onTrue((m_shooter.runIdleSpeedFactory()).unless(() -> !m_intake.m_automaticMode))
                 .onTrue(setRumble().unless(() -> !m_intake.m_automaticMode)).onTrue(m_lights.spinLeftFactory());
@@ -328,7 +336,14 @@ public class RobotContainer {
         m_intake.intakeFactory().schedule();
     }
 
+    public void disabledInit() {
+        indexerStart = m_intake.getIndexerPosition();
+        readyToCoast = coasting = false;
+    }
+
     public void disabledPeriodic() {
+        detectCoastGesture();
+
         String nextAuto = m_autoCommandName;
         if (buttonBox.button(12).getAsBoolean() && !nextAuto.equals("Nutrons")) {
             m_autoCommand = drivetrain.getAutoPath("Nutrons");
@@ -371,6 +386,35 @@ public class RobotContainer {
         }
 
         SmartDashboard.putString("Auto", m_autoCommandName);
+    }
+
+    private void detectCoastGesture() {
+        boolean hasNote = m_intake.hasNoteInIndexer();
+
+        if (!hasNote && !readyToCoast && !coasting && m_intake.getIndexerPosition() - indexerStart > 1.0) {
+            readyToCoast = true;
+        }
+
+        if (readyToCoast && !hasNote && m_intake.getIndexerPosition() - indexerStart < 0.0) {
+            // coast
+            m_climber.enableCoastMode();
+            m_elevator.enableCoastMode();
+            readyToCoast = false;
+            coasting = true;
+        }
+
+        if (coasting && hasNote) {
+            // brake
+            // NOTE: Be sure to enable brake mode in teleopInit above!
+            m_climber.enableBrakeMode();
+            m_elevator.enableBrakeMode();
+            coasting = false;
+        }
+
+        if (readyToCoast && hasNote) {
+            readyToCoast = false;
+        }
+
     }
 
     private Command setRumble() {
