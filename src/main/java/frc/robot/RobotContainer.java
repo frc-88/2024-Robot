@@ -226,7 +226,7 @@ public class RobotContainer {
                         .until(() -> m_elevator.areElevatorAndPivotDown())
                         .andThen(m_climber.stowArmFactory())
                         .unless(drivetrain.tipping()));
-        buttonBox.button(2).onTrue(m_climber.prepArmsFactory().alongWith(m_elevator.elevatorPrepFactory())
+        buttonBox.button(2).onTrue(m_climber.prepArmsFactory().alongWith(m_elevator.stowFactory())
                 .unless(drivetrain.tipping()));
         buttonBox.button(15)
                 .onTrue(climb(false));

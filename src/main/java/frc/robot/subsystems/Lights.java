@@ -79,11 +79,11 @@ public class Lights extends SubsystemBase {
         m_candle.configAllSettings(configAll, 100);
     }
 
-    private Animation noteSpinLeft = new ColorFlowAnimation(255, 165, 0, 0, 0.2, numLEDs.getValue(), Direction.Forward);
-    private Animation noteSpinRight = new ColorFlowAnimation(255, 165, 0, 0, 0.2, numLEDs.getValue(),
+    private Animation noteSpinLeft = new ColorFlowAnimation(165, 0, 255, 0, 0.2, numLEDs.getValue(), Direction.Forward);
+    private Animation noteSpinRight = new ColorFlowAnimation(165, 0, 0, 255, 0.2, numLEDs.getValue(),
             Direction.Backward);
-    private Animation holdingNote = new LarsonAnimation(255, 165, 0, 0, 0.2, numLEDs.getValue(), BounceMode.Center, 8);
-    private Animation intakingNote = new StrobeAnimation(255, 165, 0, 0, 0.2, numLEDs.getValue());
+    private Animation holdingNote = new LarsonAnimation(165, 0, 255, 0, 0.2, numLEDs.getValue(), BounceMode.Center, 8);
+    private Animation intakingNote = new StrobeAnimation(165, 0, 255, 0, 0.2, numLEDs.getValue());
     private Animation setFire = new FireAnimation(1, 0.6, numLEDs.getValue(), 0.2, 0.2);
     private Animation rainBow = new RainbowAnimation(1, 0.7, numLEDs.getValue());
 
@@ -143,7 +143,7 @@ public class Lights extends SubsystemBase {
                 // TODO:put in subsystem stuff when integrated
                 case 0: {
                     if (!m_colorSet) {
-                        larsonColor(255, 0, 0);
+                        larsonColor(0, 0, 255);
                         m_colorSet = true;
                     }
                     // swerve goes here
@@ -156,7 +156,7 @@ public class Lights extends SubsystemBase {
                 }
                 case 1: {
                     if (!m_colorSet) {
-                        larsonColor(255, 165, 0);
+                        larsonColor(165, 0, 255);
                         m_colorSet = true;
                     }
                     // elevator goes here
@@ -169,7 +169,7 @@ public class Lights extends SubsystemBase {
                 }
                 case 2: {
                     if (!m_colorSet) {
-                        larsonColor(255, 255, 0);
+                        larsonColor(255, 0, 255);
                         m_colorSet = true;
                     }
                     // intake goes here
@@ -182,7 +182,7 @@ public class Lights extends SubsystemBase {
                 }
                 case 3: {
                     if (!m_colorSet) {
-                        larsonColor(0, 255, 0);
+                        larsonColor(255, 0, 0);
                         m_colorSet = false;
                     }
                     // indexer goes here
@@ -195,7 +195,7 @@ public class Lights extends SubsystemBase {
                 }
                 case 4: {
                     if (!m_colorSet) {
-                        larsonColor(0, 0, 255);
+                        larsonColor(0, 255, 0);
                         m_colorSet = true;
                     }
                     // shooter goes here
@@ -208,7 +208,7 @@ public class Lights extends SubsystemBase {
                 }
                 case 5: {
                     if (!m_colorSet) {
-                        larsonColor(0, 255, 255);
+                        larsonColor(255, 255, 0);
                         m_colorSet = true;
                     }
                     // climber goes here
@@ -221,7 +221,7 @@ public class Lights extends SubsystemBase {
                 }
                 case 6: {
                     if (!m_colorSet) {
-                        larsonColor(143, 0, 255);
+                        larsonColor(0, 255, 143);
                         m_colorSet = true;
                     }
                     // ROS goes here

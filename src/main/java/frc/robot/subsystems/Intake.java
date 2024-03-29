@@ -48,6 +48,7 @@ public class Intake extends SubsystemBase {
             () -> m_isIntakingRunning
                     && m_intakeMotor.getAcceleration().getValueAsDouble() < -p_intakingNoteAcceleration.getValue())
             .debounce(1.5, DebounceType.kFalling);
+    private boolean m_sawNote = false;
 
     public boolean m_automaticMode = true;
     public boolean lastMode = true;
@@ -90,9 +91,13 @@ public class Intake extends SubsystemBase {
             m_indexMotor.getConfigurator().apply(indexConfiguration);
             m_indexMotor.setInverted(true);
 
+            if (isIntakingNote()) {
+                m_sawNote = true;
+            }
+
             m_intakeMotor.setControl(m_intakeRequest.withOutput(intakeRollerSpeed.getValue()));
-            m_guideMotor.setControl(m_intakeRequest.withOutput(guideRollerSpeed.getValue()));
-            m_indexMotor.setControl(m_intakeRequest.withOutput(indexRollerSpeed.getValue()));
+            m_guideMotor.setControl(m_intakeRequest.withOutput(m_sawNote ? guideRollerSpeed.getValue() : 0));
+            m_indexMotor.setControl(m_intakeRequest.withOutput(m_sawNote ? indexRollerSpeed.getValue() : 0));
 
             m_isIntakingRunning = true;
         } else {
@@ -105,6 +110,7 @@ public class Intake extends SubsystemBase {
         m_intakeMotor.setControl(m_intakeRequest.withOutput(0));
         m_guideMotor.setControl(m_intakeRequest.withOutput(0));
         m_indexMotor.setControl(m_intakeRequest.withOutput(0));
+        m_sawNote = false;
     }
 
     public void shootIndexer() {
