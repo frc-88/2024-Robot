@@ -426,6 +426,7 @@ public class RobotContainer {
         }
 
         if (readyToCoast && hasNote) {
+            m_lights.disableLED();
             indexerStart = m_intake.getIndexerPosition();
             readyToCoast = false;
         }
