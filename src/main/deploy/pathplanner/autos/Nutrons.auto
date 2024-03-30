@@ -26,7 +26,7 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "AmpSideDo"
+                              "pathName": "NutronsDo"
                             }
                           },
                           {
@@ -78,6 +78,31 @@
                       }
                     },
                     {
+                      "type": "deadline",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "NutronsDoShoot"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Pivot Stow"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Intake"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
                       "type": "named",
                       "data": {
                         "name": "Pivot Aim"
@@ -96,7 +121,7 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "AmpShootTi"
+                              "pathName": "NutronsShootTi"
                             }
                           },
                           {
@@ -122,6 +147,31 @@
                       }
                     },
                     {
+                      "type": "deadline",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "NutronsTiShoot"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Pivot Stow"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Intake"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
                       "type": "named",
                       "data": {
                         "name": "Pivot Aim"
@@ -140,7 +190,7 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "AmpShootLa"
+                              "pathName": "NutronsShootLa"
                             }
                           },
                           {
@@ -160,6 +210,31 @@
                                   }
                                 }
                               ]
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "deadline",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "NutronsLaShoot"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Pivot Stow"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Intake"
                             }
                           }
                         ]
