@@ -46,6 +46,7 @@ public class Shooter extends SubsystemBase {
     private final TalonFX m_LeftShooter = new TalonFX(Constants.SHOOTER_LEFT_MOTOR, Constants.RIO_CANBUS);
     private final TalonFX m_RightShooter = new TalonFX(Constants.SHOOTER_RIGHT_MOTOR, Constants.RIO_CANBUS);
     private double talonFree = 6380;
+    public boolean m_shuttlePass = false;
 
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
 
@@ -151,6 +152,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void runShuttlePassSpeed(boolean highSpeed) {
+        m_shuttlePass = true;
         m_LeftShooter.setControl(velocityRequest.withVelocity(highSpeed ? ((p_shuttlePassSpeed.getValue() + 500) / 60)
                 : ((p_shuttlePassSlowSpeed.getValue() + 500) / 60)));
         m_RightShooter.setControl(velocityRequest.withVelocity(highSpeed ? ((p_shuttlePassSpeed.getValue() - 500) / 60)

@@ -205,7 +205,8 @@ public class RobotContainer {
         joystick.leftBumper()
                 .whileTrue(drivetrain.aimAtAmpDumpingGroundFactory(buttonBox.button(17))
                         .alongWith(m_elevator.setFlatFactory())
-                        .alongWith(m_shooter.runShuttlePassFactory(buttonBox.button(17))));
+                        .alongWith(m_shooter.runShuttlePassFactory(buttonBox.button(17))))
+                .onFalse(new InstantCommand(() -> m_shooter.m_shuttlePass = false));
         joystick.leftTrigger().whileTrue(m_shooter.runShooterFactory());
     }
 
@@ -317,10 +318,14 @@ public class RobotContainer {
             m_elevator.enableBrakeMode();
         }
         // enable triggers
-        m_intake.hasNote().onTrue((m_shooter.runIdleSpeedFactory()).unless(() -> !m_intake.m_automaticMode))
+        m_intake.hasNote()
+                .onTrue((m_shooter.runIdleSpeedFactory())
+                        .unless(() -> !m_intake.m_automaticMode || m_shooter.m_shuttlePass))
                 .onTrue(setRumble().unless(() -> !m_intake.m_automaticMode)).onTrue(m_lights.spinLeftFactory());
         m_intake.hasNote().and(() -> !m_intake.m_automaticMode)
-                .onFalse(m_intake.intakeFactory().alongWith(m_shooter.stopShooterFactory())).debounce(0.25);
+                .onFalse(m_intake.intakeFactory()
+                        .alongWith(m_shooter.stopShooterFactory().unless(() -> m_shooter.m_shuttlePass)))
+                .debounce(0.25);
 
         m_aiming.isInWing().whileTrue(m_shooter.runShooterFactory());
         drivetrain.tipping().whileTrue(m_climber.holdPositionFactory()).whileTrue(m_elevator.holdPositionFactory());
