@@ -177,7 +177,7 @@ public class RobotContainer {
         m_lights = new Lights(drivetrain, m_intake,
                 m_elevator,
                 m_shooter, m_climber,
-                coprocessorBridge, () -> m_autoCommandName);
+                coprocessorBridge, m_aiming, () -> m_autoCommandName);
 
     }
 
@@ -199,8 +199,9 @@ public class RobotContainer {
                                 .andThen(setRumble()).unless(drivetrain.tipping()))
                 .whileTrue(drivetrain.aimAtSpeakerFactory().unless(drivetrain.tipping()))
                 .whileTrue(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
-                        .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer()));
-        // .whileTrue(m_lights.setFireFactory());
+                        .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer()))
+                .onTrue(m_lights.setShootingFactory(true))
+                .onFalse(m_lights.setShootingFactory(false));
         joystick.leftBumper()
                 .whileTrue(drivetrain.aimAtAmpDumpingGroundFactory(buttonBox.button(17))
                         .alongWith(m_elevator.setFlatFactory())
@@ -397,7 +398,7 @@ public class RobotContainer {
 
         if (!hasNote && !readyToCoast && !coasting && m_intake.getIndexerPosition() - indexerStart < -4.0) {
             readyToCoast = true;
-            m_lights.setLED(0, 255, 0);
+            m_lights.setLED(0, 0, 255);
         }
 
         if (readyToCoast && !hasNote && m_intake.getIndexerPosition() - indexerStart > 0.0) {
@@ -412,6 +413,7 @@ public class RobotContainer {
         if (coasting && hasNote) {
             // brake
             // NOTE: Be sure to enable brake mode in teleopInit above!
+            m_lights.disableLED();
             m_climber.enableBrakeMode();
             m_elevator.enableBrakeMode();
             indexerStart = m_intake.getIndexerPosition();

@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.ros.bridge.CoprocessorBridge;
+import frc.robot.util.Aiming;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import frc.robot.util.preferenceconstants.IntPreferenceConstant;
 
@@ -34,6 +35,7 @@ public class Lights extends SubsystemBase {
     private final CANdle m_candle = new CANdle(Constants.CANDLE_ID);
     private boolean m_clearAnim = true;
     private boolean m_setAnim = true;
+    private boolean m_shooting = false;
 
     private Animation m_toAnimate = null;
     private Animation m_lastAnimation = null;
@@ -44,6 +46,7 @@ public class Lights extends SubsystemBase {
     private Shooter m_shooter;
     private Climber m_climber;
     private CoprocessorBridge m_coprocessor;
+    private Aiming m_aiming;
     private Supplier<String> m_autoName;
 
     private boolean m_colorSet = false;
@@ -63,13 +66,14 @@ public class Lights extends SubsystemBase {
     }
 
     public Lights(CommandSwerveDrivetrain swerve, Intake intake, Elevator elevator,
-            Shooter shooter, Climber climber, CoprocessorBridge coprocessor, Supplier<String> autoName) {
+            Shooter shooter, Climber climber, CoprocessorBridge coprocessor, Aiming aiming, Supplier<String> autoName) {
         m_swerve = swerve;
         m_intake = intake;
         m_elevator = elevator;
         m_shooter = shooter;
         m_climber = climber;
         m_coprocessor = coprocessor;
+        m_aiming = aiming;
         m_autoName = autoName;
         CANdleConfiguration configAll = new CANdleConfiguration();
         configAll.statusLedOffWhenActive = true;
@@ -86,7 +90,7 @@ public class Lights extends SubsystemBase {
             Direction.Backward);
     private Animation holdingNote = new ColorFlowAnimation(165, 0, 255, 0, 0.2, numLEDs.getValue(), Direction.Forward);
     private Animation intakingNote = new StrobeAnimation(165, 0, 255, 0, 0.2, numLEDs.getValue());
-    private Animation setFire = new FireAnimation(1, 0.6, numLEDs.getValue(), 0.2, 0.2);
+    private Animation setFire = new FireAnimation(1, 0.8, numLEDs.getValue(), 0.2, 0.2);
     private Animation rainBow = new RainbowAnimation(1, 0.7, numLEDs.getValue());
 
     public void noteSpinLeft() {
@@ -125,6 +129,10 @@ public class Lights extends SubsystemBase {
         m_candle.setLEDs(r, g, b);
     }
 
+    public void disableLED() {
+        m_setAnim = true;
+    }
+
     public void rainbow() {
         m_setAnim = true;
         m_toAnimate = rainBow;
@@ -149,7 +157,7 @@ public class Lights extends SubsystemBase {
                         m_colorSet = true;
                     }
                     // swerve goes here
-                    if (m_swerve.isSwerveReady().getAsBoolean() && counter++ > 100) {
+                    if (m_swerve.isSwerveReady() && counter++ > 100) {
                         m_state++;
                         counter = 0;
                         m_colorSet = false;
@@ -162,7 +170,7 @@ public class Lights extends SubsystemBase {
                         m_colorSet = true;
                     }
                     // elevator goes here
-                    if (m_elevator.isElevatorReady().getAsBoolean() && counter++ > 100) {
+                    if (m_elevator.isElevatorReady() && counter++ > 100) {
                         m_state++;
                         counter = 0;
                         m_colorSet = false;
@@ -175,7 +183,7 @@ public class Lights extends SubsystemBase {
                         m_colorSet = true;
                     }
                     // intake goes here
-                    if (m_intake.isIntakeReady().getAsBoolean() && counter++ > 100) {
+                    if (m_intake.isIntakeReady() && counter++ > 100) {
                         m_state++;
                         counter = 0;
                         m_colorSet = false;
@@ -188,7 +196,7 @@ public class Lights extends SubsystemBase {
                         m_colorSet = false;
                     }
                     // indexer goes here
-                    if (m_intake.isIndexerReady().getAsBoolean() && counter++ > 100) {
+                    if (m_intake.isIndexerReady() && counter++ > 100) {
                         m_state++;
                         counter = 0;
                         m_colorSet = false;
@@ -201,7 +209,7 @@ public class Lights extends SubsystemBase {
                         m_colorSet = true;
                     }
                     // shooter goes here
-                    if (m_shooter.isShooterReady().getAsBoolean() && counter++ > 100) {
+                    if (m_shooter.isShooterReady() && counter++ > 100) {
                         m_state++;
                         counter = 0;
                         m_colorSet = false;
@@ -214,7 +222,7 @@ public class Lights extends SubsystemBase {
                         m_colorSet = true;
                     }
                     // climber goes here
-                    if (m_climber.isClimberReady().getAsBoolean() && counter++ > 100) {
+                    if (m_climber.isClimberReady() && counter++ > 100) {
                         m_state++;
                         counter = 0;
                         m_colorSet = false;
@@ -227,7 +235,7 @@ public class Lights extends SubsystemBase {
                         m_colorSet = true;
                     }
                     // ROS goes here
-                    if (m_coprocessor.isCoprocessorReady().getAsBoolean() && counter++ > 100) {
+                    if (m_coprocessor.isCoprocessorReady(m_aiming.getROSPose()) && counter++ > 100) {
                         m_state++;
                         counter = 0;
                         m_colorSet = false;
@@ -260,8 +268,10 @@ public class Lights extends SubsystemBase {
                 setLED(255, 0, 0);
             } else if (m_intake.isIntakingNote()) {
                 intakingNote();
-            } else {
+            } else if (m_shooting) {
                 setFire();
+            } else {
+                rainbow();
             }
         }
 
@@ -315,6 +325,12 @@ public class Lights extends SubsystemBase {
     public InstantCommand tieDyeFactory() {
         return new InstantCommand(() -> {
             tiedye();
+        });
+    }
+
+    public InstantCommand setShootingFactory(boolean isShooting) {
+        return new InstantCommand(() -> {
+            m_shooting = isShooting;
         });
     }
 
