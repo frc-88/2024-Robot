@@ -393,10 +393,12 @@ public class RobotContainer {
 
         if (!hasNote && !readyToCoast && !coasting && m_intake.getIndexerPosition() - indexerStart < -4.0) {
             readyToCoast = true;
+            m_lights.setLED(0, 255, 0);
         }
 
         if (readyToCoast && !hasNote && m_intake.getIndexerPosition() - indexerStart > 0.0) {
             // coast
+            m_lights.setLED(255, 0, 0);
             m_climber.enableCoastMode();
             m_elevator.enableCoastMode();
             readyToCoast = false;
@@ -415,6 +417,11 @@ public class RobotContainer {
         if (readyToCoast && hasNote) {
             indexerStart = m_intake.getIndexerPosition();
             readyToCoast = false;
+        }
+
+        if (!coasting && !readyToCoast) {
+            m_climber.enableBrakeMode();
+            m_elevator.enableBrakeMode();
         }
 
     }
