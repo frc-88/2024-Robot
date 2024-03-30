@@ -32,6 +32,7 @@ public class Lights extends SubsystemBase {
     private int m_state = 0;
     private int counter = 0;
     private final CANdle m_candle = new CANdle(Constants.CANDLE_ID);
+    private boolean m_clearAnim = true;
     private boolean m_setAnim = true;
 
     private Animation m_toAnimate = null;
@@ -73,59 +74,60 @@ public class Lights extends SubsystemBase {
         CANdleConfiguration configAll = new CANdleConfiguration();
         configAll.statusLedOffWhenActive = true;
         configAll.disableWhenLOS = false;
-        configAll.stripType = LEDStripType.BRG;
+        configAll.stripType = LEDStripType.RGB;
         configAll.brightnessScalar = 1.0;
         configAll.vBatOutputMode = VBatOutputMode.On;
         m_candle.configAllSettings(configAll, 100);
+        m_candle.configLEDType(LEDStripType.RGB, 300);
     }
 
     private Animation noteSpinLeft = new ColorFlowAnimation(165, 0, 255, 0, 0.2, numLEDs.getValue(), Direction.Forward);
     private Animation noteSpinRight = new ColorFlowAnimation(165, 0, 0, 255, 0.2, numLEDs.getValue(),
             Direction.Backward);
-    private Animation holdingNote = new LarsonAnimation(165, 0, 255, 0, 0.2, numLEDs.getValue(), BounceMode.Center, 8);
+    private Animation holdingNote = new ColorFlowAnimation(165, 0, 255, 0, 0.2, numLEDs.getValue(), Direction.Forward);
     private Animation intakingNote = new StrobeAnimation(165, 0, 255, 0, 0.2, numLEDs.getValue());
     private Animation setFire = new FireAnimation(1, 0.6, numLEDs.getValue(), 0.2, 0.2);
     private Animation rainBow = new RainbowAnimation(1, 0.7, numLEDs.getValue());
 
     public void noteSpinLeft() {
-        m_toAnimate = noteSpinLeft;
         m_setAnim = true;
+        m_toAnimate = noteSpinLeft;
     }
 
     public void noteSpinRight() {
-        m_toAnimate = noteSpinRight;
         m_setAnim = true;
+        m_toAnimate = noteSpinRight;
     }
 
     public void holdingNote() {
-        m_toAnimate = holdingNote;
         m_setAnim = true;
+        m_toAnimate = holdingNote;
     }
 
     public void intakingNote() {
-        m_toAnimate = intakingNote;
         m_setAnim = true;
+        m_toAnimate = intakingNote;
     }
 
     public void setFire() {
-        m_toAnimate = setFire;
         m_setAnim = true;
+        m_toAnimate = setFire;
     }
 
     public void larsonColor(int r, int g, int b) {
         m_toAnimate = new LarsonAnimation(r, g, b, 0, 0.2, numLEDs.getValue(), BounceMode.Front, 8);
-        m_setAnim = true;
     }
 
-    public void setLED(int r, int b, int g) {
+    public void setLED(int r, int g, int b) {
         m_setAnim = false;
-        m_candle.clearAnimation(g);
+        m_clearAnim = true;
+        m_candle.clearAnimation(0);
         m_candle.setLEDs(r, g, b);
     }
 
     public void rainbow() {
-        m_toAnimate = rainBow;
         m_setAnim = true;
+        m_toAnimate = rainBow;
     }
 
     // TODO: test this animation to see if it truly works
@@ -255,7 +257,7 @@ public class Lights extends SubsystemBase {
             }
         } else {
             if (m_intake.hasNoteInIndexer()) {
-                holdingNote();
+                setLED(255, 0, 0);
             } else if (m_intake.isIntakingNote()) {
                 intakingNote();
             } else {
@@ -267,56 +269,56 @@ public class Lights extends SubsystemBase {
         if (m_toAnimate.equals(m_lastAnimation))
 
         {
-            m_setAnim = true;
+            m_clearAnim = false;
             // if animation if not equal to last one, clear animation
         } else if (!m_toAnimate.equals(m_lastAnimation) && m_lastAnimation != null) {
             m_lastAnimation = m_toAnimate;
-            m_setAnim = true;
+            m_clearAnim = true;
             // for the very first time when m_lastAnimation is null, don't clear.
         } else {
             m_lastAnimation = m_toAnimate;
-            m_setAnim = true;
+            m_clearAnim = false;
         }
-        // if (m_setAnim) {
-        // m_candle.clearAnimation(0);
-        // m_setAnim = false;
-        // }
+        if (m_clearAnim) {
+            m_candle.clearAnimation(0);
+            m_clearAnim = false;
+        }
         if (m_setAnim) {
             m_candle.animate(m_toAnimate);
         }
     }
 
-    public SequentialCommandGroup spinLeftFactory() {
+    public InstantCommand spinLeftFactory() {
         return new InstantCommand(() -> {
             noteSpinLeft();
-        }).beforeStarting(new InstantCommand(() -> m_candle.clearAnimation(0)));
+        });
     }
 
-    public SequentialCommandGroup spinRightFactory() {
+    public InstantCommand spinRightFactory() {
         return new InstantCommand(() -> {
             noteSpinRight();
-        }).beforeStarting(new InstantCommand(() -> m_candle.clearAnimation(0)));
+        });
     }
 
-    public SequentialCommandGroup holdNoteFactory() {
+    public InstantCommand holdNoteFactory() {
         return new InstantCommand(() -> {
             holdingNote();
-        }).beforeStarting(new InstantCommand(() -> m_candle.clearAnimation(0)));
+        });
     }
 
-    public SequentialCommandGroup setFireFactory() {
+    public InstantCommand setFireFactory() {
         return new InstantCommand(() -> {
             setFire();
-        }).beforeStarting(new InstantCommand(() -> m_candle.clearAnimation(0)));
+        });
     }
 
-    public SequentialCommandGroup tieDyeFactory() {
+    public InstantCommand tieDyeFactory() {
         return new InstantCommand(() -> {
             tiedye();
-        }).beforeStarting(new InstantCommand(() -> m_candle.clearAnimation(0)));
+        });
     }
 
-    public InstantCommand setLEDFactory(int r, int b, int g) {
+    public InstantCommand setLEDFactory(int r, int g, int b) {
         return new InstantCommand(() -> setLED(r, g, b), this);
     }
 }
