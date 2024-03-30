@@ -32,10 +32,12 @@ public class Lights extends SubsystemBase {
     private IntPreferenceConstant numLEDs = new IntPreferenceConstant("Number Of LEDs", 60);
     private int m_state = 0;
     private int counter = 0;
+    private int increments = 0;
     private final CANdle m_candle = new CANdle(Constants.CANDLE_ID);
     private boolean m_clearAnim = true;
     private boolean m_setAnim = true;
     private boolean m_shooting = false;
+    private boolean m_tiedye = false;
 
     private Animation m_toAnimate = null;
     private Animation m_lastAnimation = null;
@@ -50,6 +52,16 @@ public class Lights extends SubsystemBase {
     private Supplier<String> m_autoName;
 
     private boolean m_colorSet = false;
+
+    class Colors {
+        int r, g, b;
+
+        private Colors(int red, int green, int blue) {
+            this.r = red;
+            this.g = green;
+            this.b = blue;
+        }
+    }
 
     public enum AnimationTypes {
         ColorFlow,
@@ -139,25 +151,38 @@ public class Lights extends SubsystemBase {
     }
 
     // TODO: test this animation to see if it truly works
-    public void tiedye() {
-        m_candle.animate(new ColorFlowAnimation(255, 0, 0, 0, 0.2, numLEDs.getValue(), Direction.Forward, 0), 0);
-        m_candle.animate(new ColorFlowAnimation(255, 165, 0, 0, 0.2, numLEDs.getValue(), Direction.Forward, 10), 1);
-        m_candle.animate(new ColorFlowAnimation(255, 255, 0, 0, 0.2, numLEDs.getValue(), Direction.Forward, 20), 2);
-        m_candle.animate(new ColorFlowAnimation(0, 0, 255, 0, 0.2, numLEDs.getValue(), Direction.Forward, 30), 3);
+    public void tiedye(boolean status) {
+        m_tiedye = status;
     }
 
     @Override
     public void periodic() {
-        if (DriverStation.isDisabled()) {
+        if (m_setAnim == true) {
+            m_tiedye = false;
+        }
+        if (m_tiedye == true) {
+            m_candle.setLEDs(255, 0, 0, 0, ((0 + increments) % numLEDs.getValue()), numLEDs.getValue() / 5);
+            m_candle.setLEDs(255, 165, 0, 0, (((0 + numLEDs.getValue() / 5) + increments) % numLEDs.getValue()),
+                    numLEDs.getValue() / 5);
+            m_candle.setLEDs(255, 255, 0, 0, (((0 + numLEDs.getValue() * 2 / 5) + increments) % numLEDs.getValue()),
+                    numLEDs.getValue() / 5);
+            m_candle.setLEDs(0, 0, 255, 0, (((0 + numLEDs.getValue() * 3 / 5) + increments) % numLEDs.getValue()),
+                    numLEDs.getValue() / 5);
+            m_candle.setLEDs(255, 255, 255, 0, (((0 + numLEDs.getValue() * 4 / 5) + increments) % numLEDs.getValue()),
+                    numLEDs.getValue() / 5);
+            increments++;
+        }
+
+        if (DriverStation.isDisabled())
+
+        {
             switch (m_state) {
-                // TODO:put in subsystem stuff when integrated
                 case 0: {
                     if (!m_colorSet) {
                         // blue
                         larsonColor(0, 0, 255);
                         m_colorSet = true;
                     }
-                    // swerve goes here
                     if (m_swerve.isSwerveReady() && counter++ > 50) {
                         m_state++;
                         counter = 0;
@@ -171,7 +196,6 @@ public class Lights extends SubsystemBase {
                         larsonColor(165, 0, 255);
                         m_colorSet = true;
                     }
-                    // elevator goes here
                     if (m_elevator.isElevatorReady() && counter++ > 50) {
                         m_state++;
                         counter = 0;
@@ -185,7 +209,6 @@ public class Lights extends SubsystemBase {
                         larsonColor(255, 50, 0);
                         m_colorSet = true;
                     }
-                    // intake goes here
                     if (m_intake.isIntakeReady() && counter++ > 50) {
                         m_state++;
                         counter = 0;
@@ -199,7 +222,6 @@ public class Lights extends SubsystemBase {
                         larsonColor(255, 0, 0);
                         m_colorSet = true;
                     }
-                    // indexer goes here
                     if (m_intake.isIndexerReady() && counter++ > 50) {
                         m_state++;
                         counter = 0;
@@ -213,7 +235,6 @@ public class Lights extends SubsystemBase {
                         larsonColor(0, 255, 0);
                         m_colorSet = true;
                     }
-                    // shooter goes here
                     if (m_shooter.isShooterReady() && counter++ > 50) {
                         m_state++;
                         counter = 0;
@@ -227,7 +248,6 @@ public class Lights extends SubsystemBase {
                         larsonColor(255, 255, 0);
                         m_colorSet = true;
                     }
-                    // climber goes here
                     if (m_climber.isClimberReady() && counter++ > 50) {
                         m_state++;
                         counter = 0;
@@ -241,7 +261,6 @@ public class Lights extends SubsystemBase {
                         larsonColor(0, 255, 143);
                         m_colorSet = true;
                     }
-                    // ROS goes here
                     if (m_coprocessor.isCoprocessorReady(m_aiming.getROSPose()) && counter++ > 50) {
                         m_state++;
                         counter = 0;
@@ -332,7 +351,7 @@ public class Lights extends SubsystemBase {
 
     public InstantCommand tieDyeFactory() {
         return new InstantCommand(() -> {
-            tiedye();
+            tiedye(true);
         });
     }
 
