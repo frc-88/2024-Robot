@@ -32,6 +32,7 @@ public class Lights extends SubsystemBase {
     private int m_state = 0;
     private int counter = 0;
     private final CANdle m_candle = new CANdle(Constants.CANDLE_ID);
+    private boolean m_clearAnim = true;
     private boolean m_setAnim = true;
 
     private Animation m_toAnimate = null;
@@ -88,22 +89,27 @@ public class Lights extends SubsystemBase {
     private Animation rainBow = new RainbowAnimation(1, 0.7, numLEDs.getValue());
 
     public void noteSpinLeft() {
+        m_setAnim = true;
         m_toAnimate = noteSpinLeft;
     }
 
     public void noteSpinRight() {
+        m_setAnim = true;
         m_toAnimate = noteSpinRight;
     }
 
     public void holdingNote() {
+        m_setAnim = true;
         m_toAnimate = holdingNote;
     }
 
     public void intakingNote() {
+        m_setAnim = true;
         m_toAnimate = intakingNote;
     }
 
     public void setFire() {
+        m_setAnim = true;
         m_toAnimate = setFire;
     }
 
@@ -113,11 +119,13 @@ public class Lights extends SubsystemBase {
 
     public void setLED(int r, int b, int g) {
         m_setAnim = false;
+        m_clearAnim = true;
         m_candle.clearAnimation(g);
         m_candle.setLEDs(r, g, b);
     }
 
     public void rainbow() {
+        m_setAnim = true;
         m_toAnimate = rainBow;
     }
 
@@ -260,21 +268,23 @@ public class Lights extends SubsystemBase {
         if (m_toAnimate.equals(m_lastAnimation))
 
         {
-            m_setAnim = false;
+            m_clearAnim = false;
             // if animation if not equal to last one, clear animation
         } else if (!m_toAnimate.equals(m_lastAnimation) && m_lastAnimation != null) {
             m_lastAnimation = m_toAnimate;
-            m_setAnim = true;
+            m_clearAnim = true;
             // for the very first time when m_lastAnimation is null, don't clear.
         } else {
             m_lastAnimation = m_toAnimate;
-            m_setAnim = false;
+            m_clearAnim = false;
+        }
+        if (m_clearAnim) {
+            m_candle.clearAnimation(0);
+            m_clearAnim = false;
         }
         if (m_setAnim) {
-            m_candle.clearAnimation(0);
-            m_setAnim = false;
+            m_candle.animate(m_toAnimate);
         }
-        m_candle.animate(m_toAnimate);
     }
 
     public InstantCommand spinLeftFactory() {
