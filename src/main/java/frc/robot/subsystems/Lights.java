@@ -153,11 +153,13 @@ public class Lights extends SubsystemBase {
     // TODO: test this animation to see if it truly works
     public void tiedye(boolean status) {
         m_tiedye = status;
+        m_lastAnimation = null;
+        m_clearAnimation = true;
     }
 
     @Override
     public void periodic() {
-        if (m_setAnim == true) {
+        if (m_clearAnim == true) {
             m_tiedye = false;
         }
         if (m_tiedye == true) {
