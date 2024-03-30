@@ -102,7 +102,7 @@ public class Lights extends SubsystemBase {
             Direction.Backward);
     private Animation holdingNote = new ColorFlowAnimation(165, 0, 255, 0, 0.2, numLEDs.getValue(), Direction.Forward);
     private Animation intakingNote = new StrobeAnimation(165, 0, 255, 0, 0.2, numLEDs.getValue());
-    private Animation setFire = new FireAnimation(1, 0.8, numLEDs.getValue(), 0.2, 0.2);
+    private Animation setFire = new FireAnimation(1, 0.9, numLEDs.getValue(), 0.4, 0.4);
     private Animation rainBow = new RainbowAnimation(1, 0.7, numLEDs.getValue());
 
     public void noteSpinLeft() {
@@ -291,7 +291,7 @@ public class Lights extends SubsystemBase {
                 }
             }
         } else {
-            if (m_intake.hasNoteInIndexer()) {
+            if (m_intake.hasNoteInIndexer() && !m_shooting) {
                 setLED(255, 0, 0);
             } else if (m_intake.isIntakingNote()) {
                 intakingNote();
