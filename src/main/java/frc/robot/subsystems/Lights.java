@@ -78,6 +78,7 @@ public class Lights extends SubsystemBase {
         configAll.brightnessScalar = 1.0;
         configAll.vBatOutputMode = VBatOutputMode.On;
         m_candle.configAllSettings(configAll, 100);
+        m_candle.configLEDType(LEDStripType.RGB, 300);
     }
 
     private Animation noteSpinLeft = new ColorFlowAnimation(165, 0, 255, 0, 0.2, numLEDs.getValue(), Direction.Forward);
@@ -117,10 +118,10 @@ public class Lights extends SubsystemBase {
         m_toAnimate = new LarsonAnimation(r, g, b, 0, 0.2, numLEDs.getValue(), BounceMode.Front, 8);
     }
 
-    public void setLED(int r, int b, int g) {
+    public void setLED(int r, int g, int b) {
         m_setAnim = false;
         m_clearAnim = true;
-        m_candle.clearAnimation(g);
+        m_candle.clearAnimation(0);
         m_candle.setLEDs(r, g, b);
     }
 
@@ -256,7 +257,7 @@ public class Lights extends SubsystemBase {
             }
         } else {
             if (m_intake.hasNoteInIndexer()) {
-                holdingNote();
+                setLED(255, 0, 0);
             } else if (m_intake.isIntakingNote()) {
                 intakingNote();
             } else {
