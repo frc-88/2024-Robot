@@ -274,6 +274,9 @@ public class RobotContainer {
         SmartDashboard.putData("fire",
                 m_lights.setFireFactory().ignoringDisable(true));
         SmartDashboard.putData("set red", m_lights.setLEDFactory(255, 0, 0).ignoringDisable(true));
+        SmartDashboard.putData("set green", m_lights.setLEDFactory(0, 255, 0).ignoringDisable(true));
+        SmartDashboard.putData("set blue", m_lights.setLEDFactory(0, 0, 255).ignoringDisable(true));
+
         // Elevator
         SmartDashboard.putData("Calibrate Pivot", m_elevator.calibratePivotFactory());
         SmartDashboard.putData("Calibrate Elevator", m_elevator.calibrateElevatorFactory());

@@ -73,7 +73,7 @@ public class Lights extends SubsystemBase {
         CANdleConfiguration configAll = new CANdleConfiguration();
         configAll.statusLedOffWhenActive = true;
         configAll.disableWhenLOS = false;
-        configAll.stripType = LEDStripType.GRB;
+        configAll.stripType = LEDStripType.RGB;
         configAll.brightnessScalar = 1.0;
         configAll.vBatOutputMode = VBatOutputMode.On;
         m_candle.configAllSettings(configAll, 100);
@@ -307,7 +307,7 @@ public class Lights extends SubsystemBase {
         });
     }
 
-    public InstantCommand setLEDFactory(int r, int b, int g) {
+    public InstantCommand setLEDFactory(int r, int g, int b) {
         return new InstantCommand(() -> setLED(r, g, b), this);
     }
 }
