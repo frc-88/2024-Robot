@@ -106,6 +106,22 @@ public class Intake extends SubsystemBase {
         }
     }
 
+    public void intakeNoSawNote() {
+        if (m_elevatorAndPivotDown.getAsBoolean()) {
+            m_indexMotor.getConfigurator().refresh(indexConfiguration);
+            indexConfiguration.HardwareLimitSwitch.ForwardLimitEnable = true;
+            m_indexMotor.getConfigurator().apply(indexConfiguration);
+            m_indexMotor.setInverted(true);
+
+            m_intakeMotor.setControl(m_intakeRequest.withOutput(intakeRollerSpeed.getValue()));
+            m_guideMotor.setControl(m_intakeRequest.withOutput(guideRollerSpeed.getValue()));
+            m_indexMotor.setControl(m_intakeRequest.withOutput(indexRollerSpeed.getValue()));
+
+        } else {
+            stopMoving();
+        }
+    }
+
     public void stopMoving() {
         m_intakeMotor.setControl(m_intakeRequest.withOutput(0));
         m_guideMotor.setControl(m_intakeRequest.withOutput(0));
@@ -164,6 +180,10 @@ public class Intake extends SubsystemBase {
     public Command intakeFactory() {
         return new RunCommand(() -> intake(), this).until(() -> hasNoteInIndexer())
                 .finallyDo(() -> m_isIntakingRunning = false);
+    }
+
+    public Command intakeNoSawNoteFactory() {
+        return new RunCommand(() -> intakeNoSawNote(), this).until(() -> hasNoteInIndexer());
     }
 
     public Command goblinModeFactory() {

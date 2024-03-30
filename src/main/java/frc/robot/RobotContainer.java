@@ -211,7 +211,7 @@ public class RobotContainer {
     }
 
     private void configureButtonBox() {
-        buttonBox.button(10).whileTrue(m_intake.intakeFactory().unless(drivetrain.tipping()));
+        buttonBox.button(10).whileTrue(m_intake.intakeNoSawNoteFactory().unless(drivetrain.tipping()));
         buttonBox.button(20)
                 .whileTrue(m_intake.shootIndexerFactory().unless(drivetrain.tipping()));
         buttonBox.button(18).whileTrue(m_intake.rejectFactory().unless(drivetrain.tipping()));
