@@ -490,7 +490,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         SmartDashboard.putNumber("AmpShuttle", m_aiming.getAmpAngleForDrivetrain());
         SmartDashboard.putNumber("Pigeon Rate", getPigeon2().getAngularVelocityZDevice().getValueAsDouble());
         SmartDashboard.putNumber("Robot Heading", getCurrentRobotAngle());
-        SmartDashboard.putNumber("Drive Speed", getSpeed())
+        SmartDashboard.putNumber("Drive Speed", getSpeed());
         m_aiming.sendTarget();
     }
 }
