@@ -154,7 +154,7 @@ public class Lights extends SubsystemBase {
     public void tiedye(boolean status) {
         m_tiedye = status;
         m_lastAnimation = null;
-        m_clearAnimation = true;
+        m_clearAnim = true;
     }
 
     @Override
