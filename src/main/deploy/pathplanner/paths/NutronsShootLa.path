@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 8.231257507645656,
-        "y": 4.20214579146498
+        "x": 8.133759925477097,
+        "y": 4.25089458254926
       },
       "prevControl": {
-        "x": 8.055761859742248,
-        "y": 5.489113876089985
+        "x": 8.114260409043384,
+        "y": 6.493338972426163
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,8 +39,8 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -79.9920201985587,
-    "rotateFast": false
+    "rotation": -90.0,
+    "rotateFast": true
   },
   "reversed": false,
   "folder": "Nutrons",
