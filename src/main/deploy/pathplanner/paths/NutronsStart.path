@@ -32,33 +32,23 @@
     },
     {
       "anchor": {
-        "x": 8.25075702407937,
-        "y": 7.400066486593781
+        "x": 5.0,
+        "y": 7.4
       },
       "prevControl": {
-        "x": 6.9472538765325345,
-        "y": 7.409311189767873
+        "x": 4.122521760482951,
+        "y": 7.5657458896865535
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "NutronsDo"
+      "linkedName": "NutronsStart"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.35,
-      "rotationDegrees": 18.29878190803218,
-      "rotateFast": false
-    },
-    {
       "waypointRelativePos": 1.0,
       "rotationDegrees": 0,
       "rotateFast": true
-    },
-    {
-      "waypointRelativePos": 1.9500000000000002,
-      "rotationDegrees": 15.038852943011104,
-      "rotateFast": false
     }
   ],
   "constraintZones": [],
@@ -71,7 +61,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 11.34,
+    "rotation": 20.33,
     "rotateFast": false
   },
   "reversed": false,
