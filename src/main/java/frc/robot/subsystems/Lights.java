@@ -73,7 +73,7 @@ public class Lights extends SubsystemBase {
         CANdleConfiguration configAll = new CANdleConfiguration();
         configAll.statusLedOffWhenActive = true;
         configAll.disableWhenLOS = false;
-        configAll.stripType = LEDStripType.BRG;
+        configAll.stripType = LEDStripType.GRB;
         configAll.brightnessScalar = 1.0;
         configAll.vBatOutputMode = VBatOutputMode.On;
         m_candle.configAllSettings(configAll, 100);
@@ -82,39 +82,33 @@ public class Lights extends SubsystemBase {
     private Animation noteSpinLeft = new ColorFlowAnimation(165, 0, 255, 0, 0.2, numLEDs.getValue(), Direction.Forward);
     private Animation noteSpinRight = new ColorFlowAnimation(165, 0, 0, 255, 0.2, numLEDs.getValue(),
             Direction.Backward);
-    private Animation holdingNote = new LarsonAnimation(165, 0, 255, 0, 0.2, numLEDs.getValue(), BounceMode.Center, 8);
+    private Animation holdingNote = new ColorFlowAnimation(165, 0, 255, 0, 0.2, numLEDs.getValue(), Direction.Forward);
     private Animation intakingNote = new StrobeAnimation(165, 0, 255, 0, 0.2, numLEDs.getValue());
     private Animation setFire = new FireAnimation(1, 0.6, numLEDs.getValue(), 0.2, 0.2);
     private Animation rainBow = new RainbowAnimation(1, 0.7, numLEDs.getValue());
 
     public void noteSpinLeft() {
         m_toAnimate = noteSpinLeft;
-        m_setAnim = true;
     }
 
     public void noteSpinRight() {
         m_toAnimate = noteSpinRight;
-        m_setAnim = true;
     }
 
     public void holdingNote() {
         m_toAnimate = holdingNote;
-        m_setAnim = true;
     }
 
     public void intakingNote() {
         m_toAnimate = intakingNote;
-        m_setAnim = true;
     }
 
     public void setFire() {
         m_toAnimate = setFire;
-        m_setAnim = true;
     }
 
     public void larsonColor(int r, int g, int b) {
         m_toAnimate = new LarsonAnimation(r, g, b, 0, 0.2, numLEDs.getValue(), BounceMode.Front, 8);
-        m_setAnim = true;
     }
 
     public void setLED(int r, int b, int g) {
@@ -125,7 +119,6 @@ public class Lights extends SubsystemBase {
 
     public void rainbow() {
         m_toAnimate = rainBow;
-        m_setAnim = true;
     }
 
     // TODO: test this animation to see if it truly works
@@ -267,7 +260,7 @@ public class Lights extends SubsystemBase {
         if (m_toAnimate.equals(m_lastAnimation))
 
         {
-            m_setAnim = true;
+            m_setAnim = false;
             // if animation if not equal to last one, clear animation
         } else if (!m_toAnimate.equals(m_lastAnimation) && m_lastAnimation != null) {
             m_lastAnimation = m_toAnimate;
@@ -275,45 +268,43 @@ public class Lights extends SubsystemBase {
             // for the very first time when m_lastAnimation is null, don't clear.
         } else {
             m_lastAnimation = m_toAnimate;
-            m_setAnim = true;
+            m_setAnim = false;
         }
-        // if (m_setAnim) {
-        // m_candle.clearAnimation(0);
-        // m_setAnim = false;
-        // }
         if (m_setAnim) {
-            m_candle.animate(m_toAnimate);
+            m_candle.clearAnimation(0);
+            m_setAnim = false;
         }
+        m_candle.animate(m_toAnimate);
     }
 
-    public SequentialCommandGroup spinLeftFactory() {
+    public InstantCommand spinLeftFactory() {
         return new InstantCommand(() -> {
             noteSpinLeft();
-        }).beforeStarting(new InstantCommand(() -> m_candle.clearAnimation(0)));
+        });
     }
 
-    public SequentialCommandGroup spinRightFactory() {
+    public InstantCommand spinRightFactory() {
         return new InstantCommand(() -> {
             noteSpinRight();
-        }).beforeStarting(new InstantCommand(() -> m_candle.clearAnimation(0)));
+        });
     }
 
-    public SequentialCommandGroup holdNoteFactory() {
+    public InstantCommand holdNoteFactory() {
         return new InstantCommand(() -> {
             holdingNote();
-        }).beforeStarting(new InstantCommand(() -> m_candle.clearAnimation(0)));
+        });
     }
 
-    public SequentialCommandGroup setFireFactory() {
+    public InstantCommand setFireFactory() {
         return new InstantCommand(() -> {
             setFire();
-        }).beforeStarting(new InstantCommand(() -> m_candle.clearAnimation(0)));
+        });
     }
 
-    public SequentialCommandGroup tieDyeFactory() {
+    public InstantCommand tieDyeFactory() {
         return new InstantCommand(() -> {
             tiedye();
-        }).beforeStarting(new InstantCommand(() -> m_candle.clearAnimation(0)));
+        });
     }
 
     public InstantCommand setLEDFactory(int r, int b, int g) {
