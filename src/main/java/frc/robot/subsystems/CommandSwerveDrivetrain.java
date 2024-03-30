@@ -354,6 +354,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return getState().Pose.getRotation().getDegrees();
     }
 
+    public double getSpeed() {
+        ChassisSpeeds speeds = getChassisSpeeds();
+        return Math.sqrt(Math.pow(speeds.vxMetersPerSecond, 2) + Math.pow(speeds.vyMetersPerSecond, 2));
+    }
+
     public DoubleSupplier getSupplierCurrentRobotAngle() {
         return () -> getState().Pose.getRotation().getDegrees();
     }
@@ -485,6 +490,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         SmartDashboard.putNumber("AmpShuttle", m_aiming.getAmpAngleForDrivetrain());
         SmartDashboard.putNumber("Pigeon Rate", getPigeon2().getAngularVelocityZDevice().getValueAsDouble());
         SmartDashboard.putNumber("Robot Heading", getCurrentRobotAngle());
+        SmartDashboard.putNumber("Drive Speed", getSpeed())
         m_aiming.sendTarget();
     }
 }
