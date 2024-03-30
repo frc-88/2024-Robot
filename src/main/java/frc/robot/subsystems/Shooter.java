@@ -162,9 +162,9 @@ public class Shooter extends SubsystemBase {
         m_RightShooter.setControl(velocityRequest.withVelocity(-p_sourceIntakeSpeed.getValue() / 60));
     }
 
-    public BooleanSupplier isShooterReady() {
-        return () -> m_LeftShooter.getIsProLicensed().getValue()
-                && m_LeftShooter.getIsProLicensed().getValue();
+    public boolean isShooterReady() {
+        return m_LeftShooter.isAlive()
+                && m_LeftShooter.isAlive();
     }
 
     public Trigger shooterAtSpeed() {

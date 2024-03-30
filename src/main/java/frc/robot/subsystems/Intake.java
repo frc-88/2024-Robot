@@ -144,13 +144,13 @@ public class Intake extends SubsystemBase {
         m_indexMotor.setControl(m_intakeRequest.withOutput(indexShootSpeed.getValue()));
     }
 
-    public BooleanSupplier isIntakeReady() {
-        return () -> m_intakeMotor.getIsProLicensed().getValue()
-                && m_guideMotor.getIsProLicensed().getValue();
+    public boolean isIntakeReady() {
+        return m_intakeMotor.isAlive()
+                && m_guideMotor.isAlive();
     }
 
-    public BooleanSupplier isIndexerReady() {
-        return () -> m_indexMotor.getIsProLicensed().getValue();
+    public boolean isIndexerReady() {
+        return m_indexMotor.isAlive();
     }
 
     public boolean isIntakingNote() {

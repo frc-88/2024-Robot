@@ -13,6 +13,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.utility.PhoenixPIDController;
+import com.ctre.phoenix6.signals.MagnetHealthValue;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
@@ -342,8 +343,14 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 .setValue(-getModule(3).getCANcoder().getAbsolutePosition().getValueAsDouble());
     }
 
-    public BooleanSupplier isSwerveReady() {
-        return () -> getModule(0).getSteerMotor().getIsProLicensed().getValue();
+    public boolean isSwerveReady() {
+        boolean isSet = true;
+        for (int i = 0; i < 4; i++) {
+            isSet &= getModule(i).getSteerMotor().isAlive();
+            isSet &= getModule(i).getDriveMotor().isAlive();
+            isSet &= getModule(i).getCANcoder().getMagnetHealth().getValue() == MagnetHealthValue.Magnet_Green;
+        }
+        return isSet;
     }
 
     public void localize() {

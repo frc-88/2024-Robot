@@ -6,12 +6,17 @@ package frc.robot.ros.bridge;
 
 import java.util.function.BooleanSupplier;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.util.DriveUtils;
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
 import frc.team88.ros.conversions.TFListenerCompact;
+import frc.team88.ros.messages.geometry_msgs.Pose2D;
 
 public class CoprocessorBridge extends SubsystemBase {
     private final TFListenerCompact tfListenerCompact;
@@ -47,8 +52,21 @@ public class CoprocessorBridge extends SubsystemBase {
         counter = 0;
     }
 
-    public BooleanSupplier isCoprocessorReady() {
-        return () -> coprocessorAlive;
+    public boolean isCoprocessorReady(Pose2d ROSpose) {
+        if (DriverStation.isDSAttached()) {
+            if (DriverStation.isFMSAttached()) {
+                return coprocessorAlive && isCloseToStartingPosition(ROSpose);
+            } else {
+                return coprocessorAlive;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isCloseToStartingPosition(Pose2d pose) {
+        return pose.getX() < Units.inchesToMeters(76.111250) && pose.getX() > 0.0
+                && pose.getY() > Units.inchesToMeters(20.173750) && pose.getY() < Units.inchesToMeters(304.264338);
     }
 
     // ---
