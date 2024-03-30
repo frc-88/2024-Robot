@@ -153,6 +153,7 @@ public class Lights extends SubsystemBase {
                 // TODO:put in subsystem stuff when integrated
                 case 0: {
                     if (!m_colorSet) {
+                        // blue
                         larsonColor(0, 0, 255);
                         m_colorSet = true;
                     }
@@ -166,6 +167,7 @@ public class Lights extends SubsystemBase {
                 }
                 case 1: {
                     if (!m_colorSet) {
+                        // pink
                         larsonColor(165, 0, 255);
                         m_colorSet = true;
                     }
@@ -179,7 +181,8 @@ public class Lights extends SubsystemBase {
                 }
                 case 2: {
                     if (!m_colorSet) {
-                        larsonColor(255, 0, 255);
+                        // orange
+                        larsonColor(255, 50, 0);
                         m_colorSet = true;
                     }
                     // intake goes here
@@ -192,8 +195,9 @@ public class Lights extends SubsystemBase {
                 }
                 case 3: {
                     if (!m_colorSet) {
+                        // red
                         larsonColor(255, 0, 0);
-                        m_colorSet = false;
+                        m_colorSet = true;
                     }
                     // indexer goes here
                     if (m_intake.isIndexerReady() && counter++ > 50) {
@@ -205,6 +209,7 @@ public class Lights extends SubsystemBase {
                 }
                 case 4: {
                     if (!m_colorSet) {
+                        // green
                         larsonColor(0, 255, 0);
                         m_colorSet = true;
                     }
@@ -218,6 +223,7 @@ public class Lights extends SubsystemBase {
                 }
                 case 5: {
                     if (!m_colorSet) {
+                        // yellow
                         larsonColor(255, 255, 0);
                         m_colorSet = true;
                     }
@@ -231,6 +237,7 @@ public class Lights extends SubsystemBase {
                 }
                 case 6: {
                     if (!m_colorSet) {
+                        // light blue
                         larsonColor(0, 255, 143);
                         m_colorSet = true;
                     }
@@ -244,6 +251,7 @@ public class Lights extends SubsystemBase {
                 }
                 case 7: {
                     if (!m_colorSet) {
+                        // white
                         larsonColor(255, 255, 255);
                         m_colorSet = true;
                     }
