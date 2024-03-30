@@ -391,11 +391,11 @@ public class RobotContainer {
     private void detectCoastGesture() {
         boolean hasNote = m_intake.hasNoteInIndexer();
 
-        if (!hasNote && !readyToCoast && !coasting && m_intake.getIndexerPosition() - indexerStart > 1.0) {
+        if (!hasNote && !readyToCoast && !coasting && m_intake.getIndexerPosition() - indexerStart < -4.0) {
             readyToCoast = true;
         }
 
-        if (readyToCoast && !hasNote && m_intake.getIndexerPosition() - indexerStart < 0.0) {
+        if (readyToCoast && !hasNote && m_intake.getIndexerPosition() - indexerStart > 0.0) {
             // coast
             m_climber.enableCoastMode();
             m_elevator.enableCoastMode();
@@ -408,10 +408,12 @@ public class RobotContainer {
             // NOTE: Be sure to enable brake mode in teleopInit above!
             m_climber.enableBrakeMode();
             m_elevator.enableBrakeMode();
+            indexerStart = m_intake.getIndexerPosition();
             coasting = false;
         }
 
         if (readyToCoast && hasNote) {
+            indexerStart = m_intake.getIndexerPosition();
             readyToCoast = false;
         }
 
