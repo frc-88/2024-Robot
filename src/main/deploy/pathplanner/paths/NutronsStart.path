@@ -3,77 +3,72 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.5,
-        "y": 6.45
+        "x": 1.43,
+        "y": 7.6
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.515300061478983,
-        "y": 7.263569871557796
-      },
-      "isLocked": false,
-      "linkedName": "AmpShoot"
-    },
-    {
-      "anchor": {
-        "x": 8.20200823299509,
-        "y": 4.02665014356157
-      },
-      "prevControl": {
-        "x": 8.18904170287697,
-        "y": 5.323303155373574
-      },
-      "nextControl": {
-        "x": 8.211757991211945,
-        "y": 3.05167432187596
+        "x": 1.9719127324240409,
+        "y": 7.7218085077500325
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.5,
-        "y": 6.45
+        "x": 2.9078895212422267,
+        "y": 7.731558265966888
       },
       "prevControl": {
-        "x": 7.353779268128609,
-        "y": 7.312318662642077
+        "x": 2.317889521242227,
+        "y": 7.731558265966888
+      },
+      "nextControl": {
+        "x": 3.4832078751732203,
+        "y": 7.731558265966888
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.0,
+        "y": 7.4
+      },
+      "prevControl": {
+        "x": 4.122521760482951,
+        "y": 7.5657458896865535
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "AmpShoot"
+      "linkedName": "NutronsStart"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1,
-      "rotationDegrees": -64.44003482817627,
-      "rotateFast": false
-    },
-    {
-      "waypointRelativePos": 1.8,
-      "rotationDegrees": 11.54,
-      "rotateFast": false
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 0,
+      "rotateFast": true
     }
   ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.5,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 11.34,
+    "rotation": 20.33,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "Nutrons",
   "previewStartingState": {
-    "rotation": 11.34,
+    "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

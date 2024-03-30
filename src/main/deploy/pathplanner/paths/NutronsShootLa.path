@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.5,
+        "y": 6.45
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.798043049767811,
+        "y": 6.6493351038958615
+      },
+      "isLocked": false,
+      "linkedName": "AmpShoot"
+    },
+    {
+      "anchor": {
+        "x": 8.133759925477097,
+        "y": 4.25089458254926
+      },
+      "prevControl": {
+        "x": 8.114260409043384,
+        "y": 6.493338972426163
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "NutronsLa"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -90.0,
+    "rotateFast": true
+  },
+  "reversed": false,
+  "folder": "Nutrons",
+  "previewStartingState": {
+    "rotation": 11.34,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

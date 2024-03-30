@@ -26,52 +26,13 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "AmpSideDo"
+                              "pathName": "NutronsStart"
                             }
                           },
                           {
-                            "type": "sequential",
+                            "type": "named",
                             "data": {
-                              "commands": [
-                                {
-                                  "type": "deadline",
-                                  "data": {
-                                    "commands": [
-                                      {
-                                        "type": "named",
-                                        "data": {
-                                          "name": "Shoot Soon"
-                                        }
-                                      },
-                                      {
-                                        "type": "named",
-                                        "data": {
-                                          "name": "Pivot Active Aim"
-                                        }
-                                      }
-                                    ]
-                                  }
-                                },
-                                {
-                                  "type": "parallel",
-                                  "data": {
-                                    "commands": [
-                                      {
-                                        "type": "named",
-                                        "data": {
-                                          "name": "Intake"
-                                        }
-                                      },
-                                      {
-                                        "type": "named",
-                                        "data": {
-                                          "name": "Pivot Stow"
-                                        }
-                                      }
-                                    ]
-                                  }
-                                }
-                              ]
+                              "name": "Pivot Stow"
                             }
                           }
                         ]
@@ -94,9 +55,72 @@
                       "data": {
                         "commands": [
                           {
-                            "type": "path",
+                            "type": "sequential",
                             "data": {
-                              "pathName": "AmpShootTi"
+                              "commands": [
+                                {
+                                  "type": "path",
+                                  "data": {
+                                    "pathName": "NutronsStartDo"
+                                  }
+                                },
+                                {
+                                  "type": "path",
+                                  "data": {
+                                    "pathName": "NutronsDoShoot"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Pivot Stow"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Intake"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Pivot Aim"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
+                      }
+                    },
+                    {
+                      "type": "deadline",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "sequential",
+                            "data": {
+                              "commands": [
+                                {
+                                  "type": "path",
+                                  "data": {
+                                    "pathName": "NutronsShootTi"
+                                  }
+                                },
+                                {
+                                  "type": "path",
+                                  "data": {
+                                    "pathName": "NutronsTiShoot"
+                                  }
+                                }
+                              ]
                             }
                           },
                           {
@@ -138,9 +162,22 @@
                       "data": {
                         "commands": [
                           {
-                            "type": "path",
+                            "type": "sequential",
                             "data": {
-                              "pathName": "AmpShootLa"
+                              "commands": [
+                                {
+                                  "type": "path",
+                                  "data": {
+                                    "pathName": "NutronsShootLa"
+                                  }
+                                },
+                                {
+                                  "type": "path",
+                                  "data": {
+                                    "pathName": "NutronsLaShoot"
+                                  }
+                                }
+                              ]
                             }
                           },
                           {
