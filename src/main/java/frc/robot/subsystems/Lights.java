@@ -38,6 +38,7 @@ public class Lights extends SubsystemBase {
     private boolean m_setAnim = true;
     private boolean m_shooting = false;
     private boolean m_tiedye = false;
+    private boolean m_isIntaking = false;
 
     private Animation m_toAnimate = null;
     private Animation m_lastAnimation = null;
@@ -293,12 +294,14 @@ public class Lights extends SubsystemBase {
                 }
             }
         } else {
-            if (m_intake.hasNoteInIndexer() && !m_shooting) {
+            if (m_intake.hasNoteInIndexer() && !m_shooting && !m_isIntaking) {
                 setLED(255, 0, 0);
             } else if (m_intake.isIntakingNote()) {
                 intakingNote();
             } else if (m_shooting) {
                 setFire();
+            } else if (m_isIntaking) {
+                setLED(255, 50, 0);
             } else {
                 rainbow();
             }
@@ -360,6 +363,12 @@ public class Lights extends SubsystemBase {
     public InstantCommand setShootingFactory(boolean isShooting) {
         return new InstantCommand(() -> {
             m_shooting = isShooting;
+        });
+    }
+
+    public InstantCommand setYumYumIntakeFactory(boolean isIntaking) {
+        return new InstantCommand(() -> {
+            m_isIntaking = isIntaking;
         });
     }
 
