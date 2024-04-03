@@ -146,7 +146,8 @@ public class Elevator extends SubsystemBase {
     }
 
     public boolean isElevatorNotDown() {
-        return m_elevatorMotor.getPosition().getValueAsDouble() * kElevatorMotorToElevatorDistance > (Constants.ELEVATOR_BOTTOM + 1.0);
+        return m_elevatorMotor.getPosition().getValueAsDouble()
+                * kElevatorMotorToElevatorDistance > (Constants.ELEVATOR_BOTTOM + 1.0);
     }
 
     public boolean elevatorOnTarget() {
@@ -242,6 +243,11 @@ public class Elevator extends SubsystemBase {
                 - Constants.ELEVATOR_BOTTOM < 1.0
                 && m_pivotMotor.getPosition().getValueAsDouble() * kPivotMotorRotationToShooterAngle
                         - Constants.PIVOT_BOTTOM < 1.0;
+    }
+
+    public boolean isElevatorReady() {
+        return m_elevatorMotor.isAlive()
+                && m_pivotMotor.isAlive();
     }
 
     public Command elevatorDownFactory() {
