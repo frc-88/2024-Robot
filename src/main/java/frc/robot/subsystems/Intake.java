@@ -210,6 +210,10 @@ public class Intake extends SubsystemBase {
         return m_indexMotor.getForwardLimit().getValueAsDouble() == 0;
     }
 
+    public boolean sawNote() {
+        return m_sawNote;
+    }
+
     public void disableAutoMode() {
         lastMode = hasNote().getAsBoolean();
         m_automaticMode = false;

@@ -114,7 +114,8 @@ public class RobotContainer {
         // PathPlanner Named Commands
         NamedCommands.registerCommand("Prep Shooter", m_shooter.runShooterFactory());
         NamedCommands.registerCommand("Shoot", new WaitUntilCommand(m_shooter::isShooterAtFullSpeed)
-                .andThen(m_intake.shootIndexerFactory().withTimeout(0.3)));
+                .andThen(m_intake.shootIndexerFactory().withTimeout(0.3))
+                .unless(() -> !m_intake.hasNoteInIndexer() && !m_intake.sawNote()));
         NamedCommands.registerCommand("Shoot Soon", new WaitUntilCommand(m_shooter::isShooterAtAlmostFullSpeed)
                 .andThen(m_intake.shootIndexerFactory().withTimeout(0.3)));
         NamedCommands.registerCommand("Wait For Shooter", new WaitUntilCommand(m_shooter::isShooterAtFullSpeed));
@@ -127,7 +128,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("Pivot Aim",
                 m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
                         .until(() -> m_elevator.pivotOnTarget(m_aiming.speakerAngleForShooter(),
-                                2.0)));
+                                2.0))
+                        .unless(() -> !m_intake.hasNoteInIndexer() && !m_intake.sawNote()));
         NamedCommands.registerCommand("Pivot Active Aim",
                 m_elevator.goToAimingPosition(() -> m_aiming.odomSpeakerAngle(drivetrain.getPose())));
         NamedCommands.registerCommand("Pivot Aim Minus 4",
