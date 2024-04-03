@@ -131,8 +131,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("Pivot Active Aim",
                 m_elevator.goToAimingPosition(() -> m_aiming.odomSpeakerAngle(drivetrain.getPose())));
         NamedCommands.registerCommand("Pivot Aim Minus 4",
-                m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter() - 4)
-                        .until(() -> m_elevator.pivotOnTarget(m_aiming.speakerAngleForShooter() - 4,
+                m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter() - 3.5)
+                        .until(() -> m_elevator.pivotOnTarget(m_aiming.speakerAngleForShooter() - 3.5,
                                 2.0)));
         NamedCommands.registerCommand("Aim",
                 new ParallelCommandGroup(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
