@@ -20,6 +20,12 @@
                 "data": {
                   "commands": [
                     {
+                      "type": "path",
+                      "data": {
+                        "pathName": "SpeakerToSnipe"
+                      }
+                    },
+                    {
                       "type": "named",
                       "data": {
                         "name": "Pivot Aim Minus 4"
@@ -42,7 +48,7 @@
                                 {
                                   "type": "path",
                                   "data": {
-                                    "pathName": "SpeakerToCenter5"
+                                    "pathName": "SnipeToCenter5"
                                   }
                                 },
                                 {
