@@ -36,6 +36,8 @@ public class Climber extends SubsystemBase {
     private DoublePreferenceConstant p_maxJerk = new DoublePreferenceConstant("Arm/MotionMagicJerk", 100000);
     private DoublePreferenceConstant p_armStowSpeed = new DoublePreferenceConstant("Arm/ArmStowSpeed", 0.05);
     private DoublePreferenceConstant p_softLandingspeed = new DoublePreferenceConstant("Arm/ArmSoftLandingSpeed", 0.25);
+    private DoublePreferenceConstant p_armReadjustPosition = new DoublePreferenceConstant("Arm/ArmReadjustPosition",
+            -30);
     private DoublePreferenceConstant p_armPrepPosition = new DoublePreferenceConstant("Arm/ArmPrepPosition", -45);
     private DoublePreferenceConstant p_armClimbPosition = new DoublePreferenceConstant("Arm/ArmClimbPosition", 108);
     private PIDPreferenceConstants p_PidPreferenceConstants = new PIDPreferenceConstants("Arm/PID", 10.0, 0.0, 0.3,
@@ -55,6 +57,7 @@ public class Climber extends SubsystemBase {
     private final double kMotorRotationsToClimberPosition = 360.0 / 250.0;
     private double m_angle;
     private boolean m_calibrated = false;
+    private boolean m_prepped = false;
 
     private BooleanSupplier elevatorUp;
 
@@ -175,6 +178,10 @@ public class Climber extends SubsystemBase {
                 m_armRight.isAlive();
     }
 
+    public boolean isPrepped() {
+        return m_prepped;
+    }
+
     public Command softLandingFactory() {
         return new RunCommand(() -> softLanding(), this)
                 .until(() -> climberOnTarget(10.0, 2.0)).andThen(() -> {
@@ -187,8 +194,20 @@ public class Climber extends SubsystemBase {
         return new RunCommand(() -> setClimberPostion(p_armClimbPosition.getValue()), this);
     }
 
-    public Command prepArmsFactory() {
+    public Command readjustArmsFactory() {
+        return new RunCommand(() -> setClimberPostion(p_armReadjustPosition.getValue()), this);
+    }
+
+    public Command keepArmsPreppedFactory() {
         return new RunCommand(() -> setClimberPostion(p_armPrepPosition.getValue()), this);
+    }
+
+    public Command prepArmsFactory() {
+        return new RunCommand(() -> setClimberPostion(p_armPrepPosition.getValue()), this).beforeStarting(() -> {
+            m_prepped = true;
+        }).finallyDo(() -> {
+            m_prepped = false;
+        });
     }
 
     public Command stowArmFactory() {
