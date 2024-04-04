@@ -46,6 +46,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.util.Aiming;
 import frc.robot.util.DriveUtils;
+import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Lights;
 
@@ -60,6 +61,8 @@ public class RobotContainer {
     private final Intake m_intake = new Intake(m_elevator::areElevatorAndPivotDown);
     private Climber m_climber = new Climber();
     private Lights m_lights;
+
+    private DoublePreferenceConstant p_aimingOffsetDegrees = new DoublePreferenceConstant("pivot aim offset", 3);
 
     private Command m_autoCommand = new SequentialCommandGroup(
             new WaitCommand(4),
@@ -133,8 +136,10 @@ public class RobotContainer {
         NamedCommands.registerCommand("Pivot Active Aim",
                 m_elevator.goToAimingPosition(() -> m_aiming.odomSpeakerAngle(drivetrain.getPose())));
         NamedCommands.registerCommand("Pivot Aim Minus 4",
-                m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter() - 3.5)
-                        .until(() -> m_elevator.pivotOnTarget(m_aiming.speakerAngleForShooter() - 3.5,
+                m_elevator
+                        .goToAimingPosition(() -> m_aiming.speakerAngleForShooter() - p_aimingOffsetDegrees.getValue())
+                        .until(() -> m_elevator.pivotOnTarget(
+                                m_aiming.speakerAngleForShooter() - p_aimingOffsetDegrees.getValue(),
                                 2.0)));
         NamedCommands.registerCommand("Aim",
                 new ParallelCommandGroup(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
