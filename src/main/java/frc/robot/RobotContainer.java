@@ -364,6 +364,11 @@ public class RobotContainer {
             nextAuto = "Nutrons";
         }
 
+        if (buttonBox.button(13).getAsBoolean() && !nextAuto.equals("Nutrons2")) {
+            m_autoCommand = drivetrain.getAutoPath("Nutrons2");
+            nextAuto = "Nutrons2";
+        }
+
         if (buttonBox.button(6).getAsBoolean() && !m_autoCommandName.equals("FivePiece")) {
             m_autoCommand = drivetrain.getAutoPath("FivePiece");
             nextAuto = "FivePiece";
@@ -389,7 +394,7 @@ public class RobotContainer {
             nextAuto = "SixPiece";
         }
 
-        if (buttonBox.button(13).getAsBoolean()) {
+        if (buttonBox.button(20).getAsBoolean()) {
             m_autoCommand = new WaitCommand(15);
             nextAuto = "Waiting";
         }

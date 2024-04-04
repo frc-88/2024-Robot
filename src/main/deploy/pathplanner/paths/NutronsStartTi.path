@@ -8,45 +8,45 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.72556964591364,
-        "y": 7.390316728376925
+        "x": 6.593298127213833,
+        "y": 6.37634187382389
       },
       "isLocked": false,
       "linkedName": "NutronsStart"
     },
     {
       "anchor": {
-        "x": 8.231257507645656,
-        "y": 7.47806455232863
+        "x": 8.085011134397686,
+        "y": 5.606110974689748
       },
       "prevControl": {
-        "x": 6.927754360098821,
-        "y": 7.487309255502722
+        "x": 6.895540631936372,
+        "y": 6.220345742354193
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "NutronsDo"
+      "linkedName": "NutronsTi"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 5.0,
-    "maxAcceleration": 3.5,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0,
+    "rotation": 2.38594403038884,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "Nutrons",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 20.33,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

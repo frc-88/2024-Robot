@@ -8,40 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.818838142180788,
-        "y": 6.970506193264638
+        "x": 6.729794742249817,
+        "y": 7.205071322256659
       },
       "isLocked": false,
       "linkedName": "AmpShoot"
     },
     {
       "anchor": {
-        "x": 7.891223710375348,
-        "y": 7.275581398009644
+        "x": 8.231257507645656,
+        "y": 7.47806455232863
       },
       "prevControl": {
-        "x": 7.179381565970338,
-        "y": 7.090687334527822
-      },
-      "nextControl": {
-        "x": 8.14885191924463,
-        "y": 7.34249781589777
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 4.5,
-        "y": 6.45
-      },
-      "prevControl": {
-        "x": 6.772614626310334,
-        "y": 6.952016786916457
+        "x": 7.470776366730881,
+        "y": 7.380566970160069
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "AmpShoot"
+      "linkedName": "NutronsDo"
     }
   ],
   "rotationTargets": [
