@@ -110,8 +110,8 @@ public class Climber extends SubsystemBase {
 
     public void stowArms() {
         if (m_calibrated) {
-            m_armRight.setControl(m_motionMagic.withPosition(-77.0 / kMotorRotationsToClimberPosition));
-            m_armLeft.setControl(m_motionMagic.withPosition(-77.0 / kMotorRotationsToClimberPosition));
+            m_armRight.setControl(m_motionMagic.withPosition(-78.5 / kMotorRotationsToClimberPosition));
+            m_armLeft.setControl(m_motionMagic.withPosition(-78.5 / kMotorRotationsToClimberPosition));
         } else {
             m_armRight.setControl(new DutyCycleOut(-p_armStowSpeed.getValue()));
             m_armLeft.setControl(new DutyCycleOut(-p_armStowSpeed.getValue()));
