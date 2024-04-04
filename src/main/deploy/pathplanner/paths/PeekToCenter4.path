@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 8.05610098176718,
-        "y": 2.6126978166999826
+        "x": 8.288745946861262,
+        "y": 2.551538076049126
       },
       "prevControl": {
-        "x": 7.880187487083046,
-        "y": 2.260870827331719
+        "x": 7.783852445095582,
+        "y": 2.611644445306946
       },
       "nextControl": {
-        "x": 8.268839972099295,
-        "y": 3.038175797364208
+        "x": 8.677023480173085,
+        "y": 2.50531456017867
       },
       "isLocked": false,
       "linkedName": null
@@ -36,15 +36,21 @@
         "y": 5.147872338500022
       },
       "prevControl": {
-        "x": 4.3155172223387925,
-        "y": 4.540097845413082
+        "x": 4.609354083573032,
+        "y": 4.705553915612336
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Peekaboo"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": -34.695153531233956,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
