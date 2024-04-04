@@ -29,7 +29,7 @@ import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import frc.robot.util.preferenceconstants.IntPreferenceConstant;
 
 public class Lights extends SubsystemBase {
-    private IntPreferenceConstant numLEDs = new IntPreferenceConstant("Number Of LEDs", 60);
+    private IntPreferenceConstant numLEDs = new IntPreferenceConstant("Number Of LEDs", 93);
     private int m_state = 0;
     private int counter = 0;
     private int increments = 0;
@@ -296,7 +296,7 @@ public class Lights extends SubsystemBase {
         } else {
             if (m_intake.hasNoteInIndexer() && !m_shooting && !m_isIntaking) {
                 setLED(255, 0, 0);
-            } else if (m_intake.isIntakingNote()) {
+            } else if (m_intake.isIntakingDriverNote()) {
                 intakingNote();
             } else if (m_shooting) {
                 setFire();

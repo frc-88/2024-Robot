@@ -29,8 +29,14 @@ public class Intake extends SubsystemBase {
 
     private DoublePreferenceConstant p_debounceTime = new DoublePreferenceConstant("Intake/IndexDebounceTime", 0.25);
 
-    private DoublePreferenceConstant p_intakingNoteAcceleration = new DoublePreferenceConstant(
-            "Intake/IntakingNoteCurrent",
+    private DoublePreferenceConstant p_intakingDriverNoteAcceleration = new DoublePreferenceConstant(
+            "Intake/IntakingDriverNoteAcceleration",
+            100);
+    private DoublePreferenceConstant p_intakingDriverNoteCurrent = new DoublePreferenceConstant(
+            "Intake/IntakingDriverNoteCurrent",
+            40);
+    private DoublePreferenceConstant p_intakingOperationNoteAcceleration = new DoublePreferenceConstant(
+            "Intake/IntakingOperationNoteAcceleration",
             100);
     private boolean m_isIntakingRunning = false;
 
@@ -44,10 +50,20 @@ public class Intake extends SubsystemBase {
 
     private Trigger m_hasNoteDebounced = new Trigger(this::hasNoteInIndexer).debounce(p_debounceTime.getValue(),
             DebounceType.kBoth);
-    private Trigger m_intakingNoteTrigger = new Trigger(
+    private Trigger m_intakingDriverNoteTrigger = new Trigger(
             () -> m_isIntakingRunning
-                    && m_intakeMotor.getAcceleration().getValueAsDouble() < -p_intakingNoteAcceleration.getValue())
+                    && m_intakeMotor.getAcceleration()
+                            .getValueAsDouble() < -p_intakingDriverNoteAcceleration.getValue()
+    /*
+     * && m_intakeMotor.getStatorCurrent().getValueAsDouble() >
+     * p_intakingDriverNoteCurrent.getValue()
+     */)
             .debounce(1.5, DebounceType.kFalling);
+    private Trigger m_intakingOperationNoteTrigger = new Trigger(
+            () -> m_isIntakingRunning
+                    && m_intakeMotor.getAcceleration()
+                            .getValueAsDouble() < -p_intakingOperationNoteAcceleration.getValue())
+            .debounce(4, DebounceType.kFalling);
     private boolean m_sawNote = false;
 
     public boolean m_automaticMode = true;
@@ -91,7 +107,7 @@ public class Intake extends SubsystemBase {
             m_indexMotor.getConfigurator().apply(indexConfiguration);
             m_indexMotor.setInverted(true);
 
-            if (isIntakingNote()) {
+            if (isIntakingOperationNote()) {
                 m_sawNote = true;
             }
 
@@ -169,8 +185,12 @@ public class Intake extends SubsystemBase {
         return m_indexMotor.isAlive();
     }
 
-    public boolean isIntakingNote() {
-        return m_intakingNoteTrigger.getAsBoolean() && m_isIntakingRunning;
+    public boolean isIntakingOperationNote() {
+        return m_intakingOperationNoteTrigger.getAsBoolean() && m_isIntakingRunning;
+    }
+
+    public boolean isIntakingDriverNote() {
+        return m_intakingDriverNoteTrigger.getAsBoolean() && m_isIntakingRunning;
     }
 
     public double getIndexerPosition() {
@@ -242,7 +262,8 @@ public class Intake extends SubsystemBase {
         SmartDashboard.putNumber("Intake/Index Current", m_indexMotor.getStatorCurrent().getValueAsDouble());
         SmartDashboard.putBoolean("Intake/HasNoteDebounced", hasNoteDebounced().getAsBoolean());
         SmartDashboard.putNumber("Intake/Intake Acceleration", m_intakeMotor.getAcceleration().getValueAsDouble());
-        SmartDashboard.putBoolean("Intake/Intaking Note", isIntakingNote());
+        SmartDashboard.putBoolean("Intake/Intaking Driver Note", isIntakingDriverNote());
+        SmartDashboard.putBoolean("Intake/Intaking Operation Note", isIntakingOperationNote());
         SmartDashboard.putNumber("Intake/fault fields", m_indexMotor.getFaultField().getValue());
     }
 }

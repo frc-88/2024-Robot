@@ -31,6 +31,13 @@ public abstract class BasePreferenceConstant<T> implements PreferenceConstant<T>
      */
     protected abstract void setInPreferences(T value);
 
+    /**
+     * Init the value of this constant in WPILib Preferences.
+     * 
+     * @param value The value to set
+     */
+    protected abstract void initInPreferences(T value);
+
     @Override
     public final void update() {
         T newValue = this.getFromPreferences();
@@ -56,6 +63,12 @@ public abstract class BasePreferenceConstant<T> implements PreferenceConstant<T>
     @Override
     public final void setValue(T value) {
         this.setInPreferences(value);
+        this.update();
+    }
+
+    @Override
+    public final void initValue(T value) {
+        this.initInPreferences(value);
         this.update();
     }
 }

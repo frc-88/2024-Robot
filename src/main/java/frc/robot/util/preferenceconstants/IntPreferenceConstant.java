@@ -25,7 +25,7 @@ public class IntPreferenceConstant extends BasePreferenceConstant<Integer> {
         this.name = Objects.requireNonNull(name);
         this.defaultValue = Objects.requireNonNull(defaultValue);
         if (!Preferences.containsKey(name)) {
-            this.setValue(defaultValue);
+            this.initValue(defaultValue);
         } else {
             update();
         }
@@ -41,4 +41,8 @@ public class IntPreferenceConstant extends BasePreferenceConstant<Integer> {
         Preferences.setInt(name, value);
     }
 
+    @Override
+    protected void initInPreferences(Integer value) {
+        Preferences.initInt(name, value);
+    }
 }
