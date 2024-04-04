@@ -69,7 +69,7 @@ public class RobotContainer {
             .alongWith(m_shooter.runShooterFactory().withTimeout(6).andThen(m_shooter.stopShooterFactory()));
 
     private Command climb(boolean trap) {
-        return new SequentialCommandGroup(m_elevator.climbFactory().alongWith(m_climber.prepArmsFactory())
+        return new SequentialCommandGroup(m_elevator.climbFactory().alongWith(m_climber.keepArmsPreppedFactory())
                 .until(m_elevator::isElevatorUp),
                 m_climber.climbFactory().alongWith(trap ? m_elevator.trapFactory() : m_elevator.climbFactory()))
                 .unless(drivetrain.tipping());
@@ -234,7 +234,9 @@ public class RobotContainer {
                         .andThen(m_climber.stowArmFactory())
                         .unless(drivetrain.tipping()));
         buttonBox.button(2).onTrue(m_climber.prepArmsFactory().alongWith(m_elevator.stowFactory())
-                .unless(drivetrain.tipping()));
+                .unless(drivetrain.tipping()))
+                .negate().and(m_climber::isPrepped)
+                .onTrue(m_climber.readjustArmsFactory().alongWith(m_elevator.stowFactory()));
         buttonBox.button(15)
                 .onTrue(climb(false));
         buttonBox.button(19).onTrue(m_climber.softLandingFactory().alongWith(m_elevator.climbFactory())
