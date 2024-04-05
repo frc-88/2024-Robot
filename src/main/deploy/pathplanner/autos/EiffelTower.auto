@@ -20,9 +20,15 @@
                 "data": {
                   "commands": [
                     {
+                      "type": "path",
+                      "data": {
+                        "pathName": "SpeakerToEiffel"
+                      }
+                    },
+                    {
                       "type": "named",
                       "data": {
-                        "name": "Pivot Aim Minus 4"
+                        "name": "Pivot Aim"
                       }
                     },
                     {
@@ -42,7 +48,7 @@
                                 {
                                   "type": "path",
                                   "data": {
-                                    "pathName": "SpeakerToCenter3"
+                                    "pathName": "EiffelToCenter3"
                                   }
                                 },
                                 {
