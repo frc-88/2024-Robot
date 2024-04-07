@@ -72,7 +72,9 @@ public class RobotContainer {
             .alongWith(m_shooter.runShooterFactory().withTimeout(6).andThen(m_shooter.stopShooterFactory()));
 
     private Command climb(boolean trap) {
-        return new SequentialCommandGroup(m_elevator.climbFactory().alongWith(m_climber.keepArmsPreppedFactory())
+        // return new
+        // SequentialCommandGroup(m_elevator.climbFactory().alongWith(m_climber.keepArmsPreppedFactory())
+        return new SequentialCommandGroup(m_elevator.climbFactory()
                 .until(m_elevator::isElevatorUp),
                 m_climber.climbFactory().alongWith(trap ? m_elevator.trapFactory() : m_elevator.climbFactory()))
                 .unless(drivetrain.tipping());
@@ -123,7 +125,8 @@ public class RobotContainer {
                 .andThen(m_intake.shootIndexerFactory().withTimeout(0.3)));
         NamedCommands.registerCommand("Wait For Shooter", new WaitUntilCommand(m_shooter::isShooterAtFullSpeed));
         NamedCommands.registerCommand("Localize", drivetrain.localizeFactory());
-        NamedCommands.registerCommand("Intake", m_intake.intakeFactory().withTimeout(4.0));
+        NamedCommands.registerCommand("Intake",
+                (new WaitCommand(.2)).andThen(m_intake.intakeFactory().withTimeout(4.0)));
         NamedCommands.registerCommand("Pivot Stow", m_elevator.stowFactory());
         // NamedCommands.registerCommand("Pivot Aim",
         // m_elevator.goToAnlgeFactory(p_autoCloseAim.getValue())
