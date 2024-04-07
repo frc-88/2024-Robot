@@ -75,13 +75,13 @@
                                             {
                                               "type": "named",
                                               "data": {
-                                                "name": "Intake"
+                                                "name": "Goblin Mode"
                                               }
                                             },
                                             {
                                               "type": "named",
                                               "data": {
-                                                "name": "Prep Shooter"
+                                                "name": "Slow Shooter"
                                               }
                                             }
                                           ]
