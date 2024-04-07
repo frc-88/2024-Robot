@@ -152,6 +152,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("Stop Shooter", m_shooter.stopShooterFactory().withTimeout(0.2));
         NamedCommands.registerCommand("Pivot Calibrated",
                 new WaitUntilCommand(m_elevator::isPivotCalibrated));
+        NamedCommands.registerCommand("Goblin Mode", m_intake.goblinModeFactory());
+        NamedCommands.registerCommand("Slow Shooter", m_shooter.slowSpeedFactory());
 
         configureSmartDashboardButtons();
 
