@@ -22,7 +22,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "SpeakerToSnipe"
+                        "pathName": "SpeakerToEiffel"
                       }
                     },
                     {
@@ -48,7 +48,7 @@
                                 {
                                   "type": "path",
                                   "data": {
-                                    "pathName": "SnipeToCenterE"
+                                    "pathName": "EiffelToCenterB"
                                   }
                                 },
                                 {
@@ -92,7 +92,51 @@
                                 {
                                   "type": "path",
                                   "data": {
-                                    "pathName": "SnipeToCenterD"
+                                    "pathName": "PeekToCenterD"
+                                  }
+                                },
+                                {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "Intake"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Pivot Stow"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Pivot Aim"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
+                      }
+                    },
+                    {
+                      "type": "deadline",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "parallel",
+                            "data": {
+                              "commands": [
+                                {
+                                  "type": "path",
+                                  "data": {
+                                    "pathName": "PeekToCenterC"
                                   }
                                 },
                                 {
