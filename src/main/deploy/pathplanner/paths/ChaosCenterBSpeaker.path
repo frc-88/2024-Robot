@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.231257507645656,
-        "y": 4.094898451079563
+        "x": 8.288745946861262,
+        "y": 5.777939483806896
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.236782169526335,
-        "y": 3.9876511106941464
+        "x": 6.994487502488519,
+        "y": 3.9844670680332355
       },
       "isLocked": false,
-      "linkedName": "ChaosCenter"
+      "linkedName": "ChaosCenterB"
     },
     {
       "anchor": {
-        "x": 4.935839230348296,
-        "y": 4.358141922934678
+        "x": 5.025365726407128,
+        "y": 4.317276382300513
       },
       "prevControl": {
-        "x": 5.845499541814474,
-        "y": 3.673645054900722
+        "x": 5.890608243907355,
+        "y": 3.7357199361118356
       },
       "nextControl": {
-        "x": 3.951113650445829,
-        "y": 5.099123547415742
+        "x": 3.897511939168022,
+        "y": 5.075342042575977
       },
       "isLocked": false,
       "linkedName": null
@@ -61,7 +61,7 @@
   "reversed": false,
   "folder": "TieDyeChaos",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 44.999999999999936,
     "velocity": 0
   },
   "useDefaultConstraints": true

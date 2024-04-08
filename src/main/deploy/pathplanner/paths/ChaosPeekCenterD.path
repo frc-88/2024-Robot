@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.2,
+        "y": 4.991876207030324
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.84814430890123,
+        "y": 3.9474882553368715
+      },
+      "isLocked": false,
+      "linkedName": "ChaosPeek"
+    },
+    {
+      "anchor": {
+        "x": 8.297990650035354,
+        "y": 2.5145592633527616
+      },
+      "prevControl": {
+        "x": 7.345786223103978,
+        "y": 3.096975563320497
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "ChaosCenterD"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -42.76882539196879,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "TieDyeChaos",
+  "previewStartingState": {
+    "rotation": -7.430000000000007,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

@@ -89,7 +89,7 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "ChaosPeekCenter"
+                              "pathName": "ChaosPeekCenterB"
                             }
                           },
                           {
@@ -114,7 +114,7 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "ChaosCenterSpeaker"
+                              "pathName": "ChaosCenterBSpeaker"
                             }
                           },
                           {
