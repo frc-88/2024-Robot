@@ -8,27 +8,11 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.008448377257114,
-        "y": 3.0692414537982233
+        "x": 5.959563843118187,
+        "y": 4.172896516814411
       },
       "isLocked": false,
       "linkedName": "Eiffel"
-    },
-    {
-      "anchor": {
-        "x": 5.053099835929401,
-        "y": 3.7163706759845954
-      },
-      "prevControl": {
-        "x": 4.679862386307685,
-        "y": 3.427111652527765
-      },
-      "nextControl": {
-        "x": 5.422887962893042,
-        "y": 4.002956474381418
-      },
-      "isLocked": false,
-      "linkedName": null
     },
     {
       "anchor": {
@@ -36,12 +20,12 @@
         "y": 5.574556013976893
       },
       "prevControl": {
-        "x": 8.5568423389099,
-        "y": 6.129238204422355
+        "x": 8.259739792272192,
+        "y": 6.216168162470063
       },
       "nextControl": {
-        "x": 6.856405865196879,
-        "y": 3.2142042494857295
+        "x": 8.20200823299509,
+        "y": 4.816380559126915
       },
       "isLocked": false,
       "linkedName": null
@@ -52,8 +36,8 @@
         "y": 5.147872338500022
       },
       "prevControl": {
-        "x": 4.883921767843536,
-        "y": 4.031350919844697
+        "x": 6.066811183503604,
+        "y": 3.17842117869509
       },
       "nextControl": null,
       "isLocked": false,
@@ -62,7 +46,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 2,
+      "waypointRelativePos": 1.0,
       "rotationDegrees": 29.14807184571293,
       "rotateFast": false
     }

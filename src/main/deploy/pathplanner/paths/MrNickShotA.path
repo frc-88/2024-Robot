@@ -3,54 +3,48 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.658620903940146,
-        "y": 2.8176801246714143
+        "x": 4.202587143913027,
+        "y": 6.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.013837296083145,
-        "y": 4.445889746886382
+        "x": 5.31195152480395,
+        "y": 6.4528028155155415
       },
       "isLocked": false,
-      "linkedName": "Eiffel"
+      "linkedName": "MrNickShot"
     },
     {
       "anchor": {
-        "x": 8.20200823299509,
-        "y": 4.02665014356157
+        "x": 8.3534588690799,
+        "y": 7.4234966487950995
       },
       "prevControl": {
-        "x": 8.20200823299509,
-        "y": 4.451427174140853
+        "x": 8.242522430990809,
+        "y": 7.8672424011514694
       },
       "nextControl": {
-        "x": 8.20200823299509,
-        "y": 3.6561593313210383
+        "x": 8.471458044639594,
+        "y": 6.951499946556315
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.0,
-        "y": 5.147872338500022
+        "x": 4.202587143913027,
+        "y": 6.0
       },
       "prevControl": {
-        "x": 5.10158512003485,
-        "y": 3.9974008689110017
+        "x": 5.1640362740184935,
+        "y": 6.314132267904176
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Peekaboo"
+      "linkedName": "MrNickShot"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 1.0,
-      "rotationDegrees": 0.0,
-      "rotateFast": false
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -61,14 +55,14 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -5.680000000000007,
+    "rotation": 6.14,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Cleanside",
+  "folder": "MrNick",
   "previewStartingState": {
-    "rotation": -38.95999999999998,
-    "velocity": 0.0
+    "rotation": 6.14,
+    "velocity": 0
   },
   "useDefaultConstraints": true
 }
