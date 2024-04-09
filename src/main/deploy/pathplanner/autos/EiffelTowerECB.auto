@@ -48,7 +48,7 @@
                                 {
                                   "type": "path",
                                   "data": {
-                                    "pathName": "EiffelToCenterB"
+                                    "pathName": "EiffelToCenterE"
                                   }
                                 },
                                 {
@@ -136,7 +136,7 @@
                                 {
                                   "type": "path",
                                   "data": {
-                                    "pathName": "PeekToCenterD"
+                                    "pathName": "PeekToCenterB"
                                   }
                                 },
                                 {

@@ -11,7 +11,9 @@
     "SixPiece",
     "TieDyeChaos"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "EiffelTower"
+  ],
   "defaultMaxVel": 5.0,
   "defaultMaxAccel": 3.5,
   "defaultMaxAngVel": 540.0,
