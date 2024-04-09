@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -70,6 +71,7 @@ public class RobotContainer {
             new RunCommand(() -> drivetrain.setChassisSpeeds(new ChassisSpeeds(1, 0, 0)), drivetrain).withTimeout(2),
             drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)))
             .alongWith(m_shooter.runShooterFactory().withTimeout(6).andThen(m_shooter.stopShooterFactory()));
+    private SendableChooser<Command> m_eiffelChooser = Autonomous.eiffelChooser(drivetrain);
 
     private Command climb(boolean trap) {
         // return new
@@ -313,6 +315,16 @@ public class RobotContainer {
 
         // Test
         SmartDashboard.putData("Rumble", setRumble().ignoringDisable(true));
+
+        // Auto
+        SmartDashboard.putData(m_eiffelChooser);
+        m_eiffelChooser.onChange(this::eiffelListener);
+    }
+
+    private void eiffelListener(Command eiffelAuto) {
+        if (m_autoCommandName.equals("EiffelTower")) {
+            m_autoCommand = eiffelAuto;
+        }
     }
 
     private void configureBindings() {
@@ -387,7 +399,7 @@ public class RobotContainer {
         }
 
         if (buttonBox.button(10).getAsBoolean() && !nextAuto.equals("EiffelTower")) {
-            m_autoCommand = drivetrain.getAutoPath("EiffelTower");
+            m_autoCommand = m_eiffelChooser.getSelected();
             nextAuto = "EiffelTower";
         }
 
