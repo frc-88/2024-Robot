@@ -317,7 +317,7 @@ public class RobotContainer {
         SmartDashboard.putData("Rumble", setRumble().ignoringDisable(true));
 
         // Auto
-        SmartDashboard.putData(m_eiffelChooser);
+        SmartDashboard.putData("EiffelTower", m_eiffelChooser);
         m_eiffelChooser.onChange(this::eiffelListener);
     }
 
