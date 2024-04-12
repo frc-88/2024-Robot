@@ -456,8 +456,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return pose;
     }
 
-    public Command pathFindingCommand() {
-        PathPlannerPath path = PathPlannerPath.fromPathFile(getAutoPathString());
+    public Command pathFindingCommand(String pathName) {
+        PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
         PathConstraints constraints = new PathConstraints(p_maxVeloctiy.getValue(), p_maxAcceleration.getValue(),
                 Units.degreesToRadians(p_maxAngularVelocity.getValue()),
                 Units.degreesToRadians(p_maxAngularAcceleration.getValue()));
