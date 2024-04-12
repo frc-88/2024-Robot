@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -384,6 +385,11 @@ public class RobotContainer {
         detectCoastGesture();
 
         String nextAuto = m_autoCommandName;
+        if (buttonBox.button(15).getAsBoolean() && !nextAuto.equals("TieDyeChaosC")) {
+            m_autoCommand = drivetrain.getAutoPath("TieDyeChaosC");
+            nextAuto = "TieDyeChaosC";
+        }
+
         if (buttonBox.button(12).getAsBoolean() && !nextAuto.equals("Nutrons")) {
             m_autoCommand = drivetrain.getAutoPath("Nutrons");
             nextAuto = "Nutrons";
