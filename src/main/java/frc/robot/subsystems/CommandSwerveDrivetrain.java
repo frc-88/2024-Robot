@@ -324,6 +324,24 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 Rotation2d.fromDegrees(getModule(0).getCANcoder().getAbsolutePosition().getValueAsDouble() * 360));
     }
 
+    public boolean isStopped() {
+        return getModule(0).getCurrentState().speedMetersPerSecond < 0.05 &&
+                getModule(1).getCurrentState().speedMetersPerSecond < 0.05 &&
+                getModule(2).getCurrentState().speedMetersPerSecond < 0.05 &&
+                getModule(3).getCurrentState().speedMetersPerSecond < 0.05;
+    }
+
+    public String getAutoPathString() {
+        Pose2d pose2d = getPoseBlue();
+        if (pose2d.getX() > 6.00) {
+            return "StageCenter";
+        } else if (pose2d.getX() < 6.00 && pose2d.getY() < 6.00) {
+            return DriveUtils.redAlliance() ? "AmpStage" : "SourceStage";
+        } else {
+            return DriveUtils.redAlliance() ? "SourceStage" : "AmpStage";
+        }
+    }
+
     public void setOffsetsToZero() {
         CANcoderConfiguration configuration = new CANcoderConfiguration();
         configuration.MagnetSensor.MagnetOffset = 0;
@@ -438,8 +456,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return pose;
     }
 
-    public Command pathFindingCommand(String pathName) {
-        PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
+    public Command pathFindingCommand() {
+        PathPlannerPath path = PathPlannerPath.fromPathFile(getAutoPathString());
         PathConstraints constraints = new PathConstraints(p_maxVeloctiy.getValue(), p_maxAcceleration.getValue(),
                 Units.degreesToRadians(p_maxAngularVelocity.getValue()),
                 Units.degreesToRadians(p_maxAngularAcceleration.getValue()));

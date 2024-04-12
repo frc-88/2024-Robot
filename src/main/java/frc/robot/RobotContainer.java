@@ -267,12 +267,13 @@ public class RobotContainer {
         buttonBox.button(21).whileTrue(new InstantCommand(m_intake::disableAutoMode).andThen(goblinModeFactory()))
                 .onFalse(new InstantCommand(m_intake::enableAutoMode));
         buttonBox.button(12)
-                .whileTrue(drivetrain.localizeFactory().andThen(drivetrain.pathFindingCommand("Amp"))
+                .whileTrue(drivetrain.localizeFactory().andThen(drivetrain.pathFindingCommand())
                         .andThen(drivetrain.setHeadingFactory(() -> drivetrain.getCurrentRobotAngle())));
         // buttonBox.button(16).whileTrue(m_elevator.goToAimingPosition(() ->
         // m_aiming.speakerAngleForShooter()));
         buttonBox.button(13)
-                .whileTrue(drivetrain.localizeFactory().andThen(drivetrain.pathFindingCommand("StageLeft"))
+                .whileTrue(new WaitUntilCommand(drivetrain::isStopped).andThen(drivetrain.localizeFactory())
+                        .andThen(drivetrain.pathFindingCommand())
                         .andThen(drivetrain.setHeadingFactory(() -> drivetrain.getCurrentRobotAngle())));
     }
 
