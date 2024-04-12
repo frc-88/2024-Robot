@@ -334,7 +334,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public String getAutoPathString() {
         Pose2d pose2d = getPoseBlue();
         if (pose2d.getX() > 6.00) {
-            return "StageCenter";
+            return "CenterStage";
         } else if (pose2d.getX() < 6.00 && pose2d.getY() < 6.00) {
             return DriveUtils.redAlliance() ? "AmpStage" : "SourceStage";
         } else {
