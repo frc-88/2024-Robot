@@ -24,7 +24,8 @@ public class TunerConstants {
             "swervedrive/BackLeft/Offset", 0.070557);
     public static DoublePreferenceConstant p_backRightEncoderOffset = new DoublePreferenceConstant(
             "swervedrive/BackRight/Offset", 0.112793);
-
+    private static DoublePreferenceConstant p_driveCurrentLimit = new DoublePreferenceConstant("Drive Current Limit",
+            80);
     // Both sets of gains need to be tuned to your individual robot.
 
     // The steer motor uses any SwerveModule.SteerRequestType control request with
@@ -48,7 +49,7 @@ public class TunerConstants {
 
     // The stator current at which the wheels start to slip;
     // This needs to be tuned to your individual robot
-    private static final double kSlipCurrentA = 90.0;
+    private static final double kSlipCurrentA = p_driveCurrentLimit.getValue();
 
     // Theoretical free speed (m/s) at 12v applied output;
     // This needs to be tuned to your individual robot
