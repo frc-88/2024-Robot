@@ -66,8 +66,8 @@ public class Shooter extends SubsystemBase {
     private void applyAllConfigs(double unused) {
         applyConfigs(m_LeftShooter);
         applyConfigs(m_RightShooter);
-        m_LeftShooter.setInverted(true);
-        m_RightShooter.setInverted(false);
+        m_LeftShooter.setInverted(false);
+        m_RightShooter.setInverted(true);
     }
 
     private void applyConfigs(TalonFX motor) {
