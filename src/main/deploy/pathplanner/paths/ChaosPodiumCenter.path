@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.11,
+        "y": 6.665430988519635
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.6032534947952777,
+        "y": 6.998240302786913
+      },
+      "isLocked": false,
+      "linkedName": "ChaosPodium"
+    },
+    {
+      "anchor": {
+        "x": 4.65,
+        "y": 6.95
+      },
+      "prevControl": {
+        "x": 3.7588413915566568,
+        "y": 7.016729709135094
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 16.78,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "TieDyeChaos",
+  "previewStartingState": {
+    "rotation": 28.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

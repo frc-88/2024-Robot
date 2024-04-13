@@ -1,0 +1,68 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.9036644249060484,
+        "y": 5.0
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.0115924916534516,
+        "y": 4.520659852130516
+      },
+      "isLocked": false,
+      "linkedName": "ChaosSpeaker"
+    },
+    {
+      "anchor": {
+        "x": 2.630987604317551,
+        "y": 4.132382318818692
+      },
+      "prevControl": {
+        "x": 2.3166676963984556,
+        "y": 3.9752223648591443
+      },
+      "nextControl": {
+        "x": 3.0230327840352005,
+        "y": 4.328404908677517
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.113284226568453,
+        "y": 6.665430988519635
+      },
+      "prevControl": {
+        "x": 2.3166676963984556,
+        "y": 5.916610031418261
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "ChaosPodium"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 28.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "TieDyeChaos",
+  "previewStartingState": {
+    "rotation": -16.079999999999984,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

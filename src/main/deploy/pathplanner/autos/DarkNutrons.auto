@@ -20,15 +20,59 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "path",
+                      "type": "deadline",
                       "data": {
-                        "pathName": "SpeakerToSnipe"
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "NutronsStart"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Pivot Stow"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Prep Shooter"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "deadline",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Wait For Shooter"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Prep Shooter"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Pivot Aim Minus 4"
+                            }
+                          }
+                        ]
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Pivot Aim"
+                        "name": "Pivot Aim Minus 4"
                       }
                     },
                     {
@@ -42,19 +86,13 @@
                       "data": {
                         "commands": [
                           {
-                            "type": "parallel",
+                            "type": "sequential",
                             "data": {
                               "commands": [
                                 {
                                   "type": "path",
                                   "data": {
-                                    "pathName": "SnipeToCenterE"
-                                  }
-                                },
-                                {
-                                  "type": "named",
-                                  "data": {
-                                    "name": "Intake"
+                                    "pathName": "DarkNutrons"
                                   }
                                 }
                               ]
@@ -65,49 +103,17 @@
                             "data": {
                               "name": "Pivot Stow"
                             }
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Pivot Aim"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Shoot"
-                      }
-                    },
-                    {
-                      "type": "deadline",
-                      "data": {
-                        "commands": [
+                          },
                           {
-                            "type": "parallel",
+                            "type": "named",
                             "data": {
-                              "commands": [
-                                {
-                                  "type": "path",
-                                  "data": {
-                                    "pathName": "SnipeToCenterD"
-                                  }
-                                },
-                                {
-                                  "type": "named",
-                                  "data": {
-                                    "name": "Intake"
-                                  }
-                                }
-                              ]
+                              "name": "Goblin Mode"
                             }
                           },
                           {
                             "type": "named",
                             "data": {
-                              "name": "Pivot Stow"
+                              "name": "Slow Shooter"
                             }
                           }
                         ]
@@ -116,22 +122,16 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Pivot Aim"
+                        "name": "Stop Shooter"
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Shoot"
+                        "name": "Intake"
                       }
                     }
                   ]
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Prep Shooter"
                 }
               }
             ]

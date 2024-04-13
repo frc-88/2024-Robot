@@ -3,13 +3,17 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "Nutrons",
     "Cleanside",
     "Climb",
     "FourPiece",
-    "SixPiece"
+    "MrNick",
+    "Nutrons",
+    "SixPiece",
+    "TieDyeChaos"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "EiffelTower"
+  ],
   "defaultMaxVel": 5.0,
   "defaultMaxAccel": 3.5,
   "defaultMaxAngVel": 540.0,

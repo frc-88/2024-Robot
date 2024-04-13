@@ -1,0 +1,74 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.658620903940146,
+        "y": 2.8176801246714143
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.628072063745078,
+        "y": 1.40396518322728
+      },
+      "isLocked": false,
+      "linkedName": "Eiffel"
+    },
+    {
+      "anchor": {
+        "x": 8.260506782296225,
+        "y": 1.1602212278058772
+      },
+      "prevControl": {
+        "x": 7.64177239760393,
+        "y": 0.17831666079419162
+      },
+      "nextControl": {
+        "x": 9.157484538246987,
+        "y": 2.583685927466867
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.0,
+        "y": 5.147872338500022
+      },
+      "prevControl": {
+        "x": 6.876041115502659,
+        "y": 3.3344173101647874
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Peekaboo"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 0.0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -5.680000000000007,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Cleanside",
+  "previewStartingState": {
+    "rotation": -38.95999999999998,
+    "velocity": 0.0
+  },
+  "useDefaultConstraints": true
+}

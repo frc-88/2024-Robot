@@ -7,8 +7,10 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -70,6 +72,7 @@ public class RobotContainer {
             new RunCommand(() -> drivetrain.setChassisSpeeds(new ChassisSpeeds(1, 0, 0)), drivetrain).withTimeout(2),
             drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)))
             .alongWith(m_shooter.runShooterFactory().withTimeout(6).andThen(m_shooter.stopShooterFactory()));
+    private SendableChooser<Command> m_eiffelChooser = Autonomous.eiffelChooser(drivetrain);
 
     private Command climb(boolean trap) {
         // return new
@@ -152,6 +155,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("Stop Shooter", m_shooter.stopShooterFactory().withTimeout(0.2));
         NamedCommands.registerCommand("Pivot Calibrated",
                 new WaitUntilCommand(m_elevator::isPivotCalibrated));
+        NamedCommands.registerCommand("Goblin Mode", m_intake.goblinModeFactory());
+        NamedCommands.registerCommand("Slow Shooter", m_shooter.slowSpeedFactory());
 
         configureSmartDashboardButtons();
 
@@ -312,6 +317,16 @@ public class RobotContainer {
 
         // Test
         SmartDashboard.putData("Rumble", setRumble().ignoringDisable(true));
+
+        // Auto
+        SmartDashboard.putData("EiffelTower", m_eiffelChooser);
+        m_eiffelChooser.onChange(this::eiffelListener);
+    }
+
+    private void eiffelListener(Command eiffelAuto) {
+        if (m_autoCommandName.equals("EiffelTower")) {
+            m_autoCommand = eiffelAuto;
+        }
     }
 
     private void configureBindings() {
@@ -370,6 +385,21 @@ public class RobotContainer {
         detectCoastGesture();
 
         String nextAuto = m_autoCommandName;
+        if (buttonBox.button(15).getAsBoolean() && !nextAuto.equals("TieDyeChaosB")) {
+            m_autoCommand = drivetrain.getAutoPath("TieDyeChaosB");
+            nextAuto = "TieDyeChaosB";
+        }
+
+        if (buttonBox.button(2).getAsBoolean() && !nextAuto.equals("TieDyeChaosC")) {
+            m_autoCommand = drivetrain.getAutoPath("TieDyeChaosC");
+            nextAuto = "TieDyeChaosC";
+        }
+
+        if (buttonBox.button(11).getAsBoolean() && !nextAuto.equals("TieDyeChaosD")) {
+            m_autoCommand = drivetrain.getAutoPath("TieDyeChaosD");
+            nextAuto = "TieDyeChaosD";
+        }
+
         if (buttonBox.button(12).getAsBoolean() && !nextAuto.equals("Nutrons")) {
             m_autoCommand = drivetrain.getAutoPath("Nutrons");
             nextAuto = "Nutrons";
@@ -386,11 +416,11 @@ public class RobotContainer {
         }
 
         if (buttonBox.button(10).getAsBoolean() && !nextAuto.equals("EiffelTower")) {
-            m_autoCommand = drivetrain.getAutoPath("EiffelTower");
+            m_autoCommand = m_eiffelChooser.getSelected();
             nextAuto = "EiffelTower";
         }
 
-        if (buttonBox.button(11).getAsBoolean() && !nextAuto.equals("Cleanside")) {
+        if (buttonBox.button(18).getAsBoolean() && !nextAuto.equals("Cleanside")) {
             m_autoCommand = drivetrain.getAutoPath("Cleanside");
             nextAuto = "Cleanside";
         }

@@ -1,0 +1,74 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.202587143913027,
+        "y": 6.0
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.341257691524392,
+        "y": 2.736432139530946
+      },
+      "isLocked": false,
+      "linkedName": "MrNickShot"
+    },
+    {
+      "anchor": {
+        "x": 8.279501243687172,
+        "y": 4.076914099774146
+      },
+      "prevControl": {
+        "x": 8.297990650035354,
+        "y": 4.455946929911878
+      },
+      "nextControl": {
+        "x": 8.255560797477122,
+        "y": 3.5861349524681234
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.202587143913027,
+        "y": 6.0
+      },
+      "prevControl": {
+        "x": 3.9992036740830232,
+        "y": 3.3188484394986815
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "MrNickShot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 0.0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 6.14,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "MrNick",
+  "previewStartingState": {
+    "rotation": 6.14,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

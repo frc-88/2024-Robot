@@ -20,21 +20,9 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "path",
-                      "data": {
-                        "pathName": "SpeakerToSnipe"
-                      }
-                    },
-                    {
                       "type": "named",
                       "data": {
-                        "name": "Pivot Aim"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Shoot"
+                        "name": "Wait For Shooter"
                       }
                     },
                     {
@@ -48,13 +36,26 @@
                                 {
                                   "type": "path",
                                   "data": {
-                                    "pathName": "SnipeToCenterE"
+                                    "pathName": "MrNickSpeakerShot"
                                   }
                                 },
                                 {
-                                  "type": "named",
+                                  "type": "sequential",
                                   "data": {
-                                    "name": "Intake"
+                                    "commands": [
+                                      {
+                                        "type": "named",
+                                        "data": {
+                                          "name": "Shoot"
+                                        }
+                                      },
+                                      {
+                                        "type": "named",
+                                        "data": {
+                                          "name": "Intake"
+                                        }
+                                      }
+                                    ]
                                   }
                                 }
                               ]
@@ -90,9 +91,97 @@
                             "data": {
                               "commands": [
                                 {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "Intake"
+                                  }
+                                },
+                                {
                                   "type": "path",
                                   "data": {
-                                    "pathName": "SnipeToCenterD"
+                                    "pathName": "MrNickShotA"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Pivot Stow"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Pivot Aim"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
+                      }
+                    },
+                    {
+                      "type": "deadline",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "parallel",
+                            "data": {
+                              "commands": [
+                                {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "Intake"
+                                  }
+                                },
+                                {
+                                  "type": "path",
+                                  "data": {
+                                    "pathName": "MrNickShotC"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Pivot Stow"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Pivot Aim"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
+                      }
+                    },
+                    {
+                      "type": "deadline",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "deadline",
+                            "data": {
+                              "commands": [
+                                {
+                                  "type": "path",
+                                  "data": {
+                                    "pathName": "MrNickShotB"
                                   }
                                 },
                                 {
@@ -135,6 +224,18 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop Shooter"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Localize"
           }
         }
       ]
