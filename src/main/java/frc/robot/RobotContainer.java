@@ -131,6 +131,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("Localize", drivetrain.localizeFactory());
         NamedCommands.registerCommand("Intake",
                 (new WaitCommand(.2)).andThen(m_intake.intakeNoSawNoteFactory().withTimeout(4.0)));
+        NamedCommands.registerCommand("Intake Now",
+                m_intake.intakeNoSawNoteFactory().withTimeout(4.0));
         NamedCommands.registerCommand("Pivot Stow", m_elevator.stowFactory());
         // NamedCommands.registerCommand("Pivot Aim",
         // m_elevator.goToAnlgeFactory(p_autoCloseAim.getValue())
@@ -267,10 +269,9 @@ public class RobotContainer {
                                         .andThen(m_shooter.runAmpTrapSpeedFactory().withTimeout(1.5))
                                         .andThen(m_intake.shootIndexerFactory())))
                         .unless(drivetrain.tipping()));
-        buttonBox.button(16).whileTrue(intakeFromSource())
-                .onTrue(m_lights.setYumYumIntakeFactory(true))
-                .onFalse(m_lights.setYumYumIntakeFactory(false))
-                .onFalse(new InstantCommand(m_intake::enableAutoMode).andThen(m_intake.intakeFactory()));
+        buttonBox.button(16).whileTrue(intakeFromSource().alongWith(m_lights.setYumYumIntakeFactory(true)))
+                .onFalse((new InstantCommand(m_intake::enableAutoMode).andThen(m_intake.intakeFactory()))
+                        .alongWith(m_lights.setYumYumIntakeFactory(false)));
         buttonBox.button(21).whileTrue(new InstantCommand(m_intake::disableAutoMode).andThen(goblinModeFactory()))
                 .onFalse(new InstantCommand(m_intake::enableAutoMode));
         buttonBox.button(12)
