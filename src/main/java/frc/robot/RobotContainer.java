@@ -218,6 +218,9 @@ public class RobotContainer {
                 .whileTrue(drivetrain.aimAtSpeakerFactory().unless(drivetrain.tipping()))
                 .whileTrue(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
                         .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer()))
+                .whileTrue(new WaitUntilCommand(() -> m_shooter.isShooterAtFullSpeed() && drivetrain.onTarget()
+                        && m_elevator.pivotOnTarget(() -> m_aiming.speakerAngleForShooter(), 1.0))
+                        .andThen(m_intake.shootIndexerFactory()))
                 .onTrue(m_lights.setShootingFactory(true))
                 .onFalse(m_lights.setShootingFactory(false));
         joystick.leftBumper()

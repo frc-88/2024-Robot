@@ -160,6 +160,10 @@ public class Elevator extends SubsystemBase {
                 - position) < tolerance;
     }
 
+    public boolean pivotOnTarget(DoubleSupplier position, double tolerance) {
+        return pivotOnTarget(position.getAsDouble(), tolerance);
+    }
+
     public boolean pivotOnTargetForAmp() {
         return pivotOnTarget(p_pivotAmp.getValue(), 2.0);
     }
