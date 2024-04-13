@@ -273,7 +273,7 @@ public class RobotContainer {
                                         .andThen(m_intake.shootIndexerFactory())))
                         .unless(drivetrain.tipping()));
         buttonBox.button(16).whileTrue(intakeFromSource().alongWith(m_lights.setYumYumIntakeFactory(true)))
-                .onFalse((new InstantCommand(m_intake::enableAutoMode).andThen(m_intake.intakeFactory()))
+                .onFalse((new InstantCommand(m_intake::enableAutoMode).andThen(m_intake.intakeNoSawNoteFactory()))
                         .alongWith(m_lights.setYumYumIntakeFactory(false)));
         buttonBox.button(21).whileTrue(new InstantCommand(m_intake::disableAutoMode).andThen(goblinModeFactory()))
                 .onFalse(new InstantCommand(m_intake::enableAutoMode));
