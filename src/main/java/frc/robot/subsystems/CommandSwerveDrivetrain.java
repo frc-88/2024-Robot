@@ -469,13 +469,13 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public Command stagePathfinding() {
         return new ConditionalCommand(pathFindingCommand("CenterStage"),
                 new ConditionalCommand(pathFindingCommand("AmpStage"), pathFindingCommand("SourceStage"), () -> {
-                    if (getPoseBlue().getY() < 4.11) {
+                    if (getPose().getY() < 4.11) {
                         return DriveUtils.redAlliance();
                     } else {
                         return !DriveUtils.redAlliance();
                     }
                 }), () -> {
-                    return getPoseBlue().getX() > 6.00;
+                    return getPose().getX() > 6.00;
                 });
     }
 
