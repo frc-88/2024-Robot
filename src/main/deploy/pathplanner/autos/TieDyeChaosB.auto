@@ -22,7 +22,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Wait For Shooter"
+                        "name": "Shoot Soon"
                       }
                     },
                     {
@@ -43,12 +43,6 @@
                                   "type": "sequential",
                                   "data": {
                                     "commands": [
-                                      {
-                                        "type": "named",
-                                        "data": {
-                                          "name": "Shoot"
-                                        }
-                                      },
                                       {
                                         "type": "named",
                                         "data": {
