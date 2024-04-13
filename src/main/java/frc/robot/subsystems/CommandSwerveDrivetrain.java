@@ -37,6 +37,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -463,6 +464,19 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 Units.degreesToRadians(p_maxAngularAcceleration.getValue()));
 
         return AutoBuilder.pathfindThenFollowPath(path, constraints, 0.0);
+    }
+
+    public Command stagePathfinding() {
+        return new ConditionalCommand(pathFindingCommand("CenterStage"),
+                new ConditionalCommand(pathFindingCommand("AmpStage"), pathFindingCommand("SourceStage"), () -> {
+                    if (getPoseBlue().getY() < 4.11) {
+                        return DriveUtils.redAlliance();
+                    } else {
+                        return !DriveUtils.redAlliance();
+                    }
+                }), () -> {
+                    return getPoseBlue().getX() > 6.00;
+                });
     }
 
     private void sendOdomPose() {
