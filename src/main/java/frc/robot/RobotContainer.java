@@ -232,7 +232,8 @@ public class RobotContainer {
                 .whileTrue(m_intake.shootIndexerFactory().unless(drivetrain.tipping()));
         buttonBox.button(18).whileTrue(m_intake.rejectFactory().unless(drivetrain.tipping()));
         buttonBox.button(5)
-                .whileTrue(m_elevator.setPodiumFactory().unless(drivetrain.tipping()));
+                .whileTrue(m_elevator.primeFactory().alongWith(m_shooter.primeSpeedFactory())
+                        .unless(drivetrain.tipping()));
         buttonBox.button(6)
                 .whileTrue(m_shooter.slowSpeedFactory().until(() -> m_shooter.isShooterAtSlowSpeed())
                         .andThen(m_elevator.setAmpFactory())

@@ -42,6 +42,8 @@ public class Shooter extends SubsystemBase {
             "shooter/shooter/SourceIntakeSpeed", 2800);
     private DoublePreferenceConstant p_shuttlePassSlowSpeed = new DoublePreferenceConstant(
             "shooter/shooter/ShuttlePassSlowSpeed", 2500);
+    private DoublePreferenceConstant p_primeSpeed = new DoublePreferenceConstant(
+            "shooter/shooter/PrimeSpeed", 1200);
 
     private final TalonFX m_LeftShooter = new TalonFX(Constants.SHOOTER_LEFT_MOTOR, Constants.RIO_CANBUS);
     private final TalonFX m_RightShooter = new TalonFX(Constants.SHOOTER_RIGHT_MOTOR, Constants.RIO_CANBUS);
@@ -164,6 +166,11 @@ public class Shooter extends SubsystemBase {
         m_RightShooter.setControl(velocityRequest.withVelocity(-p_sourceIntakeSpeed.getValue() / 60));
     }
 
+    public void primeSpeed() {
+        m_LeftShooter.setControl(velocityRequest.withVelocity(p_primeSpeed.getValue() / 60));
+        m_RightShooter.setControl(velocityRequest.withVelocity(p_primeSpeed.getValue() / 60));
+    }
+
     public boolean isShooterReady() {
         return m_LeftShooter.isAlive()
                 && m_LeftShooter.isAlive();
@@ -199,6 +206,10 @@ public class Shooter extends SubsystemBase {
 
     public Command runSourceIntakeFactory() {
         return new RunCommand(() -> runSourceIntake(), this);
+    }
+
+    public Command primeSpeedFactory() {
+        return new RunCommand(() -> primeSpeed(), this);
     }
 
     @Override

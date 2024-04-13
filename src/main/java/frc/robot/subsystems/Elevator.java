@@ -29,7 +29,7 @@ import frc.robot.util.preferenceconstants.PIDPreferenceConstants;
 // go up to get down
 
 public class Elevator extends SubsystemBase {
-    private DoublePreferenceConstant p_pivotPodium = new DoublePreferenceConstant("Elevator/Podium", 66);
+    private DoublePreferenceConstant p_pivotPrime = new DoublePreferenceConstant("Elevator/Prime", 90);
     private DoublePreferenceConstant p_pivotFlat = new DoublePreferenceConstant("Elevator/Flat", 42.0);
     private DoublePreferenceConstant p_pivotAmp = new DoublePreferenceConstant("Elevator/PivotAmp", 110);
     private DoublePreferenceConstant p_elevatorAmp = new DoublePreferenceConstant("Elevator/ElevatorAmp", 43);
@@ -286,9 +286,9 @@ public class Elevator extends SubsystemBase {
         }, this);
     }
 
-    public Command setPodiumFactory() {
+    public Command primeFactory() {
         return new RunCommand(() -> {
-            setPivotPosition(() -> p_pivotPodium.getValue());
+            setPivotPosition(() -> p_pivotPrime.getValue());
             elevatorStow();
         }, this);
     }
