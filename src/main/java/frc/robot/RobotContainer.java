@@ -385,9 +385,19 @@ public class RobotContainer {
         detectCoastGesture();
 
         String nextAuto = m_autoCommandName;
-        if (buttonBox.button(15).getAsBoolean() && !nextAuto.equals("TieDyeChaosC")) {
+        if (buttonBox.button(15).getAsBoolean() && !nextAuto.equals("TieDyeChaosB")) {
+            m_autoCommand = drivetrain.getAutoPath("TieDyeChaosB");
+            nextAuto = "TieDyeChaosB";
+        }
+
+        if (buttonBox.button(2).getAsBoolean() && !nextAuto.equals("TieDyeChaosC")) {
             m_autoCommand = drivetrain.getAutoPath("TieDyeChaosC");
             nextAuto = "TieDyeChaosC";
+        }
+
+        if (buttonBox.button(11).getAsBoolean() && !nextAuto.equals("TieDyeChaosD")) {
+            m_autoCommand = drivetrain.getAutoPath("TieDyeChaosD");
+            nextAuto = "TieDyeChaosD";
         }
 
         if (buttonBox.button(12).getAsBoolean() && !nextAuto.equals("Nutrons")) {
@@ -410,7 +420,7 @@ public class RobotContainer {
             nextAuto = "EiffelTower";
         }
 
-        if (buttonBox.button(11).getAsBoolean() && !nextAuto.equals("Cleanside")) {
+        if (buttonBox.button(18).getAsBoolean() && !nextAuto.equals("Cleanside")) {
             m_autoCommand = drivetrain.getAutoPath("Cleanside");
             nextAuto = "Cleanside";
         }
