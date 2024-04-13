@@ -58,6 +58,7 @@ public class RobotContainer {
     private final CommandGenericHID buttonBox = new CommandGenericHID(1); // The buttons???
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(m_aiming); // My drivetrain
     private String m_autoCommandName = "Wait";
+    private String m_autoVariantName = "None";
     private final Shooter m_shooter = new Shooter();
     private final Elevator m_elevator = new Elevator();
     private final Intake m_intake = new Intake(m_elevator::areElevatorAndPivotDown);
@@ -129,7 +130,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("Wait For Shooter", new WaitUntilCommand(m_shooter::isShooterAtFullSpeed));
         NamedCommands.registerCommand("Localize", drivetrain.localizeFactory());
         NamedCommands.registerCommand("Intake",
-                (new WaitCommand(.2)).andThen(m_intake.intakeFactory().withTimeout(4.0)));
+                (new WaitCommand(.2)).andThen(m_intake.intakeNoSawNoteFactory().withTimeout(4.0)));
         NamedCommands.registerCommand("Pivot Stow", m_elevator.stowFactory());
         // NamedCommands.registerCommand("Pivot Aim",
         // m_elevator.goToAnlgeFactory(p_autoCloseAim.getValue())
@@ -326,6 +327,7 @@ public class RobotContainer {
     private void eiffelListener(Command eiffelAuto) {
         if (m_autoCommandName.equals("EiffelTower")) {
             m_autoCommand = eiffelAuto;
+            m_autoVariantName = eiffelAuto.getName();
         }
     }
 
@@ -410,7 +412,12 @@ public class RobotContainer {
             nextAuto = "Nutrons2";
         }
 
-        if (buttonBox.button(6).getAsBoolean() && !m_autoCommandName.equals("FivePiece")) {
+        if (buttonBox.button(16).getAsBoolean() && !nextAuto.equals("DarkNutrons")) {
+            m_autoCommand = drivetrain.getAutoPath("DarkNutrons");
+            nextAuto = "DarkNutrons";
+        }
+
+        if (buttonBox.button(6).getAsBoolean() && !nextAuto.equals("FivePiece")) {
             m_autoCommand = drivetrain.getAutoPath("FivePiece");
             nextAuto = "FivePiece";
         }
@@ -418,6 +425,7 @@ public class RobotContainer {
         if (buttonBox.button(10).getAsBoolean() && !nextAuto.equals("EiffelTower")) {
             m_autoCommand = m_eiffelChooser.getSelected();
             nextAuto = "EiffelTower";
+            m_autoVariantName = m_autoCommand.getName();
         }
 
         if (buttonBox.button(18).getAsBoolean() && !nextAuto.equals("Cleanside")) {
@@ -430,7 +438,7 @@ public class RobotContainer {
             nextAuto = "Cleanside2";
         }
 
-        if ((buttonBox.button(8)).getAsBoolean() && !m_autoCommandName.equals("SixPiece")) {
+        if ((buttonBox.button(8)).getAsBoolean() && !nextAuto.equals("SixPiece")) {
             m_autoCommand = drivetrain.getAutoPath("SixPiece");
             nextAuto = "SixPiece";
         }
@@ -446,6 +454,7 @@ public class RobotContainer {
         }
 
         SmartDashboard.putString("Auto", m_autoCommandName);
+        SmartDashboard.putString("AutoVariant", m_autoVariantName);
     }
 
     private void detectCoastGesture() {
