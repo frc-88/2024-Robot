@@ -30,29 +30,15 @@
                       "data": {
                         "commands": [
                           {
-                            "type": "parallel",
+                            "type": "path",
                             "data": {
-                              "commands": [
-                                {
-                                  "type": "path",
-                                  "data": {
-                                    "pathName": "ChaosStart"
-                                  }
-                                },
-                                {
-                                  "type": "sequential",
-                                  "data": {
-                                    "commands": [
-                                      {
-                                        "type": "named",
-                                        "data": {
-                                          "name": "Intake"
-                                        }
-                                      }
-                                    ]
-                                  }
-                                }
-                              ]
+                              "pathName": "ChaosStart"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Intake"
                             }
                           },
                           {
@@ -65,9 +51,22 @@
                       }
                     },
                     {
-                      "type": "named",
+                      "type": "deadline",
                       "data": {
-                        "name": "Pivot Aim"
+                        "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Pivot Aim"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Intake"
+                            }
+                          }
+                        ]
                       }
                     },
                     {
