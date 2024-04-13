@@ -273,7 +273,7 @@ public class RobotContainer {
         // m_aiming.speakerAngleForShooter()));
         buttonBox.button(13)
                 .whileTrue(new WaitUntilCommand(drivetrain::isStopped).andThen(drivetrain.localizeFactory())
-                        .andThen(drivetrain.pathFindingCommand("AmpStage"))
+                        .andThen(drivetrain.stagePathfinding())
                         .andThen(drivetrain.setHeadingFactory(() -> drivetrain.getCurrentRobotAngle())));
     }
 
