@@ -172,7 +172,7 @@ public class Intake extends SubsystemBase {
         m_indexMotor.getConfigurator().apply(indexConfiguration);
         m_intakeMotor.setControl(m_intakeRequest.withOutput(intakeRollerSpeed.getValue()));
         m_guideMotor.setControl(m_intakeRequest.withOutput(guideRollerSpeed.getValue()));
-        m_indexMotor.setControl(m_intakeRequest.withOutput(indexShootSpeed.getValue()));
+        m_indexMotor.setControl(m_intakeRequest.withOutput(1.0));
     }
 
     public boolean isIntakeReady() {
