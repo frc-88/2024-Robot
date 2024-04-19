@@ -65,7 +65,8 @@ public class RobotContainer {
     private Climber m_climber = new Climber();
     private Lights m_lights;
 
-    private DoublePreferenceConstant p_aimingOffsetDegrees = new DoublePreferenceConstant("pivot aim offset", 3);
+    private DoublePreferenceConstant p_aimingOffsetDegrees = new DoublePreferenceConstant("pivot aim offset", 1.5);
+    private DoublePreferenceConstant p_waitSecondForShoot = new DoublePreferenceConstant("wait for shoot", 0.75);
 
     private Command m_autoCommand = new SequentialCommandGroup(
             new WaitCommand(4),
@@ -73,15 +74,12 @@ public class RobotContainer {
             new RunCommand(() -> drivetrain.setChassisSpeeds(new ChassisSpeeds(1, 0, 0)), drivetrain).withTimeout(2),
             drivetrain.applyRequest(drivetrain.SnapToAngleRequest(joystick)))
             .alongWith(m_shooter.runShooterFactory().withTimeout(6).andThen(m_shooter.stopShooterFactory()));
-    private SendableChooser<Command> m_eiffelChooser = Autonomous.eiffelChooser(drivetrain);
 
     private Command climb(boolean trap) {
         // return new
         // SequentialCommandGroup(m_elevator.climbFactory().alongWith(m_climber.keepArmsPreppedFactory())
-        return new SequentialCommandGroup(m_elevator.climbFactory()
-                .until(m_elevator::isElevatorUp),
-                m_climber.climbFactory().alongWith(trap ? m_elevator.trapFactory() : m_elevator.climbFactory()))
-                .unless(drivetrain.tipping());
+        return new SequentialCommandGroup(m_elevator.climbFactory().until(m_elevator::isElevatorUp),
+                m_climber.climbFactory().alongWith(trap ? m_elevator.trapFactory() : m_elevator.climbFactory()));
     }
 
     private Command intakeFromSource() {
@@ -169,11 +167,10 @@ public class RobotContainer {
         drivetrain.register();
         drivetrain.resetPose(new Pose2d());
 
-        m_shooter.setDefaultCommand(
-                m_shooter.stopShooterFactory().unless(drivetrain.tipping()));
-        m_intake.setDefaultCommand(m_intake.stopMovingFactory().unless(drivetrain.tipping()));
-        m_elevator.setDefaultCommand(m_elevator.stowFactory().unless(drivetrain.tipping()));
-        m_climber.setDefaultCommand(m_climber.stowArmFactory().unless(drivetrain.tipping()));
+        m_shooter.setDefaultCommand(m_shooter.stopShooterFactory());
+        m_intake.setDefaultCommand(m_intake.stopMovingFactory());
+        m_elevator.setDefaultCommand(m_elevator.stowFactory());
+        m_climber.setDefaultCommand(m_climber.stowArmFactory());
     }
 
     private void configureRosNetworkTablesBridge() {
@@ -208,21 +205,22 @@ public class RobotContainer {
         // joystick.rightTrigger()
         // .onTrue(drivetrain.localizeFactory().unless(m_elevator::isElevatorNotDown)).debounce(0.25);
         joystick.rightTrigger().onTrue(m_intake.shootIndexerFactory()
-                .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer())
-                .until(() -> !m_intake.hasNoteInIndexer())
-                .andThen(m_intake.intakeFactory()));
+                .unless(() -> !m_intake.hasNoteInIndexer())
+                .until(() -> !m_intake.hasNoteInIndexer()))
+                .onFalse(m_intake.intakeFactory());
         joystick.rightBumper()
                 .whileTrue(
                         m_shooter.runShooterFactory().alongWith(new WaitUntilCommand(m_shooter::isShooterAtFullSpeed))
-                                .andThen(setRumble()).unless(drivetrain.tipping()))
-                .whileTrue(drivetrain.aimAtSpeakerFactory().unless(drivetrain.tipping()))
+                                .andThen(setRumble()))
+                .whileTrue(drivetrain.aimAtSpeakerFactory())
                 .whileTrue(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
-                        .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer()))
+                        .unless(() -> !m_intake.hasNoteInIndexer()))
                 .whileTrue(new WaitUntilCommand(() -> m_shooter.isShooterAtFullSpeed() && drivetrain.onTarget()
                         && m_elevator.pivotOnTarget(() -> m_aiming.speakerAngleForShooter(), 1.0))
-                        .andThen(m_intake.shootIndexerFactory()))
+                        .andThen(new WaitCommand(p_waitSecondForShoot.getValue())
+                                .andThen(m_intake.shootIndexerFactory())))
                 .onTrue(m_lights.setShootingFactory(true))
-                .onFalse(m_lights.setShootingFactory(false));
+                .onFalse(m_lights.setShootingFactory(false).alongWith(m_intake.intakeFactory()));
         joystick.leftBumper()
                 .whileTrue(drivetrain.aimAtAmpDumpingGroundFactory(buttonBox.button(17))
                         .alongWith(m_elevator.setFlatFactory())
@@ -232,35 +230,30 @@ public class RobotContainer {
     }
 
     private void configureButtonBox() {
-        buttonBox.button(10).whileTrue(m_intake.intakeNoSawNoteFactory().unless(drivetrain.tipping()));
+        buttonBox.button(10).whileTrue(m_intake.intakeNoSawNoteFactory());
         buttonBox.button(20)
-                .whileTrue(m_intake.shootIndexerFactory().unless(drivetrain.tipping()));
-        buttonBox.button(18).whileTrue(m_intake.rejectFactory().unless(drivetrain.tipping()));
+                .whileTrue(m_intake.shootIndexerFactory());
+        buttonBox.button(18).whileTrue(m_intake.rejectFactory());
         buttonBox.button(5)
-                .whileTrue(m_elevator.primeFactory().alongWith(m_shooter.primeSpeedFactory())
-                        .unless(drivetrain.tipping()));
+                .whileTrue(m_elevator.primeFactory().alongWith(m_shooter.primeSpeedFactory()));
         buttonBox.button(6)
                 .whileTrue(m_shooter.slowSpeedFactory().until(() -> m_shooter.isShooterAtSlowSpeed())
                         .andThen(m_elevator.setAmpFactory())
                         .until(() -> m_elevator.pivotOnTargetForAmp() && m_elevator.elevatorOnTarget())
-                        .andThen(m_shooter.runAmpTrapSpeedFactory()).unless(drivetrain.tipping()))
+                        .andThen(m_shooter.runAmpTrapSpeedFactory()))
                 .onFalse(m_elevator.elevatorDownFactory()
-                        .until(() -> m_elevator.elevatorOnTarget() && m_elevator.pivotOnTarget(42.0, 2.0))
-                        .unless(drivetrain.tipping()))
-                .onFalse(m_shooter.stopShooterFactory().unless(drivetrain.tipping()));
+                        .until(() -> m_elevator.elevatorOnTarget() && m_elevator.pivotOnTarget(42.0, 2.0)))
+                .onFalse(m_shooter.stopShooterFactory());
         buttonBox.button(11)
                 .onTrue(m_elevator.stowFactory()
                         .until(() -> m_elevator.areElevatorAndPivotDown())
-                        .andThen(m_climber.stowArmFactory())
-                        .unless(drivetrain.tipping()));
-        buttonBox.button(2).onTrue(m_climber.prepArmsFactory().alongWith(m_elevator.stowFactory())
-                .unless(drivetrain.tipping()))
+                        .andThen(m_climber.stowArmFactory()));
+        buttonBox.button(2).onTrue(m_climber.prepArmsFactory().alongWith(m_elevator.stowFactory()))
                 .negate().and(m_climber::isPrepped)
                 .onTrue(m_climber.readjustArmsFactory().alongWith(m_elevator.stowFactory()));
         buttonBox.button(15)
                 .onTrue(climb(false));
-        buttonBox.button(19).onTrue(m_climber.softLandingFactory().alongWith(m_elevator.climbFactory())
-                .unless(drivetrain.tipping()))
+        buttonBox.button(19).onTrue(m_climber.softLandingFactory().alongWith(m_elevator.climbFactory()))
                 .onFalse(new InstantCommand(() -> m_intake.enableAutoMode()));
         buttonBox.button(8)
                 .onTrue(new InstantCommand(() -> m_intake.disableAutoMode()).andThen(new WaitCommand(0.1))
@@ -270,8 +263,7 @@ public class RobotContainer {
                                 new WaitUntilCommand(
                                         () -> m_elevator.pivotOnTargetForAmp() && m_elevator.isElevatorUp())
                                         .andThen(m_shooter.runAmpTrapSpeedFactory().withTimeout(1.5))
-                                        .andThen(m_intake.shootIndexerFactory())))
-                        .unless(drivetrain.tipping()));
+                                        .andThen(m_intake.shootIndexerFactory()))));
         buttonBox.button(16).whileTrue(intakeFromSource().alongWith(m_lights.setYumYumIntakeFactory(true)))
                 .onFalse((new InstantCommand(m_intake::enableAutoMode).andThen(m_intake.intakeNoSawNoteFactory()))
                         .alongWith(m_lights.setYumYumIntakeFactory(false)));
@@ -323,17 +315,13 @@ public class RobotContainer {
 
         // Test
         SmartDashboard.putData("Rumble", setRumble().ignoringDisable(true));
-
-        // Auto
-        SmartDashboard.putData("EiffelTower", m_eiffelChooser);
-        m_eiffelChooser.onChange(this::eiffelListener);
     }
 
     private void eiffelListener(Command eiffelAuto) {
-        if (m_autoCommandName.equals("EiffelTower")) {
-            m_autoCommand = eiffelAuto;
-            m_autoVariantName = eiffelAuto.getName();
-        }
+        // if (m_autoCommandName.equals("EiffelTower")) {
+        // m_autoCommand = eiffelAuto;
+        // m_autoVariantName = eiffelAuto.getName();
+        // }
     }
 
     private void configureBindings() {
@@ -365,7 +353,6 @@ public class RobotContainer {
                 .debounce(0.25);
 
         m_aiming.isInWing().whileTrue(m_shooter.runShooterFactory());
-        drivetrain.tipping().whileTrue(m_climber.holdPositionFactory()).whileTrue(m_elevator.holdPositionFactory());
         m_shooter.shooterAtSpeed().onTrue(setRumble());
 
         isRightStickZero().debounce(0.25, DebounceType.kRising)
@@ -428,9 +415,8 @@ public class RobotContainer {
         }
 
         if (buttonBox.button(10).getAsBoolean() && !nextAuto.equals("EiffelTower")) {
-            m_autoCommand = m_eiffelChooser.getSelected();
+            m_autoCommand = drivetrain.getAutoPath("EiffelTower");
             nextAuto = "EiffelTower";
-            m_autoVariantName = m_autoCommand.getName();
         }
 
         if (buttonBox.button(18).getAsBoolean() && !nextAuto.equals("Cleanside")) {
@@ -459,7 +445,6 @@ public class RobotContainer {
         }
 
         SmartDashboard.putString("Auto", m_autoCommandName);
-        SmartDashboard.putString("AutoVariant", m_autoVariantName);
     }
 
     private void detectCoastGesture() {

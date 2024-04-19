@@ -73,6 +73,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private double targetHeading = 0;
     private Aiming m_aiming;
     private boolean lowPowerMode = false;
+    private double m_rollOffset = 0;
 
     private boolean holdingDirections = false;
     private DoublePreferenceConstant p_maxVeloctiy = new DoublePreferenceConstant("drivetrain/PathFindingMaxVelocity",
@@ -499,6 +500,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public Command calibrateFactory() {
         return new SequentialCommandGroup(new InstantCommand(this::setOffsetsToZero), new WaitCommand(5),
                 new InstantCommand(this::setOffsets));
+    }
+
+    public Command setRollOffset() {
+        return new InstantCommand(() -> m_rollOffset = getPigeon2().getRoll().getValue());
     }
 
     public boolean tippingRoll() {
