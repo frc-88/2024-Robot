@@ -37,8 +37,8 @@ public class Climber extends SubsystemBase {
     private DoublePreferenceConstant p_armStowSpeed = new DoublePreferenceConstant("Arm/ArmStowSpeed", 0.05);
     private DoublePreferenceConstant p_softLandingspeed = new DoublePreferenceConstant("Arm/ArmSoftLandingSpeed", 0.25);
     private DoublePreferenceConstant p_armReadjustPosition = new DoublePreferenceConstant("Arm/ArmReadjustPosition",
-            -30);
-    private DoublePreferenceConstant p_armPrepPosition = new DoublePreferenceConstant("Arm/ArmPrepPosition", -15);
+            -38.0);
+    private DoublePreferenceConstant p_armPrepPosition = new DoublePreferenceConstant("Arm/ArmPrepPosition", -24.0);
     private DoublePreferenceConstant p_armClimbPosition = new DoublePreferenceConstant("Arm/ArmClimbPosition", 108);
     private PIDPreferenceConstants p_PidPreferenceConstants = new PIDPreferenceConstants("Arm/PID", 10.0, 0.0, 0.3,
             0.12, 0.0, 0.0, 0.0, 0.0);

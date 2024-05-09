@@ -27,6 +27,7 @@ import frc.team88.ros.messages.visualization_msgs.MarkerArray;
 import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.configs.Pigeon2FeaturesConfigs;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -48,6 +49,8 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.util.Aiming;
 import frc.robot.util.DriveUtils;
+import frc.robot.util.SuppliedWaitCommand;
+import frc.robot.util.preferenceconstants.BooleanPreferenceConstant;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Lights;
@@ -65,8 +68,9 @@ public class RobotContainer {
     private Climber m_climber = new Climber();
     private Lights m_lights;
 
-    private DoublePreferenceConstant p_aimingOffsetDegrees = new DoublePreferenceConstant("pivot aim offset", 1.5);
-    private DoublePreferenceConstant p_waitSecondForShoot = new DoublePreferenceConstant("wait for shoot", 0.75);
+    private DoublePreferenceConstant p_aimingOffsetDegrees = new DoublePreferenceConstant("pivot aim offset", 0);
+    private DoublePreferenceConstant p_waitSecondForShoot = new DoublePreferenceConstant("wait for shoot", 0.55);
+    private BooleanPreferenceConstant p_havePreferencesReset = new BooleanPreferenceConstant("BAD PREFERENCES", false);
 
     private Command m_autoCommand = new SequentialCommandGroup(
             new WaitCommand(4),
@@ -217,7 +221,7 @@ public class RobotContainer {
                         .unless(() -> !m_intake.hasNoteInIndexer()))
                 .whileTrue(new WaitUntilCommand(() -> m_shooter.isShooterAtFullSpeed() && drivetrain.onTarget()
                         && m_elevator.pivotOnTarget(() -> m_aiming.speakerAngleForShooter(), 1.0))
-                        .andThen(new WaitCommand(p_waitSecondForShoot.getValue())
+                        .andThen(new SuppliedWaitCommand(p_waitSecondForShoot::getValue)
                                 .andThen(m_intake.shootIndexerFactory())))
                 .onTrue(m_lights.setShootingFactory(true))
                 .onFalse(m_lights.setShootingFactory(false).alongWith(m_intake.intakeFactory()));
@@ -278,6 +282,12 @@ public class RobotContainer {
                 .whileTrue(new WaitUntilCommand(drivetrain::isStopped).andThen(drivetrain.localizeFactory())
                         .andThen(drivetrain.stagePathfinding())
                         .andThen(drivetrain.setHeadingFactory(() -> drivetrain.getCurrentRobotAngle())));
+        // buttonBox.button(25).onTrue(
+        // new InstantCommand(() ->
+        // p_waitSecondForShoot.setValue(p_waitSecondForShoot.getValue() + 0.05)));
+        // buttonBox.button(24).onTrue(
+        // new InstantCommand(() ->
+        // p_waitSecondForShoot.setValue(p_waitSecondForShoot.getValue() - 0.05)));
     }
 
     private void configureSmartDashboardButtons() {
@@ -337,6 +347,9 @@ public class RobotContainer {
     }
 
     public void teleopInit() {
+        drivetrain.getPigeon2().getConfigurator()
+                .apply(new Pigeon2FeaturesConfigs().withDisableNoMotionCalibration(true));
+
         if (coasting) {
             // brake
             m_climber.enableBrakeMode();
@@ -371,6 +384,9 @@ public class RobotContainer {
     }
 
     public void disabledInit() {
+        drivetrain.getPigeon2().getConfigurator()
+                .apply(new Pigeon2FeaturesConfigs().withDisableNoMotionCalibration(false));
+
         indexerStart = m_intake.getIndexerPosition();
         readyToCoast = coasting = false;
     }
@@ -495,6 +511,9 @@ public class RobotContainer {
     }
 
     public void autonomousInit() {
+        drivetrain.getPigeon2().getConfigurator()
+                .apply(new Pigeon2FeaturesConfigs().withDisableNoMotionCalibration(true));
+
         m_elevator.calibratePivot();
         // drivetrain.localize();
     }
