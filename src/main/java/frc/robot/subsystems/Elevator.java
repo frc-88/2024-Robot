@@ -69,7 +69,6 @@ public class Elevator extends SubsystemBase {
     private final double kElevatorMotorToElevatorDistance = (7.086614173228346 / 14);
 
     private final TalonFX m_pivotMotor = new TalonFX(Constants.ELEVATOR_ANGLER_MOTOR, Constants.RIO_CANBUS);
-    private final TalonFX m_elevatorMotor = new TalonFX(Constants.ELEVATOR_MOTOR, Constants.RIO_CANBUS);
     private MotionMagicVoltage m_pivotRequest = new MotionMagicVoltage(0);
     private MotionMagicVoltage m_elevatorRequest = new MotionMagicVoltage(0);
     private final Debouncer pivotDebouncer = new Debouncer(1, DebounceType.kRising);
@@ -92,7 +91,6 @@ public class Elevator extends SubsystemBase {
         p_ElevatorPIDPreferenceConstants.addChangeHandler(this::configureTalons);
         p_elevatorGravityFeedForward.addChangeHandler(this::configureTalons);
 
-        m_elevatorMotor.setNeutralMode(NeutralModeValue.Brake);
     }
 
     private void configureTalons(double unused) {
@@ -132,9 +130,6 @@ public class Elevator extends SubsystemBase {
         elevatorSlot0.kG = p_elevatorGravityFeedForward.getValue();
         elevatorSlot0.GravityType = GravityTypeValue.Elevator_Static;
 
-        m_elevatorMotor.getConfigurator().apply(elevatorConfig);
-
-        m_elevatorMotor.setInverted(true);
     }
 
     public boolean isPivotCalibrated() {
@@ -146,13 +141,11 @@ public class Elevator extends SubsystemBase {
     }
 
     public boolean isElevatorNotDown() {
-        return m_elevatorMotor.getPosition().getValueAsDouble()
-                * kElevatorMotorToElevatorDistance > (Constants.ELEVATOR_BOTTOM + 1.0);
+        return false;
     }
 
     public boolean elevatorOnTarget() {
-        return Math.abs(m_elevatorMotor.getPosition().getValueAsDouble() * kElevatorMotorToElevatorDistance
-                - m_elevatorTarget) < 2;
+        return true;
     }
 
     public boolean pivotOnTarget(double position, double tolerance) {
@@ -169,17 +162,14 @@ public class Elevator extends SubsystemBase {
     }
 
     public boolean isElevatorUp() {
-        return Math.abs(m_elevatorMotor.getPosition().getValueAsDouble() * kElevatorMotorToElevatorDistance
-                - p_elevatorClimbPosition.getValue()) < 1.0;
+        return false;
     }
 
     public void enableCoastMode() {
-        m_elevatorMotor.setNeutralMode(NeutralModeValue.Coast);
         m_pivotMotor.setNeutralMode(NeutralModeValue.Coast);
     }
 
     public void enableBrakeMode() {
-        m_elevatorMotor.setNeutralMode(NeutralModeValue.Brake);
         m_pivotMotor.setNeutralMode(NeutralModeValue.Brake);
     }
 
@@ -197,16 +187,7 @@ public class Elevator extends SubsystemBase {
     }
 
     public void elevatorStow() {
-        if (m_elevatorCalibrated) {
-            m_elevatorMotor.setControl(m_elevatorRequest
-                    .withPosition((Constants.ELEVATOR_BOTTOM + 0.3) / kElevatorMotorToElevatorDistance));
-        } else {
-            m_elevatorMotor.setControl(new DutyCycleOut(-p_elevatorStowSpeed.getValue()));
-            if (elevatorDebouncer.calculate(m_elevatorMotor.getVelocity().getValueAsDouble() > -1)) {
-                calibrateElevator();
-                m_elevatorCalibrated = true;
-            }
-        }
+
     }
 
     public void setPivotPosition(double position) {
@@ -219,14 +200,9 @@ public class Elevator extends SubsystemBase {
     }
 
     public void setElevatorPosition(double height) {
-        m_elevatorTarget = height;
-        m_elevatorMotor.setControl(m_elevatorRequest.withPosition(height / kElevatorMotorToElevatorDistance));
     }
 
     public void setElevatorPosition(DoubleSupplier height) {
-        m_elevatorTarget = height.getAsDouble();
-        m_elevatorMotor
-                .setControl(m_elevatorRequest.withPosition(height.getAsDouble() / kElevatorMotorToElevatorDistance));
     }
 
     public void calibratePivot() {
@@ -234,24 +210,19 @@ public class Elevator extends SubsystemBase {
     }
 
     public void calibrateElevator() {
-        m_elevatorMotor.setPosition(Constants.ELEVATOR_BOTTOM / kElevatorMotorToElevatorDistance);
     }
 
     public void holdPosition() {
-        m_elevatorMotor.setControl(new DutyCycleOut(0.0));
         m_pivotMotor.setControl(new DutyCycleOut(0.0));
     }
 
     public boolean areElevatorAndPivotDown() {
-        return m_elevatorMotor.getPosition().getValueAsDouble() * kElevatorMotorToElevatorDistance
-                - Constants.ELEVATOR_BOTTOM < 1.0
-                && m_pivotMotor.getPosition().getValueAsDouble() * kPivotMotorRotationToShooterAngle
-                        - Constants.PIVOT_BOTTOM < 1.0;
+        return m_pivotMotor.getPosition().getValueAsDouble() * kPivotMotorRotationToShooterAngle
+                - Constants.PIVOT_BOTTOM < 1.0;
     }
 
     public boolean isElevatorReady() {
-        return m_elevatorMotor.isAlive()
-                && m_pivotMotor.isAlive();
+        return m_pivotMotor.isAlive();
     }
 
     public Command elevatorDownFactory() {
@@ -357,7 +328,5 @@ public class Elevator extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Shooter Angle",
                 m_pivotMotor.getPosition().getValueAsDouble() * kPivotMotorRotationToShooterAngle);
-        SmartDashboard.putNumber("Elevator Height",
-                m_elevatorMotor.getPosition().getValueAsDouble() * kElevatorMotorToElevatorDistance);
     }
 }
