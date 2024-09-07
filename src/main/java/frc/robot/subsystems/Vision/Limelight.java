@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.util.BotPoseProvider;
+import frc.team88.ros.messages.geometry_msgs.Pose2D;
 
 /*
  *     some think that I need
@@ -43,10 +44,10 @@ public class Limelight extends SubsystemBase implements BotPoseProvider {
     public int fiducial;
 
     public Limelight(String name) {
-        m_name = name;
+        m_name = "Cresendo";
         limelightTable = NetworkTableInstance.getDefault().getTable(m_name);
         int[] speakertags = { 4, 7 };
-        LimelightHelpers.SetFiducialIDFiltersOverride(m_name, speakertags);
+        // LimelightHelpers.SetFiducialIDFiltersOverride(m_name, speakertags);
     }
 
     public double getTX() {
@@ -78,9 +79,12 @@ public class Limelight extends SubsystemBase implements BotPoseProvider {
     public Pose2d getBotPose() {
         if (LimelightHelpers.getFiducialID(m_name) > 0.0) {
             if (getAlliance() == DriverStation.Alliance.Red) {
-                return LimelightHelpers.getBotPose2d_wpiRed(m_name);
+                LimelightHelpers.PoseEstimate robotPosemt = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2(m_name);
+                return robotPosemt.pose;
             } else {
-                return LimelightHelpers.getBotPose2d_wpiBlue(m_name);
+                LimelightHelpers.PoseEstimate robotPosemt = LimelightHelpers
+                        .getBotPoseEstimate_wpiBlue_MegaTag2(m_name);
+                return robotPosemt.pose;
             }
         } else {
             return new Pose2d();
@@ -104,23 +108,25 @@ public class Limelight extends SubsystemBase implements BotPoseProvider {
 
     // Returns distance to the center of the speaker tag from the robot or -1 if not
     // found
-    public double getDistanceToCenterSpeakerTagFromRobot() {
-        // RawFiducial[] tags = fiducial;
-        LimelightHelpers.PoseEstimate speakerdis;
-        int[] redspeakerTagID = { 4 }; // Red Speaker Tag
-        int[] bluespeakerTagID = { 7 }; // Blue Speaker Tag
-        if (getAlliance() == DriverStation.Alliance.Red) {
-            LimelightHelpers.SetFiducialIDFiltersOverride(m_name, redspeakerTagID);
-            LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("limelight");
-        } else {
-            LimelightHelpers.SetFiducialIDFiltersOverride(m_name, bluespeakerTagID);
-            LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
-        }
+    // public double getDistanceToCenterSpeakerTagFromRobot() {
+    // // RawFiducial[] tags = fiducial;
+    // LimelightHelpers.PoseEstimate speakerdis;
+    // int[] redspeakerTagID = { 4 }; // Red Speaker Tag
+    // int[] bluespeakerTagID = { 7 }; // Blue Speaker Tag
+    // if (getAlliance() == DriverStation.Alliance.Red) {
+    // LimelightHelpers.SetFiducialIDFiltersOverride(m_name, redspeakerTagID);
+    // LimelightHelpers.PoseEstimate mt2 =
+    // LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("limelight");
+    // } else {
+    // LimelightHelpers.SetFiducialIDFiltersOverride(m_name, bluespeakerTagID);
+    // LimelightHelpers.PoseEstimate mt2 =
+    // LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+    // }
 
-        // }
+    // }
 
-        return -1;
-    }
+    // return -1;
+    // }
 
     private Alliance getAlliance() {
         if (DriverStation.getAlliance().isPresent()) {

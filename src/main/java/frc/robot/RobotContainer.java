@@ -121,6 +121,25 @@ public class RobotContainer {
         configureButtonBox();
         configureBindings();
 
+        // Register the Named Commands for PathPlannerLib
+        registerNamedCommands();
+        configureSmartDashboardButtons();
+
+        // set default commands
+        // set below in telop init
+        // drivetrain.setDefaultCommand(drivetrain.defaultDriveCommand(joystick));
+        drivetrain.register();
+        drivetrain.resetPose(new Pose2d());
+
+        m_shooter.setDefaultCommand(
+                m_shooter.stopShooterFactory().unless(drivetrain.tipping()));
+        m_intake.setDefaultCommand(m_intake.stopMovingFactory().unless(drivetrain.tipping()));
+        m_elevator.setDefaultCommand(m_elevator.stowFactory().unless(drivetrain.tipping()));
+        m_climber.setDefaultCommand(m_climber.stowArmFactory().unless(drivetrain.tipping()));
+    }
+
+    private void registerNamedCommands() {
+
         // PathPlanner Named Commands
         NamedCommands.registerCommand("Prep Shooter", m_shooter.runShooterFactory());
         NamedCommands.registerCommand("Shoot", new WaitUntilCommand(m_shooter::isShooterAtFullSpeed)
@@ -162,19 +181,6 @@ public class RobotContainer {
         NamedCommands.registerCommand("Goblin Mode", m_intake.goblinModeFactory());
         NamedCommands.registerCommand("Slow Shooter", m_shooter.primeSpeedFactory());
 
-        configureSmartDashboardButtons();
-
-        // set default commands
-        // set below in telop init
-        // drivetrain.setDefaultCommand(drivetrain.defaultDriveCommand(joystick));
-        drivetrain.register();
-        drivetrain.resetPose(new Pose2d());
-
-        m_shooter.setDefaultCommand(
-                m_shooter.stopShooterFactory().unless(drivetrain.tipping()));
-        m_intake.setDefaultCommand(m_intake.stopMovingFactory().unless(drivetrain.tipping()));
-        m_elevator.setDefaultCommand(m_elevator.stowFactory().unless(drivetrain.tipping()));
-        m_climber.setDefaultCommand(m_climber.stowArmFactory().unless(drivetrain.tipping()));
     }
 
     /*
