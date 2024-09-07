@@ -34,7 +34,6 @@ public class Aiming {
     private final int[] speakerTagsRed = { 3, 4 };
     private final double speakerHeight = Units.inchesToMeters((60.265913 - 2.5));
     private BridgePublisher<MarkerArray> aimPub;
-    private final Limelight m_limelight;
 
     private DoublePreferenceConstant p_aimingOffset = new DoublePreferenceConstant("Aiming Offset",
             0.11);
@@ -48,8 +47,8 @@ public class Aiming {
     // () -> RobotState.isTeleop() && getROSPose().getX() <
     // Units.inchesToMeters(231.20));
 
-    public Aiming(Limelight limelight) {
-        m_limelight = limelight;
+    public Aiming() {
+
     }
 
     public void setTFListener(TFListenerCompact tfListener) {
