@@ -40,9 +40,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
-import frc.robot.ros.bridge.BagManager;
-import frc.robot.ros.bridge.CoprocessorBridge;
-import frc.robot.ros.bridge.TagSubscriber;
+//import frc.robot.ros.bridge.BagManager;
+//import frc.robot.ros.bridge.CoprocessorBridge;
+//import frc.robot.ros.bridge.TagSubscriber;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
@@ -106,16 +106,16 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(TunerConstants.kSpeedAt12VoltsMps, drivetrain);
     private TFListenerCompact tfListenerCompact;
-    private BagManager bagManager;
+    // private BagManager bagManager;
     @SuppressWarnings("unused")
-    private CoprocessorBridge coprocessorBridge;
+    // private CoprocessorBridge coprocessorBridge;
     private double indexerStart = m_intake.getIndexerPosition();
     private boolean readyToCoast = false;
     private boolean coasting = false;
 
     public RobotContainer() {
         DataLogManager.start();
-        configureRosNetworkTablesBridge();
+        // configureRosNetworkTablesBridge();
         configureDriverController();
         configureButtonBox();
         configureBindings();
@@ -176,28 +176,33 @@ public class RobotContainer {
         m_climber.setDefaultCommand(m_climber.stowArmFactory().unless(drivetrain.tipping()));
     }
 
-    private void configureRosNetworkTablesBridge() {
-        NetworkTableInstance instance = NetworkTableInstance.create();
-        instance.startClient3("coprocessor");
-        instance.setServer("10.0.88.44", 5800);
-
-        ROSNetworkTablesBridge bridge = new ROSNetworkTablesBridge(instance.getTable(""), 20);
-        tfListenerCompact = new TFListenerCompact(bridge, "/tf_compact");
-        TagSubscriber tagsub = new TagSubscriber(bridge);
-        BridgePublisher<MarkerArray> aimPub = new BridgePublisher<>(bridge, "target_aiming");
-        coprocessorBridge = new CoprocessorBridge(drivetrain, bridge, tfListenerCompact);
-        bagManager = new BagManager(bridge);
-
-        m_aiming.setTFListener(tfListenerCompact);
-        m_aiming.setTagListener(tagsub);
-        m_aiming.setAimPub(aimPub);
-
-        m_lights = new Lights(drivetrain, m_intake,
-                m_elevator,
-                m_shooter, m_climber,
-                coprocessorBridge, m_aiming, () -> m_autoCommandName);
-
-    }
+    /*
+     * private void configureRosNetworkTablesBridge() {
+     * NetworkTableInstance instance = NetworkTableInstance.create();
+     * instance.startClient3("coprocessor");
+     * instance.setServer("10.0.88.44", 5800);
+     * 
+     * ROSNetworkTablesBridge bridge = new
+     * ROSNetworkTablesBridge(instance.getTable(""), 20);
+     * tfListenerCompact = new TFListenerCompact(bridge, "/tf_compact");
+     * TagSubscriber tagsub = new TagSubscriber(bridge);
+     * BridgePublisher<MarkerArray> aimPub = new BridgePublisher<>(bridge,
+     * "target_aiming");
+     * coprocessorBridge = new CoprocessorBridge(drivetrain, bridge,
+     * tfListenerCompact);
+     * bagManager = new BagManager(bridge);
+     * 
+     * m_aiming.setTFListener(tfListenerCompact);
+     * m_aiming.setTagListener(tagsub);
+     * m_aiming.setAimPub(aimPub);
+     * 
+     * m_lights = new Lights(drivetrain, m_intake,
+     * m_elevator,
+     * m_shooter, m_climber,
+     * coprocessorBridge, m_aiming, () -> m_autoCommandName);
+     * 
+     * }
+     */
 
     private void configureDriverController() {
         joystick.b().onTrue(drivetrain.setHeadingFactory(270));
@@ -364,7 +369,7 @@ public class RobotContainer {
                         .alongWith(m_shooter.stopShooterFactory().unless(() -> m_shooter.m_shuttlePass)))
                 .debounce(0.25);
 
-        m_aiming.isInWing().whileTrue(m_shooter.runShooterFactory());
+        // m_aiming.isInWing().whileTrue(m_shooter.runShooterFactory());
         drivetrain.tipping().whileTrue(m_climber.holdPositionFactory()).whileTrue(m_elevator.holdPositionFactory());
         m_shooter.shooterAtSpeed().onTrue(setRumble());
 
@@ -453,10 +458,10 @@ public class RobotContainer {
             nextAuto = "Waiting";
         }
 
-        if (!nextAuto.equals(m_autoCommandName)) {
-            bagManager.startBag(); // Start recording
-            m_autoCommandName = nextAuto;
-        }
+        // if (!nextAuto.equals(m_autoCommandName)) {
+        // bagManager.startBag(); // Start recording
+        // m_autoCommandName = nextAuto;
+        // }
 
         SmartDashboard.putString("Auto", m_autoCommandName);
         SmartDashboard.putString("AutoVariant", m_autoVariantName);

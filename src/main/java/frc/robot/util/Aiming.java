@@ -12,8 +12,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.ros.bridge.Frames;
-import frc.robot.ros.bridge.TagSubscriber;
+//import frc.robot.ros.bridge.Frames;
+//import frc.robot.ros.bridge.TagSubscriber;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import frc.team88.ros.bridge.BridgePublisher;
 import frc.team88.ros.conversions.ROSConversions;
@@ -24,15 +24,17 @@ import frc.team88.ros.messages.std_msgs.RosColorRGBA;
 import frc.team88.ros.messages.visualization_msgs.Marker;
 import frc.team88.ros.messages.visualization_msgs.MarkerArray;
 import frc.robot.Constants;
+import frc.robot.subsystems.Vision.Limelight;
+import frc.robot.subsystems.Vision.LimelightHelpers;
 
 public class Aiming {
     private Pose2d robotPose;
     private Alliance alliance;
     private TFListenerCompact tf_compact;
-    private TagSubscriber tagSubscriber;
     private final int[] speakerTagsRed = { 3, 4 };
     private final double speakerHeight = Units.inchesToMeters((60.265913 - 2.5));
     private BridgePublisher<MarkerArray> aimPub;
+    private final Limelight m_limelight;
 
     private DoublePreferenceConstant p_aimingOffset = new DoublePreferenceConstant("Aiming Offset",
             0.11);
@@ -42,18 +44,16 @@ public class Aiming {
 
     // private final double[] pivotAngleBounds = { 42.0, 80.0 };
 
-    public Trigger isInWing = new Trigger(
-            () -> RobotState.isTeleop() && getROSPose().getX() < Units.inchesToMeters(231.20));
+    // public Trigger isInWing = new Trigger(
+    // () -> RobotState.isTeleop() && getROSPose().getX() <
+    // Units.inchesToMeters(231.20));
 
-    public Aiming() {
+    public Aiming(Limelight limelight) {
+        m_limelight = limelight;
     }
 
     public void setTFListener(TFListenerCompact tfListener) {
         tf_compact = tfListener;
-    }
-
-    public void setTagListener(TagSubscriber tagsub) {
-        tagSubscriber = tagsub;
     }
 
     public void setAimPub(BridgePublisher<MarkerArray> array) {
@@ -62,7 +62,7 @@ public class Aiming {
 
     public void sendTarget() {
         Marker marker = new Marker();
-        marker.setHeader(aimPub.getHeader(Frames.BASE_FRAME));
+        // marker.setHeader(aimPub.getHeader(Frames.BASE_FRAME));
         marker.setAction(Marker.ADD);
         marker.setFrameLocked(false);
         marker.setPose(ROSConversions.wpiToRosPose(aimPose()));
@@ -76,18 +76,25 @@ public class Aiming {
         return (max - min) / (newMax - newMin) * (x - newMin) + min;
     }
 
-    public Pose2d getROSPose() {
-        Optional<Transform3dStamped> tfStamped = tf_compact.lookupTransform(Frames.MAP_FRAME, Frames.BASE_FRAME);
-        if (tfStamped.isEmpty()) {
-            return new Pose2d();
-        }
-        robotPose = new Pose2d(tfStamped.get().transform.getTranslation().toTranslation2d(),
-                tfStamped.get().transform.getRotation().toRotation2d());
-        return (getAlliance() == DriverStation.Alliance.Red) ? DriveUtils.redBlueTransform(robotPose) : robotPose;
-    }
+    // public Pose2d getROSPose() {
+    // Optional<Transform3dStamped> tfStamped =
+    // tf_compact.lookupTransform(Frames.MAP_FRAME, Frames.BASE_FRAME);
+    // if (tfStamped.isEmpty()) {
+    // return new Pose2d();
+    // }
+    // robotPose = new
+    // Pose2d(tfStamped.get().transform.getTranslation().toTranslation2d(),
+    // tfStamped.get().transform.getRotation().toRotation2d());
+    // return (getAlliance() == DriverStation.Alliance.Red) ?
+    // DriveUtils.redBlueTransform(robotPose) : robotPose;
+    // }
 
     public double getSpeakerAngleForDrivetrian() {
-        Pose2d robotPose = getROSPose();
+        // Pose2d robotPose = getROSPose();
+        LimelightHelpers.PoseEstimate robotPosemt = (getAlliance() == DriverStation.Alliance.Red)
+                ? LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("limelight")
+                : LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+        Pose2d robotPose = robotPosemt.pose;
         robotPose = (getAlliance() == DriverStation.Alliance.Red) ? robotPose.relativeTo(Constants.RED_SPEAKER_POSE)
                 : robotPose.relativeTo(Constants.BLUE_SPEAKER_POSE);
         double drivetrainAngle = Math.atan2(robotPose.getY(), robotPose.getX()) * (180 / Math.PI);
@@ -98,7 +105,11 @@ public class Aiming {
     }
 
     public double speakerAngleForShooter() {
-        Pose2d robotPose = getROSPose();
+        // Pose2d robotPose = getROSPose();
+        LimelightHelpers.PoseEstimate robotPosemt = (getAlliance() == DriverStation.Alliance.Red)
+                ? LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("limelight")
+                : LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+        Pose2d robotPose = robotPosemt.pose;
         double distance = (getAlliance() == DriverStation.Alliance.Red)
                 ? robotPose.relativeTo(Constants.RED_SPEAKER_POSE).getTranslation().getNorm()
                 : robotPose.relativeTo(Constants.BLUE_SPEAKER_POSE).getTranslation().getNorm();
@@ -138,7 +149,11 @@ public class Aiming {
     }
 
     public double getAmpAngleForDrivetrain() {
-        Pose2d robotPose = getROSPose();
+        // Pose2d robotPose = getROSPose();
+        LimelightHelpers.PoseEstimate robotPosemt = (getAlliance() == DriverStation.Alliance.Red)
+                ? LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("limelight")
+                : LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+        Pose2d robotPose = robotPosemt.pose;
         robotPose = (getAlliance() == DriverStation.Alliance.Red) ? robotPose.relativeTo(Constants.RED_AMP_AIM_POSE)
                 : robotPose.relativeTo(Constants.BLUE_AMP_AIM_POSE);
         double drivetrainAmpAngle = Math.atan2(robotPose.getY(), robotPose.getX()) * (180 / Math.PI);
@@ -146,7 +161,11 @@ public class Aiming {
     }
 
     public double getDumpingGroundAngle() {
-        Pose2d robotPose = getROSPose();
+        // Pose2d robotPose = getROSPose();
+        LimelightHelpers.PoseEstimate robotPosemt = (getAlliance() == DriverStation.Alliance.Red)
+                ? LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("limelight")
+                : LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+        Pose2d robotPose = robotPosemt.pose;
         robotPose = (getAlliance() == DriverStation.Alliance.Red) ? robotPose.relativeTo(Constants.DUMPING_GROUND_RED)
                 : robotPose.relativeTo(Constants.DUMPING_GROUND_BLUE);
         double drivetrainAmpAngle = Math.atan2(robotPose.getY(), robotPose.getX()) * (180 / Math.PI);
@@ -155,16 +174,16 @@ public class Aiming {
 
     public boolean getDetections() {
         try {
-            var header = tagSubscriber.receive().get().getHeader();
-            if (header.getFrameId() == "optical_camera_0") {
-                var detections = tagSubscriber.receive().get().getDetections();
-                for (var detection : detections) {
-                    ArrayList<Integer> ids = detection.getId();
-                    if (ids.contains(speakerTagsRed[0]) && ids.contains(speakerTagsRed[1])) {
-                        return true;
-                    }
-                }
-            }
+            // var header = tagSubscriber.receive().get().getHeader();
+            // if (header.getFrameId() == "optical_camera_0") {
+            // var detections = tagSubscriber.receive().get().getDetections();
+            // for (var detection : detections) {
+            // ArrayList<Integer> ids = detection.getId();
+            // if (ids.contains(speakerTagsRed[0]) && ids.contains(speakerTagsRed[1])) {
+            // return true;
+            // }
+            // }
+            // }
 
         } catch (Exception exception) {
             return false;
@@ -173,14 +192,22 @@ public class Aiming {
     }
 
     public Pose3d aimPose() {
-        Pose2d robotPose = getROSPose();
+        // Pose2d robotPose = getROSPose();
+        LimelightHelpers.PoseEstimate robotPosemt = (getAlliance() == DriverStation.Alliance.Red)
+                ? LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("limelight")
+                : LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+        Pose2d robotPose = robotPosemt.pose;
         robotPose = (getAlliance() == DriverStation.Alliance.Red) ? Constants.RED_SPEAKER_POSE.relativeTo(robotPose)
                 : Constants.BLUE_SPEAKER_POSE.relativeTo(robotPose);
         return new Pose3d(robotPose.getX(), robotPose.getY(), speakerHeight, new Rotation3d());
     }
 
     public double speakerDistance() {
-        Pose2d robotPose = getROSPose();
+        // Pose2d robotPose = getROSPose();
+        LimelightHelpers.PoseEstimate robotPosemt = (getAlliance() == DriverStation.Alliance.Red)
+                ? LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("limelight")
+                : LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+        Pose2d robotPose = robotPosemt.pose;
         return (getAlliance() == DriverStation.Alliance.Red)
                 ? robotPose.relativeTo(Constants.RED_SPEAKER_POSE).getTranslation().getNorm()
                 : robotPose.relativeTo(Constants.BLUE_SPEAKER_POSE).getTranslation().getNorm();
@@ -188,7 +215,7 @@ public class Aiming {
 
     // originPoint should be relative to the origin of whatever alliance we are on
     public double getAngletoAnyPoint(Pose2d originPoint) {
-        Pose2d robotPose = getROSPose();
+        // Pose2d robotPose = getROSPose();
         robotPose = robotPose.relativeTo(originPoint);
         return Math.atan2(robotPose.getY(), robotPose.getX()) * (180 / Math.PI);
     }
@@ -200,7 +227,7 @@ public class Aiming {
         return alliance;
     }
 
-    public Trigger isInWing() {
-        return isInWing;
-    }
+    // public Trigger isInWing() {
+    // return isInWing;
+    // }
 }

@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.ros.bridge.CoprocessorBridge;
+//import frc.robot.ros.bridge.CoprocessorBridge;
 import frc.robot.util.Aiming;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import frc.robot.util.preferenceconstants.IntPreferenceConstant;
@@ -48,7 +48,7 @@ public class Lights extends SubsystemBase {
     private Elevator m_elevator;
     private Shooter m_shooter;
     private Climber m_climber;
-    private CoprocessorBridge m_coprocessor;
+    // private CoprocessorBridge m_coprocessor;
     private Aiming m_aiming;
     private Supplier<String> m_autoName;
 
@@ -79,13 +79,13 @@ public class Lights extends SubsystemBase {
     }
 
     public Lights(CommandSwerveDrivetrain swerve, Intake intake, Elevator elevator,
-            Shooter shooter, Climber climber, CoprocessorBridge coprocessor, Aiming aiming, Supplier<String> autoName) {
+            Shooter shooter, Climber climber, Aiming aiming, Supplier<String> autoName) {
         m_swerve = swerve;
         m_intake = intake;
         m_elevator = elevator;
         m_shooter = shooter;
         m_climber = climber;
-        m_coprocessor = coprocessor;
+        // m_coprocessor = coprocessor;
         m_aiming = aiming;
         m_autoName = autoName;
         CANdleConfiguration configAll = new CANdleConfiguration();
@@ -264,7 +264,9 @@ public class Lights extends SubsystemBase {
                         larsonColor(0, 255, 143);
                         m_colorSet = true;
                     }
-                    if (m_coprocessor.isCoprocessorReady(m_aiming.getROSPose()) && counter++ > 50) {
+                    if (
+                    // m_coprocessor.isCoprocessorReady(m_aiming.getROSPose())
+                    1 == 1 && counter++ > 50) {
                         m_state++;
                         counter = 0;
                         m_colorSet = false;

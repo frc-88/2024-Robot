@@ -372,9 +372,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return isSet;
     }
 
-    public void localize() {
-        resetPose(m_aiming.getROSPose());
-    }
+    /*
+     * public void localize() {
+     * resetPose(m_aiming.getROSPose());
+     * }
+     */
 
     public double getCurrentRobotAngle() {
         return getState().Pose.getRotation().getDegrees();
@@ -403,7 +405,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public Command localizeFactory() {
         return new InstantCommand(() -> {
-            localize();
+            // localize();
         }, this);
     }
 
@@ -435,27 +437,27 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 amp.getAsBoolean() ? m_aiming.getAmpAngleForDrivetrain() : m_aiming.getDumpingGroundAngle()));
     }
 
-    private void sendROSPose() {
-        /* Telemeterize the pose */
-        Pose2d pose = m_aiming.getROSPose();
-        if (DriveUtils.redAlliance()) {
-            pose = DriveUtils.redBlueTransform(pose);
-        }
-        rosFieldTypePub.set("Field2d");
-        rosFieldPub.set(new double[] {
-                pose.getX(),
-                pose.getY(),
-                pose.getRotation().getDegrees()
-        });
-    }
+    // private void sendROSPose() {
+    // /* Telemeterize the pose */
+    // Pose2d pose = m_aiming.getROSPose();
+    // if (DriveUtils.redAlliance()) {
+    // pose = DriveUtils.redBlueTransform(pose);
+    // }
+    // rosFieldTypePub.set("Field2d");
+    // rosFieldPub.set(new double[] {
+    // pose.getX(),
+    // pose.getY(),
+    // pose.getRotation().getDegrees()
+    // });
+    // }
 
-    private Pose2d getROSPoseBlue() {
-        Pose2d pose = m_aiming.getROSPose();
-        if (DriveUtils.redAlliance()) {
-            pose = DriveUtils.redBlueTransform(pose);
-        }
-        return pose;
-    }
+    // private Pose2d getROSPoseBlue() {
+    // Pose2d pose = m_aiming.getROSPose();
+    // if (DriveUtils.redAlliance()) {
+    // pose = DriveUtils.redBlueTransform(pose);
+    // }
+    // return pose;
+    // }
 
     public Command pathFindingCommand(String pathName) {
         PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
@@ -515,7 +517,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     @Override
     public void periodic() {
-        sendROSPose();
+        // sendROSPose();
         sendOdomPose();
         SmartDashboard.putNumber("Target Heading", targetHeading);
         SmartDashboard.putNumber("Speaker Angle", m_aiming.getSpeakerAngleForDrivetrian());
