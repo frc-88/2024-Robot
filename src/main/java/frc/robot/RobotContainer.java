@@ -64,7 +64,7 @@ public class RobotContainer {
     private final Elevator m_elevator = new Elevator();
     private final Intake m_intake = new Intake(m_elevator::areElevatorAndPivotDown);
     private Climber m_climber = new Climber();
-    private Lights m_lights;
+    // private Lights m_lights;
 
     private DoublePreferenceConstant p_aimingOffsetDegrees = new DoublePreferenceConstant("pivot aim offset", 3);
 
@@ -232,9 +232,9 @@ public class RobotContainer {
                         .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer()))
                 .whileTrue(new WaitUntilCommand(() -> m_shooter.isShooterAtFullSpeed() && drivetrain.onTarget()
                         && m_elevator.pivotOnTarget(() -> m_aiming.speakerAngleForShooter(), 1.0))
-                        .andThen(m_intake.shootIndexerFactory()))
-                .onTrue(m_lights.setShootingFactory(true))
-                .onFalse(m_lights.setShootingFactory(false));
+                        .andThen(m_intake.shootIndexerFactory()));
+        // .onTrue(m_lights.setShootingFactory(true))
+        // .onFalse(m_lights.setShootingFactory(false));
         joystick.leftBumper()
                 .whileTrue(drivetrain.aimAtAmpDumpingGroundFactory(buttonBox.button(17))
                         .alongWith(m_elevator.setFlatFactory())
@@ -284,9 +284,8 @@ public class RobotContainer {
                                         .andThen(m_shooter.runAmpTrapSpeedFactory().withTimeout(1.5))
                                         .andThen(m_intake.shootIndexerFactory())))
                         .unless(drivetrain.tipping()));
-        buttonBox.button(16).whileTrue(intakeFromSource().alongWith(m_lights.setYumYumIntakeFactory(true)))
-                .onFalse((new InstantCommand(m_intake::enableAutoMode).andThen(m_intake.intakeNoSawNoteFactory()))
-                        .alongWith(m_lights.setYumYumIntakeFactory(false)));
+        buttonBox.button(16).whileTrue(intakeFromSource())
+                .onFalse((new InstantCommand(m_intake::enableAutoMode).andThen(m_intake.intakeNoSawNoteFactory())));
         buttonBox.button(21).whileTrue(new InstantCommand(m_intake::disableAutoMode).andThen(goblinModeFactory()))
                 .onFalse(new InstantCommand(m_intake::enableAutoMode));
         buttonBox.button(12)
@@ -312,13 +311,16 @@ public class RobotContainer {
         // SmartDashboard.putData("Stop Shooter", m_shooter.stopShooterCommand());
 
         // Lights
-        SmartDashboard.putData("TieDye",
-                m_lights.tieDyeFactory().ignoringDisable(true));
-        SmartDashboard.putData("fire",
-                m_lights.setFireFactory().ignoringDisable(true));
-        SmartDashboard.putData("set red", m_lights.setLEDFactory(255, 0, 0).ignoringDisable(true));
-        SmartDashboard.putData("set green", m_lights.setLEDFactory(0, 255, 0).ignoringDisable(true));
-        SmartDashboard.putData("set blue", m_lights.setLEDFactory(0, 0, 255).ignoringDisable(true));
+        // SmartDashboard.putData("TieDye",
+        // m_lights.tieDyeFactory().ignoringDisable(true));
+        // SmartDashboard.putData("fire",
+        // m_lights.setFireFactory().ignoringDisable(true));
+        // SmartDashboard.putData("set red", m_lights.setLEDFactory(255, 0,
+        // 0).ignoringDisable(true));
+        // SmartDashboard.putData("set green", m_lights.setLEDFactory(0, 255,
+        // 0).ignoringDisable(true));
+        // SmartDashboard.putData("set blue", m_lights.setLEDFactory(0, 0,
+        // 255).ignoringDisable(true));
 
         // Elevator
         SmartDashboard.putData("Calibrate Pivot", m_elevator.calibratePivotFactory());
@@ -370,7 +372,7 @@ public class RobotContainer {
         m_intake.hasNote()
                 .onTrue((m_shooter.runIdleSpeedFactory())
                         .unless(() -> !m_intake.m_automaticMode || m_shooter.m_shuttlePass))
-                .onTrue(setRumble().unless(() -> !m_intake.m_automaticMode)).onTrue(m_lights.spinLeftFactory());
+                .onTrue(setRumble().unless(() -> !m_intake.m_automaticMode)); // .onTrue(m_lights.spinLeftFactory());
         m_intake.hasNote().and(() -> !m_intake.m_automaticMode)
                 .onFalse(m_intake.intakeFactory()
                         .alongWith(m_shooter.stopShooterFactory().unless(() -> m_shooter.m_shuttlePass)))
@@ -479,12 +481,12 @@ public class RobotContainer {
 
         if (!hasNote && !readyToCoast && !coasting && m_intake.getIndexerPosition() - indexerStart < -4.0) {
             readyToCoast = true;
-            m_lights.setLED(0, 0, 255);
+            // m_lights.setLED(0, 0, 255);
         }
 
         if (readyToCoast && !hasNote && m_intake.getIndexerPosition() - indexerStart > 0.0) {
             // coast
-            m_lights.setLED(255, 0, 0);
+            // m_lights.setLED(255, 0, 0);
             m_climber.enableCoastMode();
             m_elevator.enableCoastMode();
             readyToCoast = false;
@@ -494,7 +496,7 @@ public class RobotContainer {
         if (coasting && hasNote) {
             // brake
             // NOTE: Be sure to enable brake mode in teleopInit above!
-            m_lights.disableLED();
+            // m_lights.disableLED();
             m_climber.enableBrakeMode();
             m_elevator.enableBrakeMode();
             indexerStart = m_intake.getIndexerPosition();
@@ -502,7 +504,7 @@ public class RobotContainer {
         }
 
         if (readyToCoast && hasNote) {
-            m_lights.disableLED();
+            // m_lights.disableLED();
             indexerStart = m_intake.getIndexerPosition();
             readyToCoast = false;
         }
