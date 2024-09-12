@@ -44,7 +44,7 @@ public class Limelight extends SubsystemBase implements BotPoseProvider {
     public int fiducial;
 
     public Limelight(String name) {
-        m_name = "Cresendo";
+        m_name = name;
         limelightTable = NetworkTableInstance.getDefault().getTable(m_name);
         int[] speakertags = { 4, 7 };
         // LimelightHelpers.SetFiducialIDFiltersOverride(m_name, speakertags);

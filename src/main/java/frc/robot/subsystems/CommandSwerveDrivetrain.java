@@ -437,28 +437,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 amp.getAsBoolean() ? m_aiming.getAmpAngleForDrivetrain() : m_aiming.getDumpingGroundAngle()));
     }
 
-    // private void sendROSPose() {
-    // /* Telemeterize the pose */
-    // Pose2d pose = m_aiming.getROSPose();
-    // if (DriveUtils.redAlliance()) {
-    // pose = DriveUtils.redBlueTransform(pose);
-    // }
-    // rosFieldTypePub.set("Field2d");
-    // rosFieldPub.set(new double[] {
-    // pose.getX(),
-    // pose.getY(),
-    // pose.getRotation().getDegrees()
-    // });
-    // }
-
-    // private Pose2d getROSPoseBlue() {
-    // Pose2d pose = m_aiming.getROSPose();
-    // if (DriveUtils.redAlliance()) {
-    // pose = DriveUtils.redBlueTransform(pose);
-    // }
-    // return pose;
-    // }
-
     public Command pathFindingCommand(String pathName) {
         PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
         PathConstraints constraints = new PathConstraints(p_maxVeloctiy.getValue(), p_maxAcceleration.getValue(),
@@ -494,6 +472,19 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         });
     }
 
+    private void sendLimelightPose() {
+        Pose2d pose = m_aiming.getBotPose();
+        if (DriveUtils.redAlliance()) {
+            pose = DriveUtils.redBlueTransform(pose);
+        }
+        rosFieldTypePub.set("Field2d");
+        rosFieldPub.set(new double[] {
+                pose.getX(),
+                pose.getY(),
+                pose.getRotation().getDegrees()
+        });
+    }
+
     public Trigger drivetrainOnTarget() {
         return new Trigger(() -> onTarget());
     }
@@ -519,6 +510,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public void periodic() {
         // sendROSPose();
         sendOdomPose();
+        sendLimelightPose();
         SmartDashboard.putNumber("Target Heading", targetHeading);
         SmartDashboard.putNumber("Speaker Angle", m_aiming.getSpeakerAngleForDrivetrian());
         SmartDashboard.putNumber("Speaker Distance", Units.metersToFeet(m_aiming.speakerDistance()));
