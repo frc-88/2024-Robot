@@ -512,6 +512,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         sendOdomPose();
         sendLimelightPose();
         SmartDashboard.putNumber("Target Heading", targetHeading);
+        SmartDashboard.putNumber("Limelight X", m_aiming.getBotPose().getX());
+        SmartDashboard.putNumber("Limelight Y", m_aiming.getBotPose().getY());
         SmartDashboard.putNumber("Speaker Angle", m_aiming.getSpeakerAngleForDrivetrian());
         SmartDashboard.putNumber("Speaker Distance", Units.metersToFeet(m_aiming.speakerDistance()));
         SmartDashboard.putBoolean("Tag sub", m_aiming.getDetections());
@@ -524,6 +526,5 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         SmartDashboard.putNumber("Pigeon Rate", getPigeon2().getAngularVelocityZDevice().getValueAsDouble());
         SmartDashboard.putNumber("Robot Heading", getCurrentRobotAngle());
         SmartDashboard.putNumber("Drive Speed", getSpeed());
-        m_aiming.sendTarget();
     }
 }

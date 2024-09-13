@@ -42,12 +42,21 @@ public class Limelight extends SubsystemBase implements BotPoseProvider {
     private NetworkTable limelightTable;
     private Alliance alliance;
     public int fiducial;
+    NetworkTableEntry tx;
+    NetworkTableEntry ty;
+    NetworkTableEntry ta;
 
     public Limelight(String name) {
         m_name = name;
-        limelightTable = NetworkTableInstance.getDefault().getTable(m_name);
-        int[] speakertags = { 4, 7 };
+        // limelightTable = NetworkTableInstance.getDefault().getTable(m_name);
+        // int[] speakertags = { 4, 7 };
         // LimelightHelpers.SetFiducialIDFiltersOverride(m_name, speakertags);
+        limelightTable = NetworkTableInstance.getDefault().getTable(m_name);
+        tx = limelightTable.getEntry("tx");
+        ty = limelightTable.getEntry("ty");
+        ta = limelightTable.getEntry("ta");
+
+        // post to smart dashboard periodically
     }
 
     public double getTX() {
@@ -98,10 +107,9 @@ public class Limelight extends SubsystemBase implements BotPoseProvider {
     @Override
     public void periodic() {
         Pose2d botPose = getBotPose();
-        Pose2d robotPose;
-
-        SmartDashboard.putNumber("LL:" + m_name + ":BotX", botPose.getX());
-        SmartDashboard.putNumber("LL:" + m_name + ":BotY", botPose.getY());
+        SmartDashboard.putNumber("LL:" + m_name + ":BotX", tx.getDouble(0.0));
+        SmartDashboard.putNumber("LL:" + m_name + ":BotY", ty.getDouble(0.0));
+        SmartDashboard.putNumber("LL:" + m_name + ":BotY1", getTY());
         SmartDashboard.putNumber("LL:" + m_name + ":BotYaw", botPose.getRotation().getDegrees());
         SmartDashboard.putNumber("LL:" + m_name + ":M_Distance", m_distance);
     }

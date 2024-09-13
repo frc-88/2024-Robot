@@ -33,12 +33,11 @@ public class Aiming {
     private Alliance alliance;
     // private final int[] speakerTagsRed = { 3, 4 };
     private final double speakerHeight = Units.inchesToMeters((60.265913 - 2.5));
-    private BridgePublisher<MarkerArray> aimPub;
 
     private DoublePreferenceConstant p_aimingOffset = new DoublePreferenceConstant("Aiming Offset",
             0.11);
 
-    private Limelight m_Limelight = new Limelight("Cresendo");
+    private Limelight m_Limelight;
 
     // private LimelightHelpers.PoseEstimate robotPosemt = (getAlliance() ==
     // DriverStation.Alliance.Red)
@@ -55,22 +54,11 @@ public class Aiming {
     // Units.inchesToMeters(231.20));
 
     public Aiming() {
-
+        m_Limelight = new Limelight("limelight");
     }
 
-    public void sendTarget() {
-        Marker marker = new Marker();
-        // marker.setHeader(aimPub.getHeader(Frames.BASE_FRAME));
-        marker.setAction(Marker.ADD);
-        marker.setFrameLocked(false);
-        marker.setPose(ROSConversions.wpiToRosPose(aimPose()));
-        marker.setType(Marker.ARROW);
-        marker.setScale(new Vector3(0.05, 0.05, 0.5));
-        marker.setColor(new RosColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
-        aimPub.send(new MarkerArray(new Marker[] { marker }));
-    }
-
-    public double mapValue(double x, double min, double max, double newMin, double newMax) {
+    public double mapValue(double x, double min, double max, double newMin,
+            double newMax) {
         return (max - min) / (newMax - newMin) * (x - newMin) + min;
     }
 
@@ -88,7 +76,8 @@ public class Aiming {
         Pose2d robotPose = m_Limelight.getBotPose();
         robotPose = (getAlliance() == DriverStation.Alliance.Red) ? robotPose.relativeTo(Constants.RED_SPEAKER_POSE)
                 : robotPose.relativeTo(Constants.BLUE_SPEAKER_POSE);
-        double drivetrainAngle = Math.atan2(robotPose.getY(), robotPose.getX()) * (180 / Math.PI);
+        double drivetrainAngle = Math.atan2(robotPose.getY(), robotPose.getX()) *
+                (180 / Math.PI);
         // if(robotPose.getTranslation().getNorm() > ) {
         // drivetrainAngle -= robotPose.getTranslation().getNorm() * 0.13;
         // }
@@ -110,7 +99,7 @@ public class Aiming {
         double shootingAngle = Math.atan2(distance, speakerHeight) * (180 / Math.PI);
         distance = Units.metersToFeet(distance);
 
-        shootingAngle -= distance * p_aimingOffset.getValue(); // aim higher based on distance
+        shootingAngle -= distance * p_aimingOffset.getValue(); // aim higher based on
         // double shootingAngle = 19.2 + (6.03 * distance) - (0.171 * distance *
         // distance);
 
@@ -151,7 +140,8 @@ public class Aiming {
         Pose2d robotPose = m_Limelight.getBotPose();
         robotPose = (getAlliance() == DriverStation.Alliance.Red) ? robotPose.relativeTo(Constants.RED_AMP_AIM_POSE)
                 : robotPose.relativeTo(Constants.BLUE_AMP_AIM_POSE);
-        double drivetrainAmpAngle = Math.atan2(robotPose.getY(), robotPose.getX()) * (180 / Math.PI);
+        double drivetrainAmpAngle = Math.atan2(robotPose.getY(), robotPose.getX()) *
+                (180 / Math.PI);
         return drivetrainAmpAngle;
     }
 
@@ -165,7 +155,8 @@ public class Aiming {
         Pose2d robotPose = m_Limelight.getBotPose();
         robotPose = (getAlliance() == DriverStation.Alliance.Red) ? robotPose.relativeTo(Constants.DUMPING_GROUND_RED)
                 : robotPose.relativeTo(Constants.DUMPING_GROUND_BLUE);
-        double drivetrainAmpAngle = Math.atan2(robotPose.getY(), robotPose.getX()) * (180 / Math.PI);
+        double drivetrainAmpAngle = Math.atan2(robotPose.getY(), robotPose.getX()) *
+                (180 / Math.PI);
         return drivetrainAmpAngle;
     }
 
@@ -214,7 +205,8 @@ public class Aiming {
                 : robotPose.relativeTo(Constants.BLUE_SPEAKER_POSE).getTranslation().getNorm();
     }
 
-    // originPoint should be relative to the origin of whatever alliance we are on
+    // originPoint should be relative to the origin of whatever alliance we are
+
     public double getAngletoAnyPoint(Pose2d originPoint) {
         // Pose2d robotPose = getROSPose();
         robotPose = robotPose.relativeTo(originPoint);
