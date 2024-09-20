@@ -103,7 +103,8 @@ public class RobotContainer {
                 : Units.radiansToDegrees(Math.atan2(joystick.getLeftX(), joystick.getLeftY())) + 180;
     }
 
-    private final Telemetry logger = new Telemetry(TunerConstants.kSpeedAt12VoltsMps, drivetrain);
+    // private final Telemetry logger = new
+    // Telemetry(TunerConstants.kSpeedAt12VoltsMps, drivetrain);
     private double indexerStart = m_intake.getIndexerPosition();
     private boolean readyToCoast = false;
     private boolean coasting = false;
@@ -151,21 +152,25 @@ public class RobotContainer {
         // m_elevator.goToAnlgeFactory(p_autoCloseAim.getValue())
         // .until(() -> m_elevator.pivotOnTarget(p_autoCloseAim.getValue(), 2)));
         NamedCommands.registerCommand("Pivot Aim",
-                m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
-                        .until(() -> m_elevator.pivotOnTarget(m_aiming.speakerAngleForShooter(),
+                m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter(drivetrain.getPose()))
+                        .until(() -> m_elevator.pivotOnTarget(m_aiming.speakerAngleForShooter(drivetrain.getPose()),
                                 2.0))
                         .unless(() -> !m_intake.hasNoteInIndexer() && !m_intake.sawNote()));
         NamedCommands.registerCommand("Pivot Active Aim",
                 m_elevator.goToAimingPosition(() -> m_aiming.odomSpeakerAngle(drivetrain.getPose())));
         NamedCommands.registerCommand("Pivot Aim Minus 4",
                 m_elevator
-                        .goToAimingPosition(() -> m_aiming.speakerAngleForShooter() - p_aimingOffsetDegrees.getValue())
+                        .goToAimingPosition(() -> m_aiming.speakerAngleForShooter(drivetrain.getPose())
+                                - p_aimingOffsetDegrees.getValue())
                         .until(() -> m_elevator.pivotOnTarget(
-                                m_aiming.speakerAngleForShooter() - p_aimingOffsetDegrees.getValue(),
+                                m_aiming.speakerAngleForShooter(drivetrain.getPose())
+                                        - p_aimingOffsetDegrees.getValue(),
                                 2.0)));
         NamedCommands.registerCommand("Aim",
-                new ParallelCommandGroup(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
-                        .until(() -> m_elevator.pivotOnTarget(m_aiming.speakerAngleForShooter(), 2.0)),
+                new ParallelCommandGroup(
+                        m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter(drivetrain.getPose()))
+                                .until(() -> m_elevator
+                                        .pivotOnTarget(m_aiming.speakerAngleForShooter(drivetrain.getPose()), 2.0)),
                         drivetrain.applyRequest(drivetrain.autoSnapToAngleRequest()),
                         drivetrain.aimAtSpeakerFactory().until(drivetrain::onTarget)));
         NamedCommands.registerCommand("Stop Shooter", m_shooter.stopShooterFactory().withTimeout(0.2));
@@ -193,10 +198,10 @@ public class RobotContainer {
                         m_shooter.runShooterFactory().alongWith(new WaitUntilCommand(m_shooter::isShooterAtFullSpeed))
                                 .andThen(setRumble()).unless(drivetrain.tipping()))
                 .whileTrue(drivetrain.aimAtSpeakerFactory().unless(drivetrain.tipping()))
-                .whileTrue(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
+                .whileTrue(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter(drivetrain.getPose()))
                         .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer()))
                 .whileTrue(new WaitUntilCommand(() -> m_shooter.isShooterAtFullSpeed() && drivetrain.onTarget()
-                        && m_elevator.pivotOnTarget(() -> m_aiming.speakerAngleForShooter(), 1.0))
+                        && m_elevator.pivotOnTarget(() -> m_aiming.speakerAngleForShooter(drivetrain.getPose()), 1.0))
                         .andThen(m_intake.shootIndexerFactory()));
         // .onTrue(m_lights.setShootingFactory(true))
         // .onFalse(m_lights.setShootingFactory(false));

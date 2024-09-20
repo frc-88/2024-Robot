@@ -45,6 +45,7 @@ public class Limelight extends SubsystemBase implements BotPoseProvider {
     NetworkTableEntry tx;
     NetworkTableEntry ty;
     NetworkTableEntry ta;
+    private boolean rejectUpdate = false;
 
     public Limelight(String name) {
         m_name = name;
@@ -57,6 +58,22 @@ public class Limelight extends SubsystemBase implements BotPoseProvider {
         ta = limelightTable.getEntry("ta");
 
         // post to smart dashboard periodically
+    }
+
+    public LimelightHelpers.PoseEstimate limelightPeriodic(double degrees, double rate) {
+        LimelightHelpers.SetRobotOrientation(m_name, degrees, 0, 0, 0, 0, 0);
+        LimelightHelpers.PoseEstimate pose = getBotPoseEstimate();
+        if (Math.abs(rate) > 720) {
+            rejectUpdate = true;
+        }
+        if (pose.tagCount == 0) {
+            rejectUpdate = true;
+        }
+        if (!rejectUpdate) {
+            return pose;
+        } else {
+            return null;
+        }
     }
 
     public double getTX() {
@@ -86,17 +103,24 @@ public class Limelight extends SubsystemBase implements BotPoseProvider {
     }
 
     public Pose2d getBotPose() {
-        if (LimelightHelpers.getFiducialID(m_name) > 0.0) {
-            if (getAlliance() == DriverStation.Alliance.Red) {
-                LimelightHelpers.PoseEstimate robotPosemt = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2(m_name);
-                return robotPosemt.pose;
-            } else {
-                LimelightHelpers.PoseEstimate robotPosemt = LimelightHelpers
-                        .getBotPoseEstimate_wpiBlue_MegaTag2(m_name);
-                return robotPosemt.pose;
-            }
+        if (getAlliance() == DriverStation.Alliance.Red) {
+            LimelightHelpers.PoseEstimate robotPosemt = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2(m_name);
+            return robotPosemt.pose;
         } else {
-            return new Pose2d();
+            LimelightHelpers.PoseEstimate robotPosemt = LimelightHelpers
+                    .getBotPoseEstimate_wpiBlue_MegaTag2(m_name);
+            return robotPosemt.pose;
+        }
+    }
+
+    public LimelightHelpers.PoseEstimate getBotPoseEstimate() {
+        if (getAlliance() == DriverStation.Alliance.Red) {
+            LimelightHelpers.PoseEstimate robotPosemt = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2(m_name);
+            return robotPosemt;
+        } else {
+            LimelightHelpers.PoseEstimate robotPosemt = LimelightHelpers
+                    .getBotPoseEstimate_wpiBlue_MegaTag2(m_name);
+            return robotPosemt;
         }
     }
 
@@ -106,12 +130,14 @@ public class Limelight extends SubsystemBase implements BotPoseProvider {
 
     @Override
     public void periodic() {
-        Pose2d botPose = getBotPose();
-        SmartDashboard.putNumber("LL:" + m_name + ":BotX", tx.getDouble(0.0));
-        SmartDashboard.putNumber("LL:" + m_name + ":BotY", ty.getDouble(0.0));
-        SmartDashboard.putNumber("LL:" + m_name + ":BotY1", getTY());
-        SmartDashboard.putNumber("LL:" + m_name + ":BotYaw", botPose.getRotation().getDegrees());
-        SmartDashboard.putNumber("LL:" + m_name + ":M_Distance", m_distance);
+        // Pose2d botPose = getBotPose();
+        // SmartDashboard.putNumber("LL:" + m_name + ":BotX", botPose.getX());
+        // SmartDashboard.putNumber("LL:" + m_name + ":BotY", botPose.getY());
+        // SmartDashboard.putNumber("LL:" + m_name + ":BotY1",
+        // LimelightHelpers.getFiducialID(m_name));
+        // SmartDashboard.putNumber("LL:" + m_name + ":BotYaw",
+        // botPose.getRotation().getDegrees());
+        // SmartDashboard.putNumber("LL:" + m_name + ":M_Distance", m_distance);
     }
 
     // Returns distance to the center of the speaker tag from the robot or -1 if not

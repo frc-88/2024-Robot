@@ -52,10 +52,10 @@ public class Intake extends SubsystemBase {
             () -> m_isIntakingRunning
                     && m_intakeMotor.getAcceleration()
                             .getValueAsDouble() < -p_intakingDriverNoteAcceleration.getValue())
-            .debounce(1.5, DebounceType.kFalling)
+            .debounce(.5, DebounceType.kFalling)
             .and(new Trigger(
                     () -> m_intakeMotor.getStatorCurrent().getValueAsDouble() > p_intakingDriverNoteCurrent.getValue())
-                    .debounce(1.5, DebounceType.kFalling));
+                    .debounce(.5, DebounceType.kFalling));
     private Trigger m_intakingOperationNoteTrigger = new Trigger(
             () -> m_isIntakingRunning
                     && m_intakeMotor.getAcceleration()
