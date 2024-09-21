@@ -162,18 +162,20 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public LimelightHelpers.PoseEstimate getBotPoseEstimate() {
         if (getAlliance() == DriverStation.Alliance.Red) {
-            LimelightHelpers.PoseEstimate robotPosemt = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2(m_name);
+            LimelightHelpers.PoseEstimate robotPosemt = LimelightHelpers.getBotPoseEstimate_wpiRed(m_name);
             return robotPosemt;
         } else {
             LimelightHelpers.PoseEstimate robotPosemt = LimelightHelpers
-                    .getBotPoseEstimate_wpiBlue_MegaTag2(m_name);
+                    .getBotPoseEstimate_wpiBlue(m_name);
             return robotPosemt;
         }
     }
 
     public void limelightPeriodic() {
-        LimelightHelpers.SetRobotOrientation(m_name, m_odometry.getEstimatedPosition().getRotation().getDegrees(), 0, 0,
-                0, 0, 0);
+        // LimelightHelpers.SetRobotOrientation(m_name,
+        // m_odometry.getEstimatedPosition().getRotation().getDegrees(), 0,
+        // 0,
+        // 0, 0, 0);
         LimelightHelpers.PoseEstimate pose = getBotPoseEstimate();
         if (Math.abs(m_pigeon2.getRate()) > 720) {
             rejectUpdate = true;
@@ -182,7 +184,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             rejectUpdate = true;
         }
         if (!rejectUpdate) {
-            m_odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+
+            // m_odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
             m_odometry.addVisionMeasurement(pose.pose, Timer.getFPGATimestamp());
         }
     }
@@ -416,11 +419,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return isSet;
     }
 
-    /*
-     * public void localize() {
-     * resetPose(m_aiming.getROSPose());
-     * }
-     */
+    public void localize() {
+        resetPose(getBotPoseEstimate().pose);
+    }
 
     public double getCurrentRobotAngle() {
         return getState().Pose.getRotation().getDegrees();
@@ -449,7 +450,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public Command localizeFactory() {
         return new InstantCommand(() -> {
-            // localize();
+            localize();
         }, this);
     }
 
@@ -514,9 +515,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     private void sendOdomPose() {
         Pose2d pose = getState().Pose;
-        if (DriveUtils.redAlliance()) {
-            pose = DriveUtils.redBlueTransform(pose);
-        }
+        // if (DriveUtils.redAlliance()) {
+        // pose = DriveUtils.redBlueTransform(pose);
+        // }
         poseFieldTypePub.set("Field2d");
         poseFieldPub.set(new double[] {
                 pose.getX(),
@@ -527,9 +528,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     private void sendLimelightPose() {
         Pose2d pose = getBotPoseEstimate().pose;
-        if (DriveUtils.redAlliance()) {
-            pose = DriveUtils.redBlueTransform(pose);
-        }
+        // if (DriveUtils.redAlliance()) {
+        // pose = DriveUtils.redBlueTransform(pose);
+        // }
         rosFieldTypePub.set("Field2d");
         rosFieldPub.set(new double[] {
                 pose.getX(),
