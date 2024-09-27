@@ -141,7 +141,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         snapToAngle.HeadingController = headingController;
     }
 
-    public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, Aiming aiming,
+    public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants,
+            Aiming aiming,
             SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
         configureAutoBuilder();
@@ -162,7 +163,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public LimelightHelpers.PoseEstimate getBotPoseEstimate() {
         if (getAlliance() == DriverStation.Alliance.Red) {
-            LimelightHelpers.PoseEstimate robotPosemt = LimelightHelpers.getBotPoseEstimate_wpiRed(m_name);
+            LimelightHelpers.PoseEstimate robotPosemt = LimelightHelpers.getBotPoseEstimate_wpiBlue(m_name);
             return robotPosemt;
         } else {
             LimelightHelpers.PoseEstimate robotPosemt = LimelightHelpers

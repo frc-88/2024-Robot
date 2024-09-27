@@ -122,7 +122,7 @@ public class RobotContainer {
 
         // set default commands
         // set below in telop init
-        // drivetrain.setDefaultCommand(drivetrain.defaultDriveCommand(joystick));
+        drivetrain.setDefaultCommand(drivetrain.defaultDriveCommand(joystick));
         drivetrain.register();
         drivetrain.resetPose(new Pose2d());
 
@@ -202,7 +202,8 @@ public class RobotContainer {
                         .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer()))
                 .whileTrue(new WaitUntilCommand(() -> m_shooter.isShooterAtFullSpeed() && drivetrain.onTarget()
                         && m_elevator.pivotOnTarget(() -> m_aiming.speakerAngleForShooter(drivetrain.getPose()), 1.0))
-                        .andThen(m_intake.shootIndexerFactory()));
+                        .andThen(m_intake.shootIndexerFactory())
+                        .until(() -> !m_intake.hasNoteInIndexer()));
         // .onTrue(m_lights.setShootingFactory(true))
         // .onFalse(m_lights.setShootingFactory(false));
         joystick.leftBumper()

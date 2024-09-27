@@ -104,22 +104,22 @@ public class Limelight extends SubsystemBase implements BotPoseProvider {
 
     public Pose2d getBotPose() {
         if (getAlliance() == DriverStation.Alliance.Red) {
-            LimelightHelpers.PoseEstimate robotPosemt = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2(m_name);
+            LimelightHelpers.PoseEstimate robotPosemt = LimelightHelpers.getBotPoseEstimate_wpiBlue(m_name);
             return robotPosemt.pose;
         } else {
             LimelightHelpers.PoseEstimate robotPosemt = LimelightHelpers
-                    .getBotPoseEstimate_wpiBlue_MegaTag2(m_name);
+                    .getBotPoseEstimate_wpiBlue(m_name);
             return robotPosemt.pose;
         }
     }
 
     public LimelightHelpers.PoseEstimate getBotPoseEstimate() {
         if (getAlliance() == DriverStation.Alliance.Red) {
-            LimelightHelpers.PoseEstimate robotPosemt = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2(m_name);
+            LimelightHelpers.PoseEstimate robotPosemt = LimelightHelpers.getBotPoseEstimate_wpiBlue(m_name);
             return robotPosemt;
         } else {
             LimelightHelpers.PoseEstimate robotPosemt = LimelightHelpers
-                    .getBotPoseEstimate_wpiBlue_MegaTag2(m_name);
+                    .getBotPoseEstimate_wpiBlue(m_name);
             return robotPosemt;
         }
     }

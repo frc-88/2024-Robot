@@ -48,8 +48,8 @@ public class Aiming {
     // private final double[] pivotAngleBounds = { 42.0, 80.0 };
 
     // public Trigger isInWing = new Trigger(
-    // () -> RobotState.isTeleop() && getROSPose().getX() <
-    // Units.inchesToMeters(231.20));
+    // () -> RobotState.isTeleop() && (m_aiming.speakerDistance(robotPose) <
+    // Units.feetToMeters(15)));
 
     public Aiming() {
     }
