@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Vision.Limelight;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.team88.ros.bridge.BridgePublisher;
 import frc.team88.ros.bridge.ROSNetworkTablesBridge;
@@ -40,9 +41,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
-import frc.robot.ros.bridge.BagManager;
-import frc.robot.ros.bridge.CoprocessorBridge;
-import frc.robot.ros.bridge.TagSubscriber;
+//import frc.robot.ros.bridge.BagManager;
+//import frc.robot.ros.bridge.CoprocessorBridge;
+//import frc.robot.ros.bridge.TagSubscriber;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
@@ -62,8 +63,8 @@ public class RobotContainer {
     private final Shooter m_shooter = new Shooter();
     private final Elevator m_elevator = new Elevator();
     private final Intake m_intake = new Intake(m_elevator::areElevatorAndPivotDown);
-    private Climber m_climber = new Climber();
-    private Lights m_lights;
+    // private Climber m_climber = new Climber();
+    // private Lights m_lights;
 
     private DoublePreferenceConstant p_aimingOffsetDegrees = new DoublePreferenceConstant("pivot aim offset", 3);
 
@@ -79,9 +80,7 @@ public class RobotContainer {
         // return new
         // SequentialCommandGroup(m_elevator.climbFactory().alongWith(m_climber.keepArmsPreppedFactory())
         return new SequentialCommandGroup(m_elevator.climbFactory()
-                .until(m_elevator::isElevatorUp),
-                m_climber.climbFactory().alongWith(trap ? m_elevator.trapFactory() : m_elevator.climbFactory()))
-                .unless(drivetrain.tipping());
+                .until(m_elevator::isElevatorUp));
     }
 
     private Command intakeFromSource() {
@@ -104,21 +103,36 @@ public class RobotContainer {
                 : Units.radiansToDegrees(Math.atan2(joystick.getLeftX(), joystick.getLeftY())) + 180;
     }
 
-    private final Telemetry logger = new Telemetry(TunerConstants.kSpeedAt12VoltsMps, drivetrain);
-    private TFListenerCompact tfListenerCompact;
-    private BagManager bagManager;
-    @SuppressWarnings("unused")
-    private CoprocessorBridge coprocessorBridge;
+    // private final Telemetry logger = new
+    // Telemetry(TunerConstants.kSpeedAt12VoltsMps, drivetrain);
     private double indexerStart = m_intake.getIndexerPosition();
     private boolean readyToCoast = false;
     private boolean coasting = false;
 
     public RobotContainer() {
         DataLogManager.start();
-        configureRosNetworkTablesBridge();
+        // configureRosNetworkTablesBridge();
         configureDriverController();
         configureButtonBox();
         configureBindings();
+
+        // Register the Named Commands for PathPlannerLib
+        registerNamedCommands();
+        configureSmartDashboardButtons();
+
+        // set default commands
+        // set below in telop init
+        drivetrain.setDefaultCommand(drivetrain.defaultDriveCommand(joystick));
+        drivetrain.register();
+        drivetrain.resetPose(new Pose2d());
+
+        m_shooter.setDefaultCommand(
+                m_shooter.stopShooterFactory().unless(drivetrain.tipping()));
+        m_intake.setDefaultCommand(m_intake.stopMovingFactory().unless(drivetrain.tipping()));
+        m_elevator.setDefaultCommand(m_elevator.stowFactory().unless(drivetrain.tipping()));
+    }
+
+    private void registerNamedCommands() {
 
         // PathPlanner Named Commands
         NamedCommands.registerCommand("Prep Shooter", m_shooter.runShooterFactory());
@@ -138,21 +152,25 @@ public class RobotContainer {
         // m_elevator.goToAnlgeFactory(p_autoCloseAim.getValue())
         // .until(() -> m_elevator.pivotOnTarget(p_autoCloseAim.getValue(), 2)));
         NamedCommands.registerCommand("Pivot Aim",
-                m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
-                        .until(() -> m_elevator.pivotOnTarget(m_aiming.speakerAngleForShooter(),
+                m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter(drivetrain.getPose()))
+                        .until(() -> m_elevator.pivotOnTarget(m_aiming.speakerAngleForShooter(drivetrain.getPose()),
                                 2.0))
                         .unless(() -> !m_intake.hasNoteInIndexer() && !m_intake.sawNote()));
         NamedCommands.registerCommand("Pivot Active Aim",
                 m_elevator.goToAimingPosition(() -> m_aiming.odomSpeakerAngle(drivetrain.getPose())));
         NamedCommands.registerCommand("Pivot Aim Minus 4",
                 m_elevator
-                        .goToAimingPosition(() -> m_aiming.speakerAngleForShooter() - p_aimingOffsetDegrees.getValue())
+                        .goToAimingPosition(() -> m_aiming.speakerAngleForShooter(drivetrain.getPose())
+                                - p_aimingOffsetDegrees.getValue())
                         .until(() -> m_elevator.pivotOnTarget(
-                                m_aiming.speakerAngleForShooter() - p_aimingOffsetDegrees.getValue(),
+                                m_aiming.speakerAngleForShooter(drivetrain.getPose())
+                                        - p_aimingOffsetDegrees.getValue(),
                                 2.0)));
         NamedCommands.registerCommand("Aim",
-                new ParallelCommandGroup(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
-                        .until(() -> m_elevator.pivotOnTarget(m_aiming.speakerAngleForShooter(), 2.0)),
+                new ParallelCommandGroup(
+                        m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter(drivetrain.getPose()))
+                                .until(() -> m_elevator
+                                        .pivotOnTarget(m_aiming.speakerAngleForShooter(drivetrain.getPose()), 2.0)),
                         drivetrain.applyRequest(drivetrain.autoSnapToAngleRequest()),
                         drivetrain.aimAtSpeakerFactory().until(drivetrain::onTarget)));
         NamedCommands.registerCommand("Stop Shooter", m_shooter.stopShooterFactory().withTimeout(0.2));
@@ -160,42 +178,6 @@ public class RobotContainer {
                 new WaitUntilCommand(m_elevator::isPivotCalibrated));
         NamedCommands.registerCommand("Goblin Mode", m_intake.goblinModeFactory());
         NamedCommands.registerCommand("Slow Shooter", m_shooter.primeSpeedFactory());
-
-        configureSmartDashboardButtons();
-
-        // set default commands
-        // set below in telop init
-        // drivetrain.setDefaultCommand(drivetrain.defaultDriveCommand(joystick));
-        drivetrain.register();
-        drivetrain.resetPose(new Pose2d());
-
-        m_shooter.setDefaultCommand(
-                m_shooter.stopShooterFactory().unless(drivetrain.tipping()));
-        m_intake.setDefaultCommand(m_intake.stopMovingFactory().unless(drivetrain.tipping()));
-        m_elevator.setDefaultCommand(m_elevator.stowFactory().unless(drivetrain.tipping()));
-        m_climber.setDefaultCommand(m_climber.stowArmFactory().unless(drivetrain.tipping()));
-    }
-
-    private void configureRosNetworkTablesBridge() {
-        NetworkTableInstance instance = NetworkTableInstance.create();
-        instance.startClient3("coprocessor");
-        instance.setServer("10.0.88.44", 5800);
-
-        ROSNetworkTablesBridge bridge = new ROSNetworkTablesBridge(instance.getTable(""), 20);
-        tfListenerCompact = new TFListenerCompact(bridge, "/tf_compact");
-        TagSubscriber tagsub = new TagSubscriber(bridge);
-        BridgePublisher<MarkerArray> aimPub = new BridgePublisher<>(bridge, "target_aiming");
-        coprocessorBridge = new CoprocessorBridge(drivetrain, bridge, tfListenerCompact);
-        bagManager = new BagManager(bridge);
-
-        m_aiming.setTFListener(tfListenerCompact);
-        m_aiming.setTagListener(tagsub);
-        m_aiming.setAimPub(aimPub);
-
-        m_lights = new Lights(drivetrain, m_intake,
-                m_elevator,
-                m_shooter, m_climber,
-                coprocessorBridge, m_aiming, () -> m_autoCommandName);
 
     }
 
@@ -216,13 +198,14 @@ public class RobotContainer {
                         m_shooter.runShooterFactory().alongWith(new WaitUntilCommand(m_shooter::isShooterAtFullSpeed))
                                 .andThen(setRumble()).unless(drivetrain.tipping()))
                 .whileTrue(drivetrain.aimAtSpeakerFactory().unless(drivetrain.tipping()))
-                .whileTrue(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter())
+                .whileTrue(m_elevator.goToAimingPosition(() -> m_aiming.speakerAngleForShooter(drivetrain.getPose()))
                         .unless(() -> drivetrain.tipping().getAsBoolean() || !m_intake.hasNoteInIndexer()))
                 .whileTrue(new WaitUntilCommand(() -> m_shooter.isShooterAtFullSpeed() && drivetrain.onTarget()
-                        && m_elevator.pivotOnTarget(() -> m_aiming.speakerAngleForShooter(), 1.0))
-                        .andThen(m_intake.shootIndexerFactory()))
-                .onTrue(m_lights.setShootingFactory(true))
-                .onFalse(m_lights.setShootingFactory(false));
+                        && m_elevator.pivotOnTarget(() -> m_aiming.speakerAngleForShooter(drivetrain.getPose()), 1.0))
+                        .andThen(m_intake.shootIndexerFactory())
+                        .until(() -> !m_intake.hasNoteInIndexer()));
+        // .onTrue(m_lights.setShootingFactory(true))
+        // .onFalse(m_lights.setShootingFactory(false));
         joystick.leftBumper()
                 .whileTrue(drivetrain.aimAtAmpDumpingGroundFactory(buttonBox.button(17))
                         .alongWith(m_elevator.setFlatFactory())
@@ -251,17 +234,9 @@ public class RobotContainer {
         buttonBox.button(11)
                 .onTrue(m_elevator.stowFactory()
                         .until(() -> m_elevator.areElevatorAndPivotDown())
-                        .andThen(m_climber.stowArmFactory())
                         .unless(drivetrain.tipping()));
-        buttonBox.button(2).onTrue(m_climber.prepArmsFactory().alongWith(m_elevator.stowFactory())
-                .unless(drivetrain.tipping()))
-                .negate().and(m_climber::isPrepped)
-                .onTrue(m_climber.readjustArmsFactory().alongWith(m_elevator.stowFactory()));
         buttonBox.button(15)
                 .onTrue(climb(false));
-        buttonBox.button(19).onTrue(m_climber.softLandingFactory().alongWith(m_elevator.climbFactory())
-                .unless(drivetrain.tipping()))
-                .onFalse(new InstantCommand(() -> m_intake.enableAutoMode()));
         buttonBox.button(8)
                 .onTrue(new InstantCommand(() -> m_intake.disableAutoMode()).andThen(new WaitCommand(0.1))
                         .andThen(m_shooter.slowSpeedFactory().until(
@@ -272,9 +247,8 @@ public class RobotContainer {
                                         .andThen(m_shooter.runAmpTrapSpeedFactory().withTimeout(1.5))
                                         .andThen(m_intake.shootIndexerFactory())))
                         .unless(drivetrain.tipping()));
-        buttonBox.button(16).whileTrue(intakeFromSource().alongWith(m_lights.setYumYumIntakeFactory(true)))
-                .onFalse((new InstantCommand(m_intake::enableAutoMode).andThen(m_intake.intakeNoSawNoteFactory()))
-                        .alongWith(m_lights.setYumYumIntakeFactory(false)));
+        buttonBox.button(16).whileTrue(intakeFromSource())
+                .onFalse((new InstantCommand(m_intake::enableAutoMode).andThen(m_intake.intakeNoSawNoteFactory())));
         buttonBox.button(21).whileTrue(new InstantCommand(m_intake::disableAutoMode).andThen(goblinModeFactory()))
                 .onFalse(new InstantCommand(m_intake::enableAutoMode));
         buttonBox.button(12)
@@ -300,13 +274,16 @@ public class RobotContainer {
         // SmartDashboard.putData("Stop Shooter", m_shooter.stopShooterCommand());
 
         // Lights
-        SmartDashboard.putData("TieDye",
-                m_lights.tieDyeFactory().ignoringDisable(true));
-        SmartDashboard.putData("fire",
-                m_lights.setFireFactory().ignoringDisable(true));
-        SmartDashboard.putData("set red", m_lights.setLEDFactory(255, 0, 0).ignoringDisable(true));
-        SmartDashboard.putData("set green", m_lights.setLEDFactory(0, 255, 0).ignoringDisable(true));
-        SmartDashboard.putData("set blue", m_lights.setLEDFactory(0, 0, 255).ignoringDisable(true));
+        // SmartDashboard.putData("TieDye",
+        // m_lights.tieDyeFactory().ignoringDisable(true));
+        // SmartDashboard.putData("fire",
+        // m_lights.setFireFactory().ignoringDisable(true));
+        // SmartDashboard.putData("set red", m_lights.setLEDFactory(255, 0,
+        // 0).ignoringDisable(true));
+        // SmartDashboard.putData("set green", m_lights.setLEDFactory(0, 255,
+        // 0).ignoringDisable(true));
+        // SmartDashboard.putData("set blue", m_lights.setLEDFactory(0, 0,
+        // 255).ignoringDisable(true));
 
         // Elevator
         SmartDashboard.putData("Calibrate Pivot", m_elevator.calibratePivotFactory());
@@ -315,9 +292,6 @@ public class RobotContainer {
         SmartDashboard.putData("Go To Flat", m_elevator.setFlatFactory());
 
         // Climber
-        SmartDashboard.putData("ClimberCalibrate", m_climber.calibrateFactory());
-        SmartDashboard.putData("ClimberCoastMode", m_climber.enableCoastModeFactory().ignoringDisable(true));
-        SmartDashboard.putData("ClimberBrakeMode", m_climber.enableBrakeModeFactory().ignoringDisable(true));
         SmartDashboard.putData("ElevatorCoastMode", m_elevator.enableCoastModeFactory().ignoringDisable(true));
         SmartDashboard.putData("ElevatorBrakeMode", m_elevator.enableBrakeModeFactory().ignoringDisable(true));
 
@@ -351,21 +325,20 @@ public class RobotContainer {
     public void teleopInit() {
         if (coasting) {
             // brake
-            m_climber.enableBrakeMode();
             m_elevator.enableBrakeMode();
         }
         // enable triggers
         m_intake.hasNote()
                 .onTrue((m_shooter.runIdleSpeedFactory())
                         .unless(() -> !m_intake.m_automaticMode || m_shooter.m_shuttlePass))
-                .onTrue(setRumble().unless(() -> !m_intake.m_automaticMode)).onTrue(m_lights.spinLeftFactory());
+                .onTrue(setRumble().unless(() -> !m_intake.m_automaticMode)); // .onTrue(m_lights.spinLeftFactory());
         m_intake.hasNote().and(() -> !m_intake.m_automaticMode)
                 .onFalse(m_intake.intakeFactory()
                         .alongWith(m_shooter.stopShooterFactory().unless(() -> m_shooter.m_shuttlePass)))
                 .debounce(0.25);
 
-        m_aiming.isInWing().whileTrue(m_shooter.runShooterFactory());
-        drivetrain.tipping().whileTrue(m_climber.holdPositionFactory()).whileTrue(m_elevator.holdPositionFactory());
+        // m_aiming.isInWing().whileTrue(m_shooter.runShooterFactory());
+        drivetrain.tipping().whileTrue(m_elevator.holdPositionFactory());
         m_shooter.shooterAtSpeed().onTrue(setRumble());
 
         isRightStickZero().debounce(0.25, DebounceType.kRising)
@@ -453,10 +426,10 @@ public class RobotContainer {
             nextAuto = "Waiting";
         }
 
-        if (!nextAuto.equals(m_autoCommandName)) {
-            bagManager.startBag(); // Start recording
-            m_autoCommandName = nextAuto;
-        }
+        // if (!nextAuto.equals(m_autoCommandName)) {
+        // bagManager.startBag(); // Start recording
+        // m_autoCommandName = nextAuto;
+        // }
 
         SmartDashboard.putString("Auto", m_autoCommandName);
         SmartDashboard.putString("AutoVariant", m_autoVariantName);
@@ -467,13 +440,12 @@ public class RobotContainer {
 
         if (!hasNote && !readyToCoast && !coasting && m_intake.getIndexerPosition() - indexerStart < -4.0) {
             readyToCoast = true;
-            m_lights.setLED(0, 0, 255);
+            // m_lights.setLED(0, 0, 255);
         }
 
         if (readyToCoast && !hasNote && m_intake.getIndexerPosition() - indexerStart > 0.0) {
             // coast
-            m_lights.setLED(255, 0, 0);
-            m_climber.enableCoastMode();
+            // m_lights.setLED(255, 0, 0);
             m_elevator.enableCoastMode();
             readyToCoast = false;
             coasting = true;
@@ -482,21 +454,19 @@ public class RobotContainer {
         if (coasting && hasNote) {
             // brake
             // NOTE: Be sure to enable brake mode in teleopInit above!
-            m_lights.disableLED();
-            m_climber.enableBrakeMode();
+            // m_lights.disableLED();
             m_elevator.enableBrakeMode();
             indexerStart = m_intake.getIndexerPosition();
             coasting = false;
         }
 
         if (readyToCoast && hasNote) {
-            m_lights.disableLED();
+            // m_lights.disableLED();
             indexerStart = m_intake.getIndexerPosition();
             readyToCoast = false;
         }
 
         if (!coasting && !readyToCoast) {
-            m_climber.enableBrakeMode();
             m_elevator.enableBrakeMode();
         }
 

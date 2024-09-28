@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.util.ConcurrentModificationException;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -23,6 +24,7 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -33,8 +35,10 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -47,6 +51,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.Vision.LimelightHelpers;
+import frc.robot.subsystems.Vision.Limelight;
 import frc.robot.util.Aiming;
 import frc.robot.util.DriveUtils;
 import frc.robot.util.HoldAnglesRequest;
@@ -73,6 +79,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private double targetHeading = 0;
     private Aiming m_aiming;
     private boolean lowPowerMode = false;
+    public boolean rejectUpdate = false;
+    public Alliance alliance;
+    public String m_name = "limelight";
+    // public Limelight m_Limelight = new Limelight("limelight");
 
     private boolean holdingDirections = false;
     private DoublePreferenceConstant p_maxVeloctiy = new DoublePreferenceConstant("drivetrain/PathFindingMaxVelocity",
@@ -131,7 +141,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         snapToAngle.HeadingController = headingController;
     }
 
-    public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, Aiming aiming,
+    public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants,
+            Aiming aiming,
             SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
         configureAutoBuilder();
@@ -141,6 +152,43 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         }
         headingController.enableContinuousInput(-Math.PI, Math.PI);
         snapToAngle.HeadingController = headingController;
+    }
+
+    private Alliance getAlliance() {
+        if (DriverStation.getAlliance().isPresent()) {
+            alliance = DriverStation.getAlliance().get();
+        }
+        return alliance;
+    }
+
+    public LimelightHelpers.PoseEstimate getBotPoseEstimate() {
+        if (getAlliance() == DriverStation.Alliance.Red) {
+            LimelightHelpers.PoseEstimate robotPosemt = LimelightHelpers.getBotPoseEstimate_wpiBlue(m_name);
+            return robotPosemt;
+        } else {
+            LimelightHelpers.PoseEstimate robotPosemt = LimelightHelpers
+                    .getBotPoseEstimate_wpiBlue(m_name);
+            return robotPosemt;
+        }
+    }
+
+    public void limelightPeriodic() {
+        // LimelightHelpers.SetRobotOrientation(m_name,
+        // m_odometry.getEstimatedPosition().getRotation().getDegrees(), 0,
+        // 0,
+        // 0, 0, 0);
+        LimelightHelpers.PoseEstimate pose = getBotPoseEstimate();
+        if (Math.abs(m_pigeon2.getRate()) > 720) {
+            rejectUpdate = true;
+        }
+        if (pose.tagCount == 0) {
+            rejectUpdate = true;
+        }
+        if (!rejectUpdate) {
+
+            // m_odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+            m_odometry.addVisionMeasurement(pose.pose, Timer.getFPGATimestamp());
+        }
     }
 
     public void setTargetHeading(double target) {
@@ -373,7 +421,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public void localize() {
-        resetPose(m_aiming.getROSPose());
+        resetPose(getBotPoseEstimate().pose);
     }
 
     public double getCurrentRobotAngle() {
@@ -427,34 +475,13 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public Command aimAtSpeakerFactory() {
-        return new RunCommand(() -> setTargetHeading(m_aiming.getSpeakerAngleForDrivetrian()));
+        return new RunCommand(() -> setTargetHeading(m_aiming.getSpeakerAngleForDrivetrian(getPose())));
     }
 
     public Command aimAtAmpDumpingGroundFactory(BooleanSupplier amp) {
         return new RunCommand(() -> setTargetHeading(
-                amp.getAsBoolean() ? m_aiming.getAmpAngleForDrivetrain() : m_aiming.getDumpingGroundAngle()));
-    }
-
-    private void sendROSPose() {
-        /* Telemeterize the pose */
-        Pose2d pose = m_aiming.getROSPose();
-        if (DriveUtils.redAlliance()) {
-            pose = DriveUtils.redBlueTransform(pose);
-        }
-        rosFieldTypePub.set("Field2d");
-        rosFieldPub.set(new double[] {
-                pose.getX(),
-                pose.getY(),
-                pose.getRotation().getDegrees()
-        });
-    }
-
-    private Pose2d getROSPoseBlue() {
-        Pose2d pose = m_aiming.getROSPose();
-        if (DriveUtils.redAlliance()) {
-            pose = DriveUtils.redBlueTransform(pose);
-        }
-        return pose;
+                amp.getAsBoolean() ? m_aiming.getAmpAngleForDrivetrain(getPose())
+                        : m_aiming.getDumpingGroundAngle(getPose())));
     }
 
     public Command pathFindingCommand(String pathName) {
@@ -479,13 +506,34 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 });
     }
 
+    private void add(LimelightHelpers.PoseEstimate estimate) {
+        if (estimate == null) {
+            return;
+        }
+        m_odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+        m_odometry.addVisionMeasurement(estimate.pose, estimate.timestampSeconds);
+    }
+
     private void sendOdomPose() {
         Pose2d pose = getState().Pose;
-        if (DriveUtils.redAlliance()) {
-            pose = DriveUtils.redBlueTransform(pose);
-        }
+        // if (DriveUtils.redAlliance()) {
+        // pose = DriveUtils.redBlueTransform(pose);
+        // }
         poseFieldTypePub.set("Field2d");
         poseFieldPub.set(new double[] {
+                pose.getX(),
+                pose.getY(),
+                pose.getRotation().getDegrees()
+        });
+    }
+
+    private void sendLimelightPose() {
+        Pose2d pose = getBotPoseEstimate().pose;
+        // if (DriveUtils.redAlliance()) {
+        // pose = DriveUtils.redBlueTransform(pose);
+        // }
+        rosFieldTypePub.set("Field2d");
+        rosFieldPub.set(new double[] {
                 pose.getX(),
                 pose.getY(),
                 pose.getRotation().getDegrees()
@@ -515,21 +563,28 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     @Override
     public void periodic() {
-        sendROSPose();
+        // sendROSPose();
         sendOdomPose();
+        sendLimelightPose();
+        try {
+            limelightPeriodic();
+        } catch (ConcurrentModificationException e) {
+
+        }
         SmartDashboard.putNumber("Target Heading", targetHeading);
-        SmartDashboard.putNumber("Speaker Angle", m_aiming.getSpeakerAngleForDrivetrian());
-        SmartDashboard.putNumber("Speaker Distance", Units.metersToFeet(m_aiming.speakerDistance()));
+        SmartDashboard.putNumber("Limelight X", getBotPoseEstimate().pose.getX());
+        SmartDashboard.putNumber("Limelight Y", getBotPoseEstimate().pose.getY());
+        SmartDashboard.putNumber("Speaker Angle", m_aiming.getSpeakerAngleForDrivetrian(getPose()));
+        SmartDashboard.putNumber("Speaker Distance", Units.metersToFeet(m_aiming.speakerDistance(getPose())));
         SmartDashboard.putBoolean("Tag sub", m_aiming.getDetections());
-        SmartDashboard.putNumber("Shooter Aiming", m_aiming.speakerAngleForShooter());
+        SmartDashboard.putNumber("Shooter Aiming", m_aiming.speakerAngleForShooter(getPose()));
         SmartDashboard.putNumber("Pigeon Yaw", getPigeon2().getYaw().getValueAsDouble());
         SmartDashboard.putNumber("Pigeon Roll", getPigeon2().getRoll().getValueAsDouble());
         SmartDashboard.putNumber("Pigeon Pitch", getPigeon2().getPitch().getValueAsDouble());
         SmartDashboard.putString("PowerMode", lowPowerMode ? "LowPowerMode" : "HighPowerMode");
-        SmartDashboard.putNumber("AmpShuttle", m_aiming.getAmpAngleForDrivetrain());
+        SmartDashboard.putNumber("AmpShuttle", m_aiming.getAmpAngleForDrivetrain(getPose()));
         SmartDashboard.putNumber("Pigeon Rate", getPigeon2().getAngularVelocityZDevice().getValueAsDouble());
         SmartDashboard.putNumber("Robot Heading", getCurrentRobotAngle());
         SmartDashboard.putNumber("Drive Speed", getSpeed());
-        m_aiming.sendTarget();
     }
 }

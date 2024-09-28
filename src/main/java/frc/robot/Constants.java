@@ -100,10 +100,14 @@ public final class Constants {
     public static final double COPROCESSOR_SLOW_UPDATE_DELAY = 1.0 / 5;
     public static final double COPROCESSOR_SLOW_UPDATE_DELAY_OFFSET = 0.02;
 
+    // Limelight
+    public static class LimelightConstants {
+        public static final String kCameraName = "limelight";
+    }
+
     // Aiming
-    public static final Pose2d RED_SPEAKER_POSE = DriveUtils
-            .redBlueTransform(new Pose2d(new Translation2d((16.54 - 0.12), 5.547868),
-                    Rotation2d.fromDegrees(180)));
+    public static final Pose2d RED_SPEAKER_POSE = new Pose2d(new Translation2d((16.54 - 0.12), 5.547868),
+            Rotation2d.fromDegrees(0));
     public static final Pose2d BLUE_SPEAKER_POSE = new Pose2d(new Translation2d(0.12, 5.547868),
             Rotation2d.fromDegrees(0));
     public static final Pose2d BLUE_AMP_AIM_POSE = new Pose2d(new Translation2d(1.83, 7.65),

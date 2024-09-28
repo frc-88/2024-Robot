@@ -1,9 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
-import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -54,10 +52,10 @@ public class Intake extends SubsystemBase {
             () -> m_isIntakingRunning
                     && m_intakeMotor.getAcceleration()
                             .getValueAsDouble() < -p_intakingDriverNoteAcceleration.getValue())
-            .debounce(1.5, DebounceType.kFalling)
+            .debounce(.5, DebounceType.kFalling)
             .and(new Trigger(
                     () -> m_intakeMotor.getStatorCurrent().getValueAsDouble() > p_intakingDriverNoteCurrent.getValue())
-                    .debounce(1.5, DebounceType.kFalling));
+                    .debounce(.5, DebounceType.kFalling));
     private Trigger m_intakingOperationNoteTrigger = new Trigger(
             () -> m_isIntakingRunning
                     && m_intakeMotor.getAcceleration()
